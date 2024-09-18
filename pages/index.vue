@@ -1,3 +1,5 @@
 <template>
-	<div>Hello World</div>
+	<UContainer>
+		<LoginForm />
+	</UContainer>
 </template>
