@@ -12,6 +12,9 @@ export default defineNuxtConfig({
 		'@nuxtjs/device',
 	],
 	compatibilityDate: '2024-09-17',
+	runtimeConfig: {
+		apiBaseUrl: '',
+	},
 	ui: {
 		global: true,
 	},
