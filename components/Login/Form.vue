@@ -32,16 +32,21 @@
 			>
 		</div>
 		<div class="form__actions">
-			<UButton class="form__actions__login" size="xl" :square="true">Log in</UButton>
+			<UButton class="form__actions__login" size="xl" :square="true" @click="handleLogin(form)"
+				>Log in</UButton
+			>
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
+import type { ILoginForm } from '@/types/login'
 import { loginSchema } from '@/schema/login'
-import type { LoginForm } from '@/types/login'
+import { useAuth } from '@/composables/use-auth'
 
-const form = ref<LoginForm>({
+const { handleLogin } = useAuth()
+
+const form = ref<ILoginForm>({
 	email: '',
 	password: '',
 })
