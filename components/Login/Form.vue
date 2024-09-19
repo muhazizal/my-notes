@@ -92,7 +92,7 @@ const handleRedirectSignUp = () => {
 
 <style lang="scss" scoped>
 .form {
-	@apply min-h-screen flex flex-col justify-center items-center;
+	@apply min-h-[calc(100vh-32px)] sm:min-h-[calc(100vh-48px)] lg:min-h-[calc(100vh-64px)] flex flex-col justify-center items-center;
 
 	&__logo {
 		@apply mb-16;
