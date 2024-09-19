@@ -10,10 +10,22 @@
 		</div>
 		<UForm class="form__body" :schema="loginSchema" :state="form" @submit="handleLogin">
 			<UFormGroup name="email" size="xl" eager-validation>
-				<UInput v-model="form.email" class="form__input" placeholder="Email address" size="xl" />
+				<UInput
+					v-model="form.email"
+					class="form__input"
+					placeholder="Email address"
+					size="xl"
+					@keypress="preventSpace"
+				/>
 			</UFormGroup>
 			<UFormGroup name="password" size="xl" eager-validation>
-				<UInput v-model="form.password" placeholder="Password" size="xl" :type="getPasswordType">
+				<UInput
+					v-model="form.password"
+					placeholder="Password"
+					size="xl"
+					:type="getPasswordType"
+					@keypress="preventSpace"
+				>
 					<template #trailing>
 						<UButton
 							color="gray"
@@ -49,10 +61,12 @@
 import type { ILoginBody } from '@/types/login'
 import { loginSchema } from '@/schema/login'
 import { useLogin } from '@/composables/api/useLogin'
+import { useNoSpace } from '@/composables/utils/input/useNoSpace'
 
 const toast = useToast()
 const router = useRouter()
 const { isLoadingLogin, login } = useLogin()
+const { preventSpace } = useNoSpace()
 
 const form = ref<ILoginBody>({
 	email: '',
