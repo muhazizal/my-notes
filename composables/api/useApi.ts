@@ -18,12 +18,14 @@ export function useApi<T>(url: string, opts: CustomFetchOptions<T> = {}) {
 		},
 		onResponse({ response }) {
 			if (import.meta.server) {
-				console.log('useApi onResponse', response._data)
+				console.error('useApi onResponse', response)
 			}
 		},
 		async onResponseError({ response }) {
+			console.error(response)
+
 			if (import.meta.server) {
-				console.log('useApi onResponseError', response._data)
+				console.error('useApi onResponseError', response)
 			}
 
 			const excludedInterceptor = (statusCode: number): boolean => {
@@ -31,17 +33,9 @@ export function useApi<T>(url: string, opts: CustomFetchOptions<T> = {}) {
 				return excludeInterceptor.includes(statusCode)
 			}
 
-			if (!excludedInterceptor(response._data.code)) {
-				if (response._data.code === 422) {
-					let errorText = response._data.message
-					const errors = response._data.errors
-
-					if (typeof errors === 'string') {
-						errorText = errors
-					} else if (Array.isArray(errors)) {
-						errorText = errors[0].messages[0]
-					}
-
+			if (!excludedInterceptor(response.status)) {
+				if (response.status === 422) {
+					const errorText = response.statusText
 					toast.add({
 						color: 'red',
 						title: 'Error 422',
@@ -49,11 +43,11 @@ export function useApi<T>(url: string, opts: CustomFetchOptions<T> = {}) {
 					})
 				}
 
-				if (response._data.code === 401) {
+				if (response.status === 401) {
 					toast.add({
 						color: 'red',
 						title: 'Error 401',
-						description: response._data.message,
+						description: response.statusText,
 					})
 
 					if (import.meta.client) {
@@ -61,25 +55,25 @@ export function useApi<T>(url: string, opts: CustomFetchOptions<T> = {}) {
 					}
 				}
 
-				if (response._data.code === 403) {
+				if (response.status === 403) {
 					toast.add({
 						color: 'red',
 						title: 'Error 403',
-						description: response._data.message,
+						description: response.statusText,
 					})
 
 					throw showError({ statusCode: 403 })
 				}
 
-				if (response._data.code === 404) {
+				if (response.status === 404) {
 					throw showError({ statusCode: 404 })
 				}
 
-				if (response._data.code >= 500) {
+				if (response.status >= 500) {
 					toast.add({
 						color: 'red',
-						title: `Error ${response._data.code}`,
-						description: response._data.message,
+						title: `Error ${response.status}`,
+						description: response.statusText,
 					})
 				}
 			}

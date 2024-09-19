@@ -9,6 +9,3 @@ export interface ILoginResponse extends IResponse {
 	message: string
 	code: number
 }
-
-// UI
-export interface ILoginForm extends ILoginBody {}

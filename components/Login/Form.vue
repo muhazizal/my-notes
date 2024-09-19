@@ -32,7 +32,13 @@
 			>
 		</div>
 		<div class="form__actions">
-			<UButton class="form__actions__login" size="xl" :square="true" @click="handleLogin(form)"
+			<UButton
+				class="form__actions__login"
+				size="xl"
+				:square="true"
+				:loading="isLoadingLogin"
+				:disabled="isLoadingLogin"
+				@click="handleLogin"
 				>Log in</UButton
 			>
 		</div>
@@ -40,13 +46,15 @@
 </template>
 
 <script setup lang="ts">
-import type { ILoginForm } from '@/types/login'
+import type { ILoginBody } from '@/types/login'
 import { loginSchema } from '@/schema/login'
-import { useAuth } from '@/composables/use-auth'
+import { useLogin } from '@/composables/api/useLogin'
 
-const { handleLogin } = useAuth()
+const toast = useToast()
+const router = useRouter()
+const { isLoadingLogin, login } = useLogin()
 
-const form = ref<ILoginForm>({
+const form = ref<ILoginBody>({
 	email: '',
 	password: '',
 })
@@ -64,9 +72,21 @@ const getPasswordIcon = computed<string>(() =>
 )
 const getPasswordType = computed<string>(() => (showPassword.value ? 'text' : 'password'))
 
+const handleLogin = async (): Promise<void> => {
+	const res = await login(form.value)
+
+	if (res) {
+		toast.add({
+			color: 'green',
+			title: 'Login',
+			description: res.message,
+		})
+		// router.replace('/notes')
+	}
+}
+
 const handleRedirectSignUp = () => {
-	const router = useRouter()
-	router.push('/sign-up')
+	router.replace('/sign-up')
 }
 </script>
 
