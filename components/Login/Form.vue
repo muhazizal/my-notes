@@ -8,7 +8,7 @@
 				>Sign up now</UButton
 			>
 		</div>
-		<UForm class="form__body" :schema="loginSchema" :state="form">
+		<UForm class="form__body" :schema="loginSchema" :state="form" @submit="handleLogin">
 			<UFormGroup name="email" size="xl" eager-validation>
 				<UInput v-model="form.email" class="form__input" placeholder="Email address" size="xl" />
 			</UFormGroup>
@@ -25,23 +25,23 @@
 					</template>
 				</UInput>
 			</UFormGroup>
+			<div class="form__footer">
+				<UButton color="primary" variant="link" :padded="false" @click="handleRedirectSignUp"
+					>Forgot password?</UButton
+				>
+			</div>
+			<div class="form__actions">
+				<UButton
+					class="form__actions__login"
+					type="submit"
+					size="xl"
+					:square="true"
+					:loading="isLoadingLogin"
+					:disabled="isLoadingLogin"
+					>Log in</UButton
+				>
+			</div>
 		</UForm>
-		<div class="form__footer">
-			<UButton color="primary" variant="link" :padded="false" @click="handleRedirectSignUp"
-				>Forgot password?</UButton
-			>
-		</div>
-		<div class="form__actions">
-			<UButton
-				class="form__actions__login"
-				size="xl"
-				:square="true"
-				:loading="isLoadingLogin"
-				:disabled="isLoadingLogin"
-				@click="handleLogin"
-				>Log in</UButton
-			>
-		</div>
 	</div>
 </template>
 
@@ -111,11 +111,11 @@ const handleRedirectSignUp = () => {
 	}
 
 	&__footer {
-		@apply mt-4 w-6/12 max-w-96 text-right;
+		@apply max-w-96 text-right;
 	}
 
 	&__actions {
-		@apply mt-12 w-6/12 max-w-96 text-center;
+		@apply max-w-96 text-center !mt-12;
 
 		&__login {
 			@apply w-52 justify-center p-3 rounded-none;
