@@ -2,7 +2,7 @@ import { useApi } from './useApi'
 import type { ILoginBody, ILoginResponse } from '@/types/login'
 
 export function useLogin() {
-	const isLoadingLogin = useState('isLoadingLogin', () => false)
+	const isLoadingLogin = useState('is-loading-login', () => false)
 
 	const login = async (body: ILoginBody) => {
 		if (isLoadingLogin.value) return
