@@ -1,5 +1,5 @@
 <template>
 	<UContainer>
-		<RegisterForm />
+		<Register />
 	</UContainer>
 </template>
