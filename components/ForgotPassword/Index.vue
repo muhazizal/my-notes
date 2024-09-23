@@ -26,18 +26,18 @@
 						size="xl"
 						@keypress="preventSpace"
 					/>
-					<div class="form__actions">
-						<UButton
-							class="form__actions__submit"
-							type="submit"
-							size="xl"
-							:square="true"
-							:loading="isLoadingForgotPassword"
-							:disabled="isLoadingForgotPassword"
-							>Submit</UButton
-						>
-					</div>
 				</UFormGroup>
+				<div class="form__actions">
+					<UButton
+						class="form__actions__submit"
+						type="submit"
+						size="xl"
+						:square="true"
+						:loading="isLoadingForgotPassword"
+						:disabled="isLoadingForgotPassword"
+						>Submit</UButton
+					>
+				</div>
 			</UForm>
 		</template>
 	</div>
