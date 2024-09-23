@@ -1,7 +1,7 @@
 <template>
 	<div class="form">
 		<AppLogo class="form__logo" />
-		<h2 class="form__title">Email Verification</h2>
+		<h2 class="form__title">Email Verification.</h2>
 		<template v-if="isWaitingVerify">
 			<div class="form__caption">
 				<p>Please wait, email verification is on progress</p>
