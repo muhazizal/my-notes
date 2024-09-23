@@ -3,7 +3,7 @@
 		<AppLogo class="form__logo" />
 		<h2 class="form__title">Never Forget Anything 📝</h2>
 		<div class="form__caption">
-			<p>Write your notes in your hand and you will save energy to remember.</p>
+			<p>Write your notes and you will save time-energy to remember.</p>
 		</div>
 		<div class="form__actions">
 			<UButton class="form__actions__item" size="xl" :square="true" @click="handleRedirectSignIn"
