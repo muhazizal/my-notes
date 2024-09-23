@@ -3,7 +3,7 @@
 		<AppLogo class="form__logo" />
 		<h2 class="form__title">Create new account.</h2>
 		<template v-if="isRegisterSuccess">
-			<div class="form__caption">
+			<div class="form__caption--success">
 				<p>Success to register your account</p>
 				<p>Please check your email to complete verification process</p>
 				<UButton
@@ -139,7 +139,11 @@ const handleRedirectSignIn = () => {
 	}
 
 	&__caption {
-		@apply text-sm flex flex-col gap-1 mb-12 text-center;
+		@apply text-sm flex flex-row gap-1 mb-12 text-center;
+
+		&--success {
+			@apply flex-col;
+		}
 
 		&__action {
 			@apply mx-auto mt-12 rounded-none p-3 w-52 justify-center;
