@@ -1,7 +1,6 @@
 import { z } from 'zod'
 import { isAlphanumeric } from 'validator'
-
-const passwordSchema = z.string().trim().min(5, 'Password must be at least 5 characters long')
+import { passwordSchema } from '@/schema/standalone/password.js'
 
 export const registerSchema = z.object({
 	fullname: z.string().min(1, 'Full name is required'),
