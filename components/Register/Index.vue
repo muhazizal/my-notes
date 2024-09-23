@@ -122,7 +122,7 @@ const handleRegister = async (): Promise<void> => {
 }
 
 const handleRedirectSignIn = () => {
-	router.replace('/')
+	router.replace('/sign-in')
 }
 </script>
 

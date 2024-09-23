@@ -73,7 +73,7 @@ const handleForgotPassword = async (): Promise<void> => {
 }
 
 const handleRedirectSignIn = () => {
-	router.replace('/')
+	router.replace('/sign-in')
 }
 </script>
 

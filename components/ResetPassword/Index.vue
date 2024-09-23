@@ -111,7 +111,7 @@ const handleResetPassword = async (): Promise<void> => {
 }
 
 const handleRedirectSignIn = (): void => {
-	router.replace('/')
+	router.replace('/sign-in')
 }
 const handleRedirectForgotPassword = (): void => {
 	router.replace('/forgot-password')

@@ -87,7 +87,7 @@ const handleResendVerification = async (): Promise<void> => {
 }
 
 const handleRedirectSignIn = (): void => {
-	router.replace('/')
+	router.replace('/sign-in')
 }
 
 onMounted(async (): Promise<void> => {

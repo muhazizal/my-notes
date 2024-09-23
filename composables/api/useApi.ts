@@ -51,7 +51,7 @@ export function useApi<T>(url: string, opts: CustomFetchOptions<T> = {}) {
 					})
 
 					if (import.meta.client) {
-						router.replace('/')
+						router.replace('/sign-in')
 					}
 				}
 
