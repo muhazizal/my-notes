@@ -38,7 +38,11 @@
 				</UInput>
 			</UFormGroup>
 			<div class="form__footer">
-				<UButton color="primary" variant="link" :padded="false" @click="handleRedirectSignUp"
+				<UButton
+					color="primary"
+					variant="link"
+					:padded="false"
+					@click="handleRedirectForgotPassword"
 					>Forgot password?</UButton
 				>
 			</div>
@@ -101,6 +105,9 @@ const handleLogin = async (): Promise<void> => {
 
 const handleRedirectSignUp = () => {
 	router.replace('/sign-up')
+}
+const handleRedirectForgotPassword = () => {
+	router.replace('/forgot-password')
 }
 </script>
 
