@@ -1,5 +1,5 @@
 <template>
 	<UContainer>
-		<VerifyForm />
+		<Verify />
 	</UContainer>
 </template>
