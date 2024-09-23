@@ -2,60 +2,81 @@
 	<div class="form">
 		<AppLogo class="form__logo" />
 		<h2 class="form__title">Create new account.</h2>
-		<div class="form__caption">
-			<p>Already have an account?</p>
-			<UButton color="primary" variant="link" :padded="false" @click="handleRedirectSignIn"
-				>Sign in now</UButton
-			>
-		</div>
-		<UForm class="form__body" :schema="registerSchema" :state="form" @submit="handleRegister">
-			<UFormGroup name="fullname" size="xl" eager-validation>
-				<UInput v-model="form.fullname" placeholder="Full name" size="xl" />
-			</UFormGroup>
-			<UFormGroup name="username" size="xl" eager-validation>
-				<UInput v-model="form.username" placeholder="Username" size="xl" @keypress="preventSpace" />
-			</UFormGroup>
-			<UFormGroup name="email" size="xl" eager-validation>
-				<UInput
-					v-model="form.email"
-					placeholder="Email address"
-					size="xl"
-					@keypress="preventSpace"
-				/>
-			</UFormGroup>
-			<UFormGroup name="password.real" size="xl" eager-validation>
-				<UInput
-					v-model="form.password.real"
-					placeholder="Password"
-					size="xl"
-					type="password"
-					@keypress="preventSpace"
-				/>
-			</UFormGroup>
-			<UFormGroup name="password.confirmation" size="xl" eager-validation>
-				<UInput
-					v-model="form.password.confirmation"
-					placeholder="Confirm password"
-					size="xl"
-					type="password"
-					@keypress="preventSpace"
-				/>
-			</UFormGroup>
-			<UFormGroup name="tnc" size="xl" eager-validation>
-				<UCheckbox v-model="form.tnc" name="tnc" label="Term & Conditions" />
-			</UFormGroup>
-			<div class="form__actions">
+		<template v-if="isRegisterSuccess">
+			<div class="form__caption">
+				<p>Success to register your account</p>
+				<p>Please check your email to complete verification process</p>
 				<UButton
-					class="form__actions__register"
-					type="submit"
+					class="form__caption__action"
+					color="primary"
 					size="xl"
 					:square="true"
-					:loading="isLoadingRegister"
-					:disabled="isLoadingRegister"
-					>Sign Up</UButton
+					@click="handleRedirectSignIn"
+					>Sign in now</UButton
 				>
 			</div>
-		</UForm>
+		</template>
+		<template v-else>
+			<div class="form__caption">
+				<p>Already have an account?</p>
+				<UButton color="primary" variant="link" :padded="false" @click="handleRedirectSignIn"
+					>Sign in now</UButton
+				>
+			</div>
+			<UForm class="form__body" :schema="registerSchema" :state="form" @submit="handleRegister">
+				<UFormGroup name="fullname" size="xl" eager-validation>
+					<UInput v-model="form.fullname" placeholder="Full name" size="xl" />
+				</UFormGroup>
+				<UFormGroup name="username" size="xl" eager-validation>
+					<UInput
+						v-model="form.username"
+						placeholder="Username"
+						size="xl"
+						@keypress="preventSpace"
+					/>
+				</UFormGroup>
+				<UFormGroup name="email" size="xl" eager-validation>
+					<UInput
+						v-model="form.email"
+						placeholder="Email address"
+						size="xl"
+						@keypress="preventSpace"
+					/>
+				</UFormGroup>
+				<UFormGroup name="password.real" size="xl" eager-validation>
+					<UInput
+						v-model="form.password.real"
+						placeholder="Password"
+						size="xl"
+						type="password"
+						@keypress="preventSpace"
+					/>
+				</UFormGroup>
+				<UFormGroup name="password.confirmation" size="xl" eager-validation>
+					<UInput
+						v-model="form.password.confirmation"
+						placeholder="Confirm password"
+						size="xl"
+						type="password"
+						@keypress="preventSpace"
+					/>
+				</UFormGroup>
+				<UFormGroup name="tnc" size="xl" eager-validation>
+					<UCheckbox v-model="form.tnc" name="tnc" label="Term & Conditions" />
+				</UFormGroup>
+				<div class="form__actions">
+					<UButton
+						class="form__actions__register"
+						type="submit"
+						size="xl"
+						:square="true"
+						:loading="isLoadingRegister"
+						:disabled="isLoadingRegister"
+						>Sign Up</UButton
+					>
+				</div>
+			</UForm>
+		</template>
 	</div>
 </template>
 
@@ -80,6 +101,7 @@ const form = ref<IRegisterForm>({
 	},
 	tnc: false,
 })
+const isRegisterSuccess = ref<boolean>(false)
 
 const handleRegister = async (): Promise<void> => {
 	const res = await register({
@@ -95,7 +117,7 @@ const handleRegister = async (): Promise<void> => {
 			title: 'Register',
 			description: res.message,
 		})
-		// router.push('/verify')
+		isRegisterSuccess.value = true
 	}
 }
 
@@ -117,7 +139,11 @@ const handleRedirectSignIn = () => {
 	}
 
 	&__caption {
-		@apply text-sm flex flex-row gap-1 mb-12;
+		@apply text-sm flex flex-col gap-1 mb-12 text-center;
+
+		&__action {
+			@apply mx-auto mt-12 rounded-none p-3 w-52 justify-center;
+		}
 	}
 
 	&__body {
