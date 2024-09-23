@@ -99,7 +99,7 @@ const handleLogin = async (): Promise<void> => {
 			title: 'Login',
 			description: res.message,
 		})
-		// router.replace('/notes')
+		router.replace('/notes')
 	}
 }
 
