@@ -1,5 +1,5 @@
 <template>
 	<UContainer>
-		<LoginForm />
+		<Login />
 	</UContainer>
 </template>
