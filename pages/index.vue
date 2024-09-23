@@ -1,5 +1,5 @@
 <template>
 	<UContainer>
-		<Login />
+		<LandingScreen />
 	</UContainer>
 </template>
