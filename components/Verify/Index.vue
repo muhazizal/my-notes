@@ -35,7 +35,7 @@
 						:loading="isLoadingResendVerification"
 						:disabled="isLoadingResendVerification"
 						@click="handleResendVerification"
-						>Resend Verification URL</UButton
+						>Resend</UButton
 					>
 				</div>
 			</template>
