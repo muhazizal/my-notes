@@ -3,3 +3,8 @@ export interface IResponse<T = unknown> {
 	code: number
 	data?: T
 }
+
+export interface IError {
+	statusCode: string
+	statusMessage: string
+}
