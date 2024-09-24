@@ -11,13 +11,8 @@ export default defineEventHandler(async (event) => {
 		})
 	}
 
-	// const token = getCookie(event, 'oauth/token')
 	const { apiBaseUrl } = useRuntimeConfig()
 	const path = getRouterParam(event, 'path') ?? ''
-
-	// if (token) {
-	//   event.node.req.headers.authorization = `Bearer ${token}`
-	// }
 
 	const queryParam = getQuery(event)
 
