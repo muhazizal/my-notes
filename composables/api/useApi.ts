@@ -18,12 +18,10 @@ export function useApi<T>(url: string, opts: CustomFetchOptions<T> = {}) {
 		},
 		onResponse({ response }) {
 			if (import.meta.server) {
-				console.error('useApi onResponse', response)
+				console.info('useApi onResponse', response)
 			}
 		},
 		async onResponseError({ response }) {
-			console.error(response)
-
 			if (import.meta.server) {
 				console.error('useApi onResponseError', response)
 			}
