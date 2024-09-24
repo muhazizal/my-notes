@@ -34,6 +34,7 @@ export function useApi<T>(url: string, opts: CustomFetchOptions<T> = {}) {
 			if (!excludedInterceptor(response.status)) {
 				if (response.status === 422) {
 					const errorText = response.statusText
+
 					toast.add({
 						color: 'red',
 						title: 'Error 422',
@@ -64,6 +65,12 @@ export function useApi<T>(url: string, opts: CustomFetchOptions<T> = {}) {
 				}
 
 				if (response.status === 404) {
+					toast.add({
+						color: 'red',
+						title: 'Error 404',
+						description: response.statusText,
+					})
+
 					throw showError({ statusCode: 404 })
 				}
 
