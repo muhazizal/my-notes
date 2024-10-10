@@ -15,12 +15,10 @@ export function useApi<T>(url: string, opts: CustomFetchOptions<T> = {}) {
 		async onRequest({ options }) {
 			options.headers = new Headers(options.headers) || {}
 			options.headers.set('X-Requested-With', 'XMLHttpRequest')
+			options.headers.set('Content-Type', 'application/json')
+			options.headers.set('Accept', 'application/json')
 		},
-		onResponse({ response }) {
-			if (import.meta.server) {
-				console.info('useApi onResponse', response)
-			}
-		},
+		onResponse() {},
 		async onResponseError({ response }) {
 			if (import.meta.server) {
 				console.error('useApi onResponseError', response)
