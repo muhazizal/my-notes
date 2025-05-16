@@ -5,7 +5,7 @@
 		<div class="form__caption">
 			<p>Don't have an account yet?</p>
 			<UButton color="primary" variant="link" :padded="false" @click="handleRedirectSignUp"
-				>Sign up now</UButton
+				>Sign up.</UButton
 			>
 		</div>
 		<UForm class="form__body" :schema="loginSchema" :state="form" @submit="handleLogin">

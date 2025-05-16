@@ -12,7 +12,7 @@
 					size="xl"
 					:square="true"
 					@click="handleRedirectSignIn"
-					>Sign in now</UButton
+					>Sign in.</UButton
 				>
 			</div>
 		</template>
@@ -20,7 +20,7 @@
 			<div class="form__caption">
 				<p>Already have an account?</p>
 				<UButton color="primary" variant="link" :padded="false" @click="handleRedirectSignIn"
-					>Sign in now</UButton
+					>Sign in.</UButton
 				>
 			</div>
 			<UForm class="form__body" :schema="registerSchema" :state="form" @submit="handleRegister">

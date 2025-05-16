@@ -9,7 +9,7 @@
 			<div class="form__caption">
 				<p>Already remember your password?</p>
 				<UButton color="primary" variant="link" :padded="false" @click="handleRedirectSignIn"
-					>Sign in now</UButton
+					>Sign in.</UButton
 				>
 			</div>
 			<UForm
