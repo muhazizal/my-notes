@@ -30,13 +30,14 @@ export function useApi<T>(url: string, opts: CustomFetchOptions<T> = {}) {
 			}
 
 			if (!excludedInterceptor(response.status)) {
-				if (response.status === 422) {
-					const errorText = response.statusText
+				const { message } = response._data
+				const fallbackMessage = response.statusText
 
+				if (response.status === 422) {
 					toast.add({
 						color: 'red',
 						title: 'Error 422',
-						description: errorText,
+						description: message || fallbackMessage,
 					})
 				}
 
@@ -44,7 +45,7 @@ export function useApi<T>(url: string, opts: CustomFetchOptions<T> = {}) {
 					toast.add({
 						color: 'red',
 						title: 'Error 401',
-						description: response.statusText,
+						description: message || fallbackMessage,
 					})
 
 					if (import.meta.client) {
@@ -56,7 +57,7 @@ export function useApi<T>(url: string, opts: CustomFetchOptions<T> = {}) {
 					toast.add({
 						color: 'red',
 						title: 'Error 403',
-						description: response.statusText,
+						description: message || fallbackMessage,
 					})
 
 					throw showError({ statusCode: 403 })
@@ -66,7 +67,7 @@ export function useApi<T>(url: string, opts: CustomFetchOptions<T> = {}) {
 					toast.add({
 						color: 'red',
 						title: 'Error 404',
-						description: response.statusText,
+						description: message || fallbackMessage,
 					})
 
 					throw showError({ statusCode: 404 })
@@ -76,7 +77,7 @@ export function useApi<T>(url: string, opts: CustomFetchOptions<T> = {}) {
 					toast.add({
 						color: 'red',
 						title: `Error ${response.status}`,
-						description: response.statusText,
+						description: message || fallbackMessage,
 					})
 				}
 			}
