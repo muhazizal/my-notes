@@ -1,21 +1,5 @@
 # My Notes Web Application
 
-## Documentations
-
-Web application modules documentation:
-
-- [Nuxt docs](https://nuxt.com/docs/getting-started/introduction)
-- [Nuxt UI docs](https://ui.nuxt.com/getting-started)
-- [Devtools docs](https://devtools.nuxt.com/guide/getting-started)
-- [Pinia docs](https://pinia.vuejs.org/introduction.html)
-- [Tailwind docs](https://tailwindcss.com/docs/installation)
-- [Vueuse docs](https://vueuse.org/guide/)
-- [Test-utils docs](https://nuxt.com/docs/getting-started/introduction)
-- [Nuxt Image docs](https://image.nuxt.com/get-started/installation)
-- [Nuxt Eslint docs](https://eslint.nuxt.com/packages/module)
-- [Nuxt Googlefonts docs](https://google-fonts.nuxtjs.org/getting-started/setup)
-- [Nuxt Device docs](https://nuxt.com/modules/device)
-
 ## Setup
 
 Make sure to install the dependencies:
