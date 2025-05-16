@@ -2,10 +2,11 @@ import { useUserStore } from '@/stores/user'
 import type { Pinia } from 'pinia'
 
 export default defineNuxtPlugin(async ({ $pinia }): Promise<void> => {
-	const access_token = useCookie('access_token')
+	const session_id = useCookie<string>('session_id')
+
 	const { getUserProfile } = useUserStore($pinia as Pinia)
 
-	if (access_token.value) {
+	if (session_id.value) {
 		await getUserProfile()
 	}
 })

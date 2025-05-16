@@ -6,7 +6,6 @@ type CustomFetchOptions<T> = UseFetchOptions<T> & {
 }
 
 export function useApi<T>(url: string, opts: CustomFetchOptions<T> = {}) {
-	const router = useRouter()
 	const toast = useToast()
 
 	const { excludeInterceptor, ...options } = opts
@@ -18,7 +17,6 @@ export function useApi<T>(url: string, opts: CustomFetchOptions<T> = {}) {
 			options.headers.set('Content-Type', 'application/json')
 			options.headers.set('Accept', 'application/json')
 		},
-		onResponse() {},
 		async onResponseError({ response }) {
 			if (import.meta.server) {
 				console.error('useApi onResponseError', response)
@@ -47,9 +45,8 @@ export function useApi<T>(url: string, opts: CustomFetchOptions<T> = {}) {
 						title: 'Error 401',
 						description: message || fallbackMessage,
 					})
-
 					if (import.meta.client) {
-						router.replace('/sign-in')
+						return navigateTo('/sign-in')
 					}
 				}
 
