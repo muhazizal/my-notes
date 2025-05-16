@@ -3,6 +3,7 @@ import { useApi } from '@/composables/api/useApi.js'
 
 export const useUserStore = defineStore('userStore', () => {
 	const isLoading = ref<boolean>(false)
+	const isLoggedIn = ref<boolean>(false)
 
 	// User data
 	const user = ref<IUser | undefined>({
@@ -24,15 +25,18 @@ export const useUserStore = defineStore('userStore', () => {
 		})
 
 		if (error.value) {
+			isLoggedIn.value = false
 			isLoading.value = false
 		} else {
 			user.value = data.value?.data
+			isLoggedIn.value = true
 			isLoading.value = false
 		}
 	}
 
 	return {
 		user,
+		isLoggedIn,
 		getUserProfile,
 	}
 })
