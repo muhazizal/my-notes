@@ -1,7 +1,7 @@
 import { useUserStore } from '@/stores/user'
 
 export default defineNuxtRouteMiddleware(async (to) => {
-	const { isLoggedIn } = useUserStore()
+	const { isLoggedIn } = storeToRefs(useUserStore())
 	const router = useRouter()
 
 	const isAuthRoute = (route: string): boolean => {
@@ -10,7 +10,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
 		)
 	}
 
-	if (isLoggedIn) {
+	if (isLoggedIn.value) {
 		if (isAuthRoute(to.name as string)) {
 			router.replace('/notes')
 		}
