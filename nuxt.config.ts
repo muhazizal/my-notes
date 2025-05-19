@@ -17,6 +17,7 @@ export default defineNuxtConfig({
 	},
 	ui: {
 		global: true,
+		colorMode: false,
 	},
 	googleFonts: {
 		families: {
