@@ -2,14 +2,21 @@ import { useUserStore } from '@/stores/user'
 
 export default defineNuxtRouteMiddleware(async (to) => {
 	const { isLoggedIn } = useUserStore()
+	const router = useRouter()
 
-	const authRoutes = ['index', 'sign-in', 'sign-up', 'forgot-password', 'verify', 'reset-password']
+	const isAuthRoute = (route: string): boolean => {
+		return ['index', 'sign-in', 'sign-up', 'forgot-password', 'verify', 'reset-password'].includes(
+			route
+		)
+	}
 
 	if (isLoggedIn) {
-		if (authRoutes.includes(to.name as string)) {
-			return navigateTo('/notes')
+		if (isAuthRoute(to.name as string)) {
+			router.replace('/notes')
 		}
 	} else {
-		return navigateTo('/sign-in')
+		if (!isAuthRoute(to.name as string)) {
+			router.replace('/sign-in')
+		}
 	}
 })

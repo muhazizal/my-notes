@@ -7,6 +7,7 @@ type CustomFetchOptions<T> = UseFetchOptions<T> & {
 
 export function useApi<T>(url: string, opts: CustomFetchOptions<T> = {}) {
 	const toast = useToast()
+	const router = useRouter()
 
 	const { excludeInterceptor, ...options } = opts
 
@@ -46,7 +47,7 @@ export function useApi<T>(url: string, opts: CustomFetchOptions<T> = {}) {
 						description: message || fallbackMessage,
 					})
 					if (import.meta.client) {
-						return navigateTo('/sign-in')
+						router.replace('/sign-in')
 					}
 				}
 
