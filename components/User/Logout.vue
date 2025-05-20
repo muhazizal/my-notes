@@ -57,7 +57,7 @@ const handleLogout = async (): Promise<void> => {
 	if (data.value) {
 		toast.add({
 			color: 'green',
-			title: 'Logout Account',
+			title: 'Logout',
 			description: data.value.message,
 		})
 
