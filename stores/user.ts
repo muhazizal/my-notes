@@ -48,6 +48,7 @@ export const useUserStore = defineStore('userStore', () => {
 
 	// Clear user data
 	const handleClearUser = () => {
+		isLoggedIn.value = false
 		user.value.email = ''
 		user.value.fullname = ''
 		user.value.isVerified = false
