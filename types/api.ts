@@ -1,7 +1,7 @@
-export interface IResponse<T> {
+export interface IResponse<T = undefined> {
 	message: string
 	code: number
-	data: T
+	data?: T
 }
 
 export interface IError {

@@ -6,10 +6,7 @@ export interface IEditUserProfileBody {
 	username: string
 	email: string
 }
-export interface IEditUserProfileResponse extends IResponse<IEditUserProfileBody> {
-	message: string
-	code: number
-}
+export interface IEditUserProfileResponse extends IResponse<IEditUserProfileBody> {}
 
 // UI
 export interface IEditUserProfileForm {

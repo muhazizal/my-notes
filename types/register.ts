@@ -7,10 +7,7 @@ export interface IRegisterBody {
 	email: string
 	password: string
 }
-export interface IRegisterResponse extends IResponse {
-	message: string
-	code: number
-}
+export interface IRegisterResponse extends IResponse {}
 
 // UI
 export interface IRegisterForm {

@@ -101,7 +101,7 @@ const handleEditUserProfile = async (): Promise<void> => {
 			title: 'Edit Profile',
 			description: error.value.data.message,
 		})
-	} else if (data.value) {
+	} else if (data.value?.data) {
 		const { fullname, username, email } = data.value.data
 		user.value!.fullname = fullname
 		user.value!.username = username

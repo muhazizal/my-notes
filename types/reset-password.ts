@@ -4,10 +4,7 @@ import type { IResponse } from './api'
 export interface IResetPasswordBody {
 	password: string
 }
-export interface IResetPasswordResponse extends IResponse {
-	message: string
-	code: number
-}
+export interface IResetPasswordResponse extends IResponse {}
 
 // UI
 export interface IResetPasswordForm {

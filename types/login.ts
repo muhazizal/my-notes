@@ -5,7 +5,4 @@ export interface ILoginBody {
 	email: string
 	password: string
 }
-export interface ILoginResponse extends IResponse {
-	message: string
-	code: number
-}
+export interface ILoginResponse extends IResponse {}

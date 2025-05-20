@@ -7,7 +7,7 @@ export const useUserStore = defineStore('userStore', () => {
 	const isLoggedIn = ref<boolean>(false)
 
 	// User data
-	const user = ref<IUser | undefined>({
+	const user = ref<IUser>({
 		email: '',
 		fullname: '',
 		isVerified: false,
@@ -28,7 +28,7 @@ export const useUserStore = defineStore('userStore', () => {
 		if (error.value) {
 			isLoggedIn.value = false
 			isLoading.value = false
-		} else {
+		} else if (data.value?.data) {
 			user.value = data.value?.data
 			isLoggedIn.value = true
 			isLoading.value = false

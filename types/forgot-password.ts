@@ -4,7 +4,4 @@ import type { IResponse } from './api'
 export interface IForgotPasswordBody {
 	email: string
 }
-export interface IForgotPasswordResponse extends IResponse {
-	message: string
-	code: number
-}
+export interface IForgotPasswordResponse extends IResponse {}

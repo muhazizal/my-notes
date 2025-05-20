@@ -1,11 +1,7 @@
 import type { IResponse } from './api'
 
 // API
-export interface IUserProfileResponse extends IResponse {
-	message: string
-	code: number
-	data: IUser
-}
+export interface IUserProfileResponse extends IResponse<IUser> {}
 
 // DATA
 export interface IUser {
