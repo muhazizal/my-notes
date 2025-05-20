@@ -45,10 +45,18 @@ export const useUserStore = defineStore('userStore', () => {
 		})
 	}
 
+	const handleClearUser = () => {
+		user.value.email = ''
+		user.value.fullname = ''
+		user.value.isVerified = false
+		user.value.username = ''
+	}
+
 	return {
 		user,
 		isLoggedIn,
 		getUserProfile,
 		editUserProfile,
+		handleClearUser,
 	}
 })

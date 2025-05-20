@@ -16,15 +16,18 @@
 		</UContainer>
 
 		<UserEditProfile ref="userEditProfile" />
+		<UserLogout ref="userLogout" />
 	</header>
 </template>
 
 <script setup lang="ts">
 import UserEditProfile from '~/components/User/EditProfile.vue'
+import UserLogout from '~/components/User/Logout.vue'
 
 const { user } = storeToRefs(useUserStore())
 
 const userEditProfile = useTemplateRef<InstanceType<typeof UserEditProfile>>('userEditProfile')
+const userLogout = useTemplateRef<InstanceType<typeof UserLogout>>('userLogout')
 
 const items = ref([
 	[
@@ -42,6 +45,9 @@ const items = ref([
 			labelClass: 'text-red-600',
 			icon: 'i-heroicons-arrow-right-on-rectangle',
 			iconClass: 'text-red-600',
+			click: () => {
+				userLogout.value?.handleOpenModal(true)
+			},
 		},
 	],
 ])
