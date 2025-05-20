@@ -1,5 +1,6 @@
 import type { IUser, IUserProfileResponse } from '~/types/user'
 import type { IEditUserProfileBody, IEditUserProfileResponse } from '~/types/edit-user-profile'
+import type { IDeleteResponse } from '~/types/delete'
 import { useApi } from '@/composables/api/useApi.js'
 
 export const useUserStore = defineStore('userStore', () => {
@@ -45,11 +46,21 @@ export const useUserStore = defineStore('userStore', () => {
 		})
 	}
 
+	// Clear user data
 	const handleClearUser = () => {
 		user.value.email = ''
 		user.value.fullname = ''
 		user.value.isVerified = false
 		user.value.username = ''
+	}
+
+	// Delete user account
+	const deleteUserAccount = async () => {
+		return await useApi<IDeleteResponse>('/api/user', {
+			method: 'delete',
+			credentials: 'include',
+			watch: false,
+		})
 	}
 
 	return {
@@ -58,5 +69,6 @@ export const useUserStore = defineStore('userStore', () => {
 		getUserProfile,
 		editUserProfile,
 		handleClearUser,
+		deleteUserAccount,
 	}
 })

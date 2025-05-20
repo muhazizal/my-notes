@@ -17,17 +17,20 @@
 
 		<UserEditProfile ref="userEditProfile" />
 		<UserLogout ref="userLogout" />
+		<UserDelete ref="userDelete" />
 	</header>
 </template>
 
 <script setup lang="ts">
 import UserEditProfile from '~/components/User/EditProfile.vue'
 import UserLogout from '~/components/User/Logout.vue'
+import UserDelete from '~/components/User/Delete.vue'
 
 const { user } = storeToRefs(useUserStore())
 
 const userEditProfile = useTemplateRef<InstanceType<typeof UserEditProfile>>('userEditProfile')
 const userLogout = useTemplateRef<InstanceType<typeof UserLogout>>('userLogout')
+const userDelete = useTemplateRef<InstanceType<typeof UserDelete>>('userDelete')
 
 const items = ref([
 	[
@@ -47,6 +50,17 @@ const items = ref([
 			iconClass: 'text-red-600',
 			click: () => {
 				userLogout.value?.handleOpenModal(true)
+			},
+		},
+	],
+	[
+		{
+			label: 'Delete Account',
+			labelClass: 'text-red-600',
+			icon: 'i-heroicons-trash',
+			iconClass: 'text-red-600',
+			click: () => {
+				userDelete.value?.handleOpenModal(true)
 			},
 		},
 	],
