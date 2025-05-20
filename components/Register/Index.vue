@@ -6,14 +6,6 @@
 			<div class="form__caption--success">
 				<p>Success to register your account</p>
 				<p>Please check your email to complete verification process</p>
-				<UButton
-					class="form__caption__action"
-					color="primary"
-					size="xl"
-					:square="true"
-					@click="handleRedirectSignIn"
-					>Sign in</UButton
-				>
 			</div>
 		</template>
 		<template v-else>
