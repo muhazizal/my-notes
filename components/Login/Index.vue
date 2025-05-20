@@ -69,6 +69,7 @@ import { useNoSpace } from '@/composables/utils/input/useNoSpace'
 
 const toast = useToast()
 const router = useRouter()
+const { getUserProfile } = useUserStore()
 const { isLoadingLogin, login } = useLogin()
 const { preventSpace } = useNoSpace()
 
@@ -99,6 +100,9 @@ const handleLogin = async (): Promise<void> => {
 			title: 'Login',
 			description: res.message,
 		})
+
+		await getUserProfile()
+
 		router.replace('/notes')
 	}
 }
