@@ -3,7 +3,7 @@
 		<UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
 			<template #header>
 				<div class="logout__header">
-					<h3>Logout</h3>
+					<h3>Logout Account</h3>
 				</div>
 			</template>
 
@@ -57,7 +57,7 @@ const handleLogout = async (): Promise<void> => {
 	if (data.value) {
 		toast.add({
 			color: 'green',
-			title: 'Edit Profile',
+			title: 'Logout Account',
 			description: data.value.message,
 		})
 
