@@ -15,20 +15,24 @@
 			</nav>
 		</UContainer>
 
-		<UserEditProfile ref="userEditProfile" />
+		<AppCreateDialog ref="userEditProfile" title="Edit Profile">
+			<template #body="{ onOpenModal }">
+				<UserEditProfile @on-open-modal="onOpenModal" />
+			</template>
+		</AppCreateDialog>
 		<UserLogout ref="userLogout" />
 		<UserDelete ref="userDelete" />
 	</header>
 </template>
 
 <script setup lang="ts">
-import UserEditProfile from '~/components/User/EditProfile.vue'
+import AppCreateDialog from '~/components/App/CreateDialog.vue'
 import UserLogout from '~/components/User/Logout.vue'
 import UserDelete from '~/components/User/Delete.vue'
 
 const { user } = storeToRefs(useUserStore())
 
-const userEditProfile = useTemplateRef<InstanceType<typeof UserEditProfile>>('userEditProfile')
+const userEditProfile = useTemplateRef<InstanceType<typeof AppCreateDialog>>('userEditProfile')
 const userLogout = useTemplateRef<InstanceType<typeof UserLogout>>('userLogout')
 const userDelete = useTemplateRef<InstanceType<typeof UserDelete>>('userDelete')
 
