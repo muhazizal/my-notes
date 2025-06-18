@@ -44,11 +44,11 @@
 </template>
 
 <script setup lang="ts">
-import { useVerify } from '@/composables/api/useVerify'
+import { useAuth } from '@/composables/api/useAuth'
 
 const route = useRoute()
 const router = useRouter()
-const { verify, resendVerification, isLoadingResendVerification } = useVerify()
+const { verify, resendVerification, isLoadingResendVerification } = useAuth()
 
 const toast = useToast()
 const { token } = route.params

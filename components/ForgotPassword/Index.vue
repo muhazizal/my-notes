@@ -46,12 +46,12 @@
 <script setup lang="ts">
 import type { IForgotPasswordBody } from '@/types/auth'
 import { forgotPasswordSchema } from '@/schema/forgot-password'
-import { useForgotPassword } from '@/composables/api/useForgotPassword'
+import { useAuth } from '@/composables/api/useAuth'
 import { useNoSpace } from '@/composables/utils/input/useNoSpace'
 
 const toast = useToast()
 const router = useRouter()
-const { isLoadingForgotPassword, forgotPassword } = useForgotPassword()
+const { isLoadingForgotPassword, forgotPassword } = useAuth()
 const { preventSpace } = useNoSpace()
 
 const isSuccessForgotPassword = ref<boolean>(false)

@@ -34,10 +34,10 @@
 </template>
 
 <script lang="ts" setup>
-import { useLogout } from '@/composables/api/useLogout'
+import { useAuth } from '@/composables/api/useAuth'
 
 const { handleClearUser } = useUserStore()
-const { logout } = useLogout()
+const { logout } = useAuth()
 const toast = useToast()
 const router = useRouter()
 

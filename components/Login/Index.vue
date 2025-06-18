@@ -64,13 +64,13 @@
 <script setup lang="ts">
 import type { ILoginBody } from '@/types/auth'
 import { loginSchema } from '@/schema/login'
-import { useLogin } from '@/composables/api/useLogin'
+import { useAuth } from '@/composables/api/useAuth'
 import { useNoSpace } from '@/composables/utils/input/useNoSpace'
 
 const toast = useToast()
 const router = useRouter()
 const { getUserProfile } = useUserStore()
-const { isLoadingLogin, login } = useLogin()
+const { isLoadingLogin, login } = useAuth()
 const { preventSpace } = useNoSpace()
 
 const form = ref<ILoginBody>({

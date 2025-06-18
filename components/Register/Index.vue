@@ -75,12 +75,12 @@
 <script setup lang="ts">
 import type { IRegisterForm } from '@/types/auth'
 import { registerSchema } from '@/schema/register'
-import { useRegister } from '@/composables/api/useRegister'
+import { useAuth } from '@/composables/api/useAuth'
 import { useNoSpace } from '@/composables/utils/input/useNoSpace'
 
 const toast = useToast()
 const router = useRouter()
-const { isLoadingRegister, register } = useRegister()
+const { isLoadingRegister, register } = useAuth()
 const { preventSpace } = useNoSpace()
 
 const form = ref<IRegisterForm>({
