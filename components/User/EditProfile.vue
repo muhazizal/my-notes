@@ -57,7 +57,7 @@
 </template>
 
 <script lang="ts" setup>
-import type { IEditUserProfileForm } from '~/types/edit-user-profile'
+import type { IEditUserProfileForm } from '~/types/user'
 import { editUserProfileSchema } from '~/schema/edit-user-profile'
 import { useNoSpace } from '@/composables/utils/input/useNoSpace'
 
