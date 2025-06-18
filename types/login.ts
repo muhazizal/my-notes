@@ -1,8 +1,0 @@
-import type { IResponse } from './api'
-
-// API
-export interface ILoginBody {
-	email: string
-	password: string
-}
-export interface ILoginResponse extends IResponse {}

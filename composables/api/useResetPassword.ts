@@ -1,5 +1,5 @@
 import { useApi } from './useApi'
-import type { IResetPasswordBody, IResetPasswordResponse } from '@/types/reset-password'
+import type { IResetPasswordBody, IResetPasswordResponse } from '@/types/auth'
 
 export function useResetPassword() {
 	const route = useRoute()

@@ -1,5 +1,5 @@
 import { useApi } from './useApi'
-import type { IForgotPasswordBody, IForgotPasswordResponse } from '@/types/forgot-password'
+import type { IForgotPasswordBody, IForgotPasswordResponse } from '@/types/auth'
 
 export function useForgotPassword() {
 	const isLoadingForgotPassword = useState('is-loading-forgot-password', () => false)

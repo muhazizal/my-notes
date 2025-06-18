@@ -73,7 +73,7 @@
 </template>
 
 <script setup lang="ts">
-import type { IRegisterForm } from '@/types/register'
+import type { IRegisterForm } from '@/types/auth'
 import { registerSchema } from '@/schema/register'
 import { useRegister } from '@/composables/api/useRegister'
 import { useNoSpace } from '@/composables/utils/input/useNoSpace'

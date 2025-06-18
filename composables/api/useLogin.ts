@@ -1,5 +1,5 @@
 import { useApi } from './useApi'
-import type { ILoginBody, ILoginResponse } from '@/types/login'
+import type { ILoginBody, ILoginResponse } from '@/types/auth'
 
 export function useLogin() {
 	const isLoadingLogin = useState('is-loading-login', () => false)

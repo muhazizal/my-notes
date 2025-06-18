@@ -62,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ILoginBody } from '@/types/login'
+import type { ILoginBody } from '@/types/auth'
 import { loginSchema } from '@/schema/login'
 import { useLogin } from '@/composables/api/useLogin'
 import { useNoSpace } from '@/composables/utils/input/useNoSpace'

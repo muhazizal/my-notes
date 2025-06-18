@@ -1,5 +1,5 @@
 import { useApi } from './useApi'
-import type { ILogoutResponse } from '@/types/logout'
+import type { ILogoutResponse } from '@/types/auth'
 
 export function useLogout() {
 	const logout = async () => {

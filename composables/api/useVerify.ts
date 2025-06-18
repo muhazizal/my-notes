@@ -1,5 +1,5 @@
 import { useApi } from './useApi'
-import type { IVerifyResponse, IResendVerificationResponse } from '@/types/verify'
+import type { IVerifyResponse, IResendVerificationResponse } from '@/types/auth'
 
 export function useVerify() {
 	const isLoadingVerify = useState('is-loading-verify', () => false)

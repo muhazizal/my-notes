@@ -74,7 +74,7 @@
 </template>
 
 <script setup lang="ts">
-import type { IResetPasswordForm } from '@/types/reset-password'
+import type { IResetPasswordForm } from '@/types/auth'
 import { resetPasswordSchema } from '@/schema/reset-password'
 import { useResetPassword } from '@/composables/api/useResetPassword'
 import { useNoSpace } from '@/composables/utils/input/useNoSpace'

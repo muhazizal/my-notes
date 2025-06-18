@@ -44,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import type { IForgotPasswordBody } from '@/types/forgot-password'
+import type { IForgotPasswordBody } from '@/types/auth'
 import { forgotPasswordSchema } from '@/schema/forgot-password'
 import { useForgotPassword } from '@/composables/api/useForgotPassword'
 import { useNoSpace } from '@/composables/utils/input/useNoSpace'

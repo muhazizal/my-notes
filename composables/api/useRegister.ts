@@ -1,5 +1,5 @@
 import { useApi } from './useApi'
-import type { IRegisterBody, IRegisterResponse } from '@/types/register'
+import type { IRegisterBody, IRegisterResponse } from '@/types/auth'
 
 export function useRegister() {
 	const isLoadingRegister = useState('is-loading-register', () => false)
