@@ -39,7 +39,7 @@
 						color="gray"
 						:square="true"
 						:disabled="isLoadingForm"
-						@click="handleCancelEdit"
+						@click="handleOpenModal(false)"
 						>Cancel</UButton
 					>
 					<UButton
@@ -74,10 +74,21 @@ const handleOpenModal = (payload: boolean) => {
 
 const isLoadingForm = ref(false)
 const form = ref<IEditUserProfileForm>({
-	fullname: user.value!.fullname,
-	username: user.value!.username,
-	email: user.value!.email,
+	fullname: '',
+	username: '',
+	email: '',
 })
+
+const handleInitForm = (): void => {
+	form.value.fullname = user.value.fullname
+	form.value.username = user.value.username
+	form.value.email = user.value.email
+}
+const handleClearForm = (): void => {
+	form.value.fullname = ''
+	form.value.username = ''
+	form.value.email = ''
+}
 
 const handleEditUserProfile = async (): Promise<void> => {
 	if (isLoadingForm.value) return
@@ -112,13 +123,13 @@ const handleEditUserProfile = async (): Promise<void> => {
 	isOpen.value = false
 }
 
-const handleCancelEdit = (): void => {
-	form.value.fullname = ''
-	form.value.username = ''
-	form.value.email = ''
-
-	handleOpenModal(false)
-}
+watch(isOpen, (newVal) => {
+	if (newVal) {
+		handleInitForm()
+	} else {
+		handleClearForm()
+	}
+})
 
 defineExpose({
 	handleOpenModal,
