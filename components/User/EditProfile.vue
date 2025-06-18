@@ -1,6 +1,6 @@
 <template>
 	<UForm
-		class="edit__body"
+		class="create__body"
 		:schema="editUserProfileSchema"
 		:state="form"
 		@submit="handleEditUserProfile"
@@ -14,7 +14,7 @@
 		<UFormGroup name="email" size="xl" eager-validation>
 			<UInput v-model="form.email" placeholder="Email address" size="xl" @keypress="preventSpace" />
 		</UFormGroup>
-		<div class="edit__actions">
+		<div class="create__actions">
 			<UButton
 				size="xl"
 				variant="outline"

@@ -1,8 +1,8 @@
 <template>
-	<UModal v-model="isOpen" class="edit" prevent-close>
+	<UModal v-model="isOpen" class="create" prevent-close>
 		<UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
 			<template #header>
-				<div class="edit__header">
+				<div class="create__header">
 					<h3>{{ props.title }}</h3>
 				</div>
 			</template>
@@ -28,7 +28,7 @@ defineExpose({
 </script>
 
 <style lang="scss">
-.edit {
+.create {
 	&__header {
 		@apply flex items-center justify-between;
 
