@@ -1,6 +1,10 @@
-import type { IUser, IUserProfileResponse } from '~/types/user'
-import type { IEditUserProfileBody, IEditUserProfileResponse } from '~/types/edit-user-profile'
-import type { IDeleteResponse } from '~/types/delete'
+import type {
+	IUser,
+	IUserProfileResponse,
+	IEditUserProfileBody,
+	IEditUserProfileResponse,
+	IDeleteResponse,
+} from '~/types/user'
 import { useApi } from '@/composables/api/useApi.js'
 
 export const useUserStore = defineStore('userStore', () => {
