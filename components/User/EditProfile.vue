@@ -73,19 +73,13 @@ const handleEditUserProfile = async (): Promise<void> => {
 	if (isLoadingForm.value) return
 	isLoadingForm.value = true
 
-	const { data, error } = await editUserProfile({
+	const { data } = await editUserProfile({
 		fullname: form.value.fullname,
 		username: form.value.username,
 		email: form.value.email,
 	})
 
-	if (error.value) {
-		toast.add({
-			color: 'red',
-			title: 'Edit Profile',
-			description: error.value.data.message,
-		})
-	} else if (data.value?.data) {
+	if (data.value?.data) {
 		const { fullname, username, email } = data.value.data
 		user.value!.fullname = fullname
 		user.value!.username = username
