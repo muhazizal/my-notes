@@ -4,7 +4,7 @@
 			<nav aria-label="Main navigation" class="nav__content">
 				<UDropdown :items="items" :popper="{ placement: 'bottom-end' }">
 					<div class="nav__dropdown">
-						<span class="hover-shake mr-2">✋🏼</span> Hello {{ user?.fullname }}
+						<span class="hover-shake mr-2">✋🏼</span> Hello {{ getUserFirstFullname }}
 						<UButton
 							color="white"
 							variant="ghost"
@@ -31,6 +31,7 @@ import UserLogout from '~/components/User/Logout.vue'
 import UserDelete from '~/components/User/Delete.vue'
 
 const { user } = storeToRefs(useUserStore())
+const getUserFirstFullname = computed(() => user.value.fullname.trim().split(' ')[0])
 
 const userEditProfile = useTemplateRef<InstanceType<typeof AppCreateDialog>>('userEditProfile')
 const userLogout = useTemplateRef<InstanceType<typeof UserLogout>>('userLogout')
