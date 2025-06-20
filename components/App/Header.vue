@@ -2,9 +2,9 @@
 	<header class="nav border-b">
 		<UContainer class="!py-4">
 			<nav aria-label="Main navigation" class="nav__content">
-				<UDropdown mode="hover" :items="items" :popper="{ placement: 'bottom-end' }">
+				<UDropdown :items="items" :popper="{ placement: 'bottom-end' }">
 					<div class="nav__dropdown">
-						✋🏼 Hello {{ user?.fullname }}
+						<span class="hover-shake mr-2">✋🏼</span> Hello {{ user?.fullname }}
 						<UButton
 							color="white"
 							variant="ghost"

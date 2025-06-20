@@ -15,6 +15,7 @@ export default defineNuxtConfig({
 	runtimeConfig: {
 		apiBaseUrl: '',
 	},
+	css: ['@/assets/scss/main.scss'],
 	ui: {
 		global: true,
 		colorMode: false,
