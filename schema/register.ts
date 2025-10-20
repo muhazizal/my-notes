@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { isAlphanumeric } from 'validator'
+import validator from 'validator'
 import { passwordSchema } from '@/schema/standalone/password.js'
 
 export const registerSchema = z.object({
@@ -10,7 +10,7 @@ export const registerSchema = z.object({
 		.min(3, 'Username must be at least 3 characters long')
 		.refine(
 			(value) => {
-				return isAlphanumeric(value)
+				return validator.isAlphanumeric(value)
 			},
 			{
 				message: 'Username must be alphanumeric',

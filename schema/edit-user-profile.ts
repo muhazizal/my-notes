@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { isAlphanumeric } from 'validator'
+import validator from 'validator'
 
 export const editUserProfileSchema = z.object({
 	fullname: z.string().min(1, 'Full name is required'),
@@ -7,7 +7,7 @@ export const editUserProfileSchema = z.object({
 		.string()
 		.trim()
 		.min(3, 'Username must be at least 3 characters long')
-		.refine(isAlphanumeric, {
+		.refine(validator.isAlphanumeric, {
 			message: 'Username must be alphanumeric',
 		}),
 	email: z.string().trim().min(1, 'Email is required').email('Email is not valid'),
