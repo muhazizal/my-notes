@@ -3,10 +3,5 @@
 	"regions": ["sin1"],
 	"buildCommand": "npm run build",
 	"outputDirectory": ".output",
-	"framework": "nuxt",
-	"functions": {
-		"api/**/*.js": {
-			"regions": ["sin1"]
-		}
-	}
+	"framework": "nuxt"
 }
