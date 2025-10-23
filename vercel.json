@@ -1,7 +1,3 @@
 {
-	"version": 2,
-	"regions": ["sin1"],
-	"buildCommand": "npm run build",
-	"outputDirectory": ".output",
-	"framework": "nuxt"
+	"regions": ["sin1"]
 }
