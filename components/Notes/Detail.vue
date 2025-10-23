@@ -84,7 +84,7 @@
 							variant="outline"
 							color="gray"
 							:square="true"
-							:disabled="isLoadingForm"
+							:disabled="isUpdating"
 							@click="handleClearForm"
 							>Cancel</UButton
 						>
@@ -92,8 +92,8 @@
 							type="submit"
 							size="xl"
 							:square="true"
-							:loading="isLoadingForm"
-							:disabled="isLoadingForm"
+							:loading="isUpdating"
+							:disabled="isUpdating"
 							>Update</UButton
 						>
 					</div>
@@ -140,7 +140,6 @@ const handleBack = (): void => {
 }
 
 const updateNoteRef = useTemplateRef<InstanceType<typeof AppCreateDialog>>('updateNoteRef')
-const isLoadingForm = ref(false)
 const form = ref<IUpdateNoteBody>({
 	title: note.value.title,
 	description: note.value.description,
