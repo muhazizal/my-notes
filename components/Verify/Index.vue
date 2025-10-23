@@ -12,7 +12,7 @@
 			<div class="form__caption">
 				<p>
 					Success to verify your email, please
-					<UButton color="primary" variant="link" :padded="false" @click="handleRedirectSignIn"
+					<UButton color="primary" variant="link" :padded="false" @click.self="handleRedirectSignIn"
 						>Sign in</UButton
 					>
 					to continue
