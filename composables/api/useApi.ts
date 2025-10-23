@@ -75,7 +75,7 @@ export function useApi<T>(url: string, opts: CustomFetchOptions<T> = {}) {
 					toast.add({
 						color: 'red',
 						title: `Error ${response.status}`,
-						description: message || fallbackMessage,
+						description: message || fallbackMessage || 'Internal server error',
 					})
 				}
 			}
