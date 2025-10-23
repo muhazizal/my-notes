@@ -87,6 +87,7 @@ const handleCreateNote = async (): Promise<void> => {
 	}
 
 	isLoadingForm.value = false
+	handleClearForm()
 	createNoteRef.value?.handleOpenModal(false)
 }
 const handleCancel = (): void => {
