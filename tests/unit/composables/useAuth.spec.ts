@@ -204,4 +204,70 @@ describe('useAuth', () => {
 			expect(res).toBe(false)
 		})
 	})
+
+	describe('loading guards (early returns)', () => {
+		it('forgotPassword returns early when already loading', async () => {
+			const { forgotPassword, isLoadingForgotPassword } = useAuth()
+			isLoadingForgotPassword.value = true
+
+			const res = await forgotPassword({ email: 'a@b.com' })
+			expect(res).toBeUndefined()
+			expect(isLoadingForgotPassword.value).toBe(true)
+		})
+
+		it('login returns early when already loading', async () => {
+			const { login, isLoadingLogin } = useAuth()
+			const userStore = useUserStore()
+			isLoadingLogin.value = true
+			userStore.isLoggedIn.value = false
+			userStore.handleClearUser.mockClear()
+
+			const res = await login({ email: 'a@b.com', password: 'secret' })
+			expect(res).toBeUndefined()
+			expect(isLoadingLogin.value).toBe(true)
+			expect(userStore.isLoggedIn.value).toBe(false)
+			expect(userStore.handleClearUser).not.toHaveBeenCalled()
+		})
+
+		it('register returns early when already loading', async () => {
+			const { register, isLoadingRegister } = useAuth()
+			isLoadingRegister.value = true
+
+			const res = await register({
+				email: 'new@user.com',
+				fullname: 'New User',
+				password: 'pass',
+				username: 'newbie',
+			})
+			expect(res).toBeUndefined()
+			expect(isLoadingRegister.value).toBe(true)
+		})
+
+		it('resetPassword returns early when already loading', async () => {
+			const { resetPassword, isLoadingResetPassword } = useAuth()
+			isLoadingResetPassword.value = true
+
+			const res = await resetPassword({ password: 'newpass' })
+			expect(res).toBeUndefined()
+			expect(isLoadingResetPassword.value).toBe(true)
+		})
+
+		it('verify returns early when already loading', async () => {
+			const { verify, isLoadingVerify } = useAuth()
+			isLoadingVerify.value = true
+
+			const res = await verify('tok123')
+			expect(res).toBeUndefined()
+			expect(isLoadingVerify.value).toBe(true)
+		})
+
+		it('resendVerification returns early when already loading', async () => {
+			const { resendVerification, isLoadingResendVerification } = useAuth()
+			isLoadingResendVerification.value = true
+
+			const res = await resendVerification('tok123')
+			expect(res).toBeUndefined()
+			expect(isLoadingResendVerification.value).toBe(true)
+		})
+	})
 })
