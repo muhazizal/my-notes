@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { mount, shallowMount } from '@vue/test-utils'
-import { ref, nextTick } from 'vue'
+import { ref } from 'vue'
+import Register from '@/components/Register/Index.vue'
+import { useAuth } from '@/composables/api/useAuth'
 
 // Allow mocking the router instance returned by global useRouter
 declare const useRouter: () => any
@@ -49,6 +51,35 @@ describe('components/Register/Index.vue', () => {
 	let replaceSpy: ReturnType<typeof vi.fn>
 	let toastAddSpy: ReturnType<typeof vi.fn>
 
+	// Shared factories for speed
+	const shallowComp = () =>
+		shallowMount(Register, {
+			global: {
+				stubs: {
+					AppLogo: true,
+					UButton: UButtonStub, // render real <button> for reliable click
+					UForm: true,
+					UFormGroup: true,
+					UInput: true,
+					UCheckbox: true,
+				},
+			},
+		})
+
+	const mountComp = () =>
+		mount(Register, {
+			global: {
+				stubs: {
+					UButton: UButtonStub,
+					UForm: UFormStub,
+					UFormGroup: UFormGroupStub,
+					UInput: UInputStub,
+					UCheckbox: UCheckboxStub,
+					AppLogo: AppLogoStub,
+				},
+			},
+		})
+
 	beforeEach(() => {
 		// Mock router.replace for redirect assertions
 		const routerStub = vi.mocked(useRouter as any)
@@ -64,89 +95,58 @@ describe('components/Register/Index.vue', () => {
 	})
 
 	it('initially shows default caption and form (negative)', async () => {
-		const Comp = (await import('@/components/Register/Index.vue')).default
-
-		const wrapper = mount(Comp, {
-			global: {
-				stubs: {
-					UButton: UButtonStub,
-					UForm: UFormStub,
-					UFormGroup: UFormGroupStub,
-					UInput: UInputStub,
-					UCheckbox: UCheckboxStub,
-					AppLogo: AppLogoStub,
-				},
-			},
-		})
+		// Use shallow mount for speed; UFormStub still renders a real <form>
+		const wrapper = shallowComp()
 
 		expect(wrapper.text()).toContain('Already have an account?')
 		expect(wrapper.text()).not.toContain('Success to register your account')
 		expect(wrapper.text()).not.toContain('Please check your email to complete verification process')
+
+		// Shallow stubs don’t render a real <form>; assert the component exists instead
+		expect(wrapper.findComponent({ name: 'UForm' }).exists()).toBe(true)
 	})
 
 	it('handleRegister success shows toast and success caption (positive)', async () => {
-		const Comp = (await import('@/components/Register/Index.vue')).default
-
-		// Make register resolve so success branch runs
-		registerMock.mockResolvedValue({
+		// Drive success branch
+		registerMock.mockResolvedValueOnce({
 			code: 200,
 			message: 'Success to register your account',
 		})
 
-		// Use shallowMount to avoid DOM fragment anchor issues when toggling v-if
-		const wrapper = shallowMount(Comp, {
-			global: {
-				stubs: {
-					UButton: true,
-					UForm: true,
-					UFormGroup: true,
-					UInput: true,
-					UCheckbox: true,
-					AppLogo: true,
-				},
-			},
-		})
+		const wrapper = shallowComp()
 
+		// Call handler and flush microtasks + DOM updates
 		await (wrapper.vm as any).handleRegister()
-		await nextTick()
+		await Promise.resolve()
+		await wrapper.vm.$nextTick()
+		await wrapper.vm.$nextTick()
 
+		// Assert toast and state
 		expect(toastAddSpy).toHaveBeenCalledWith(
 			expect.objectContaining({
 				title: 'Register',
 				description: 'Success to register your account',
 			})
 		)
-		expect(wrapper.text()).toContain('Success to register your account')
-		expect(wrapper.text()).toContain('Please check your email to complete verification process')
+		expect((wrapper.vm as any).isRegisterSuccess).toBe(true)
+
+		// Assert success caption specifically (avoids flakiness)
+		const successCaption = wrapper.find('.form__caption--success')
+		expect(successCaption.exists()).toBe(true)
+		expect(successCaption.text()).toContain('Success to register your account')
+		expect(successCaption.text()).toContain('Please check your email to complete verification process')
+
 		// Default caption should be gone
 		expect(wrapper.text()).not.toContain('Already have an account?')
 	})
 
 	it('handleRegister failure keeps default caption and no toast (negative)', async () => {
-		// Ensure failure branch (no toast, no success caption)
 		registerMock.mockResolvedValueOnce(null)
 
-		const Comp = (await import('@/components/Register/Index.vue')).default
+		const wrapper = shallowComp()
 
-		// Use shallowMount since we don't need actual child DOM when not toggling v-if
-		const { shallowMount } = await import('@vue/test-utils')
-		const { nextTick } = await import('vue')
-		const wrapper = shallowMount(Comp, {
-			global: {
-				stubs: {
-					UButton: true,
-					UForm: true,
-					UFormGroup: true,
-					UInput: true,
-					UCheckbox: true,
-					AppLogo: true,
-				},
-			},
-		})
-
-		// Call the method directly and await to ensure the false branch of `if (res)` executes
 		await (wrapper.vm as any).handleRegister()
-		await nextTick()
+		await wrapper.vm.$nextTick()
 
 		expect(toastAddSpy).not.toHaveBeenCalled()
 		expect(wrapper.text()).toContain('Already have an account?')
@@ -155,29 +155,17 @@ describe('components/Register/Index.vue', () => {
 	})
 
 	it('inline @keypress handlers call preventSpace (positive)', async () => {
-		const Comp = (await import('@/components/Register/Index.vue')).default
-
+		// Needs real input DOM, keep full mount
 		preventSpaceMock.mockClear()
 
-		const wrapper = mount(Comp, {
-			global: {
-				stubs: {
-					UButton: UButtonStub,
-					UForm: UFormStub,
-					UFormGroup: UFormGroupStub,
-					UInput: UInputStub,
-					UCheckbox: UCheckboxStub,
-					AppLogo: AppLogoStub,
-				},
-			},
-		})
+		const wrapper = mountComp()
 
 		const allInputs = wrapper.findAll('input')
 		const textInputs = allInputs.filter((i) => i.attributes('type') !== 'checkbox')
 
-		// Skip the first text input (fullname) because it has no @keypress handler
+		// Skip first text input (fullname) — no @keypress handler
 		for (let i = 1; i < textInputs.length; i++) {
-		await textInputs[i].trigger('keypress', { key: ' ' })
+			await textInputs[i].trigger('keypress', { key: ' ' })
 		}
 
 		const expectedCalls = textInputs.length - 1
@@ -185,74 +173,32 @@ describe('components/Register/Index.vue', () => {
 	})
 
 	it('clicking "Sign in" navigates to /sign-in (positive)', async () => {
-		const Comp = (await import('@/components/Register/Index.vue')).default
+		const wrapper = shallowComp()
 
-		const wrapper = mount(Comp, {
-			global: {
-				stubs: {
-					UButton: UButtonStub,
-					UForm: UFormStub,
-					UFormGroup: UFormGroupStub,
-					UInput: UInputStub,
-					UCheckbox: UCheckboxStub,
-					AppLogo: AppLogoStub,
-				},
-			},
-		})
+		// Find the real button rendered by UButtonStub, then click it
+		const signInBtn = wrapper.findAll('button').find((b) => b.text() === 'Sign in')
+		expect(signInBtn).toBeDefined()
 
-		const signInBtn = wrapper.findAll('button').find((b) => b.text() === 'Sign in')!
-		await signInBtn.trigger('click')
+		await signInBtn!.trigger('click')
 		expect(replaceSpy).toHaveBeenCalledWith('/sign-in')
 	})
 
 	it('disables submit and shows loading when isLoadingRegister is true (positive)', async () => {
-		const Comp = (await import('@/components/Register/Index.vue')).default
-
-		// Toggle loading state before mount
-		const { useAuth } = await import('@/composables/api/useAuth')
+		// Set mocked flag via static import to avoid dynamic import overhead
 		useAuth().isLoadingRegister.value = true
 
-		const wrapper = mount(Comp, {
-			global: {
-				stubs: {
-					UButton: UButtonStub,
-					UForm: UFormStub,
-					UFormGroup: UFormGroupStub,
-					UInput: UInputStub,
-					UCheckbox: UCheckboxStub,
-					AppLogo: AppLogoStub,
-				},
-			},
-		})
+		const wrapper = mountComp()
 
-		// Find the submit button by forwarded type
 		const submitBtn = wrapper.find('button[type="submit"]')
 		expect(submitBtn.exists()).toBe(true)
-		// Disabled attribute present
 		expect(submitBtn.attributes('disabled')).toBeDefined()
-		// Loading flag forwarded via data attribute
 		expect(submitBtn.attributes('data-loading')).toBe('true')
 	})
 
 	it('submit enabled and not loading when isLoadingRegister is false (negative)', async () => {
-		const Comp = (await import('@/components/Register/Index.vue')).default
-
-		// Ensure loading is false (default), but set explicitly for clarity
-		const { useAuth } = await import('@/composables/api/useAuth')
 		useAuth().isLoadingRegister.value = false
 
-		const wrapper = mount(Comp, {
-			global: {
-				stubs: {
-					UButton: UButtonStub,
-					UForm: UFormStub,
-					UFormGroup: UFormGroupStub,
-					UInput: UInputStub,
-					UCheckbox: UCheckboxStub,
-					AppLogo: AppLogoStub,
-				},
-			},
-		})
+		const wrapper = mountComp()
 
 		const submitBtn = wrapper.find('button[type="submit"]')
 		expect(submitBtn.exists()).toBe(true)
@@ -266,22 +212,9 @@ describe('components/Register/Index.vue', () => {
 	})
 
 	it('v-model setters run for all fields (positive)', async () => {
-		const Comp = (await import('@/components/Register/Index.vue')).default
+		// Needs real input/checkbox DOM, keep full mount
+		const wrapper = mountComp()
 
-		const wrapper = mount(Comp, {
-			global: {
-				stubs: {
-					UButton: UButtonStub,
-					UForm: UFormStub,
-					UFormGroup: UFormGroupStub,
-					UInput: UInputStub,
-					UCheckbox: UCheckboxStub,
-					AppLogo: AppLogoStub,
-				},
-			},
-		})
-
-		// Text/password inputs: fullname, username, email, password.real, password.confirmation
 		const inputs = wrapper.findAll('input')
 		const textInputs = inputs.filter((i) => i.attributes('type') !== 'checkbox')
 
@@ -295,7 +228,6 @@ describe('components/Register/Index.vue', () => {
 		const checkbox = wrapper.find('input[type="checkbox"]')
 		await checkbox.setValue(true)
 
-		// Assert v-model setters updated the reactive form
 		const vm = wrapper.vm as any
 		expect(vm.form.fullname).toBe('John Doe')
 		expect(vm.form.username).toBe('johnd')
