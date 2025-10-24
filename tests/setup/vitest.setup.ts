@@ -43,6 +43,10 @@ vi.stubGlobal('storeToRefs', (store: Record<string, any>) => {
 
 vi.stubGlobal('defineNuxtRouteMiddleware', (fn: any) => fn)
 
+// Stub definePageMeta so page SFCs can be imported and assertions can be made
+const __definePageMeta = vi.fn((meta: any) => meta)
+vi.stubGlobal('definePageMeta', __definePageMeta)
+
 // Minimal stub for user store used by composables (shared instance)
 const __userStore = {
 	user: ref({ email: '', fullname: '', isVerified: false, username: '' }),
