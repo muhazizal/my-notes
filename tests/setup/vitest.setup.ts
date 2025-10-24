@@ -120,3 +120,12 @@ vi.stubGlobal('mswServer', server)
 beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }))
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
+
+
+// Nitro/h3 helper stubs for server route unit tests
+vi.stubGlobal('defineEventHandler', (fn: any) => fn)
+vi.stubGlobal('useRuntimeConfig', vi.fn(() => ({ apiBaseUrl: 'https://api.example' })))
+vi.stubGlobal('proxyRequest', vi.fn())
+vi.stubGlobal('getRequestHeader', vi.fn())
+vi.stubGlobal('getRouterParam', vi.fn())
+vi.stubGlobal('getQuery', vi.fn())
