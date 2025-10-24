@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url'
 import vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
-  plugins: [vue()],
+	plugins: [vue()],
 	resolve: {
 		alias: {
 			'@': fileURLToPath(new URL('./', import.meta.url)),
@@ -27,6 +27,12 @@ export default defineConfig({
 				'server/**/*',
 			],
 			exclude: ['tests/**/*', '**/*.d.ts', '**/*.test.*', '**/*.spec.*', 'node_modules/**/*'],
+			thresholds: {
+				lines: 90,
+				statements: 90,
+				functions: 90,
+				branches: 95,
+			},
 		},
 	},
 })
