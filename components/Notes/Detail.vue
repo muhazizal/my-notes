@@ -104,6 +104,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed, nextTick, useTemplateRef } from 'vue'
 import { format } from 'date-fns'
 import { useNotes } from '~/composables/api/useNotes'
 import { createNoteSchema } from '~/schema/notes'
