@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { useNotes } from '~/composables/api/useNotes'
+import { flushPromises } from '@vue/test-utils'
 
 declare const mswServer: ReturnType<typeof import('msw/node').setupServer>
 declare const useToast: () => any
@@ -33,7 +34,7 @@ describe('useNotes', () => {
 
 		const { getNotes } = useNotes()
 		const res = await getNotes()
-		await Promise.resolve()
+		await flushPromises()
 
 		expect(res.error.value).not.toBeNull()
 		const err = res.error.value!
@@ -53,7 +54,7 @@ describe('useNotes', () => {
 
 		const { getNotes } = useNotes()
 		const res = await getNotes()
-		await Promise.resolve()
+		await flushPromises()
 
 		expect(res.error.value).not.toBeNull()
 		const err = res.error.value!
@@ -94,7 +95,7 @@ describe('useNotes', () => {
 
 		const { createNote } = useNotes()
 		const res = await createNote({ title: '', description: '' })
-		await Promise.resolve()
+		await flushPromises()
 
 		expect(res.error.value).not.toBeNull()
 		const err = res.error.value!
@@ -148,7 +149,7 @@ describe('useNotes', () => {
 
 		const { updateNote } = useNotes()
 		const res = await updateNote({ id: '1', body: { title: '', description: '' } })
-		await Promise.resolve()
+		await flushPromises()
 
 		expect(res.error.value).not.toBeNull()
 		const err = res.error.value!
@@ -167,7 +168,7 @@ describe('useNotes', () => {
 
 		const { updateNote } = useNotes()
 		const res = await updateNote({ id: '1', body: { title: 'x', description: 'y' } })
-		await Promise.resolve()
+		await flushPromises()
 
 		expect(res.error.value).not.toBeNull()
 		const err = res.error.value!
@@ -211,7 +212,7 @@ describe('useNotes', () => {
 
 		const { deleteNote } = useNotes()
 		const res = await deleteNote('1')
-		await Promise.resolve()
+		await flushPromises()
 
 		expect(res.error.value).not.toBeNull()
 		const err = res.error.value!

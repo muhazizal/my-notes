@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { mount, flushPromises } from '@vue/test-utils'
 import { http, HttpResponse } from 'msw'
 import { useNotes } from '~/composables/api/useNotes'
 
@@ -135,9 +135,7 @@ describe('components/Notes/Create.vue', () => {
 		await wrapper.find('[data-test="form"]').trigger('submit')
 
 		// Flush microtasks and Vue updates to allow fetch + state mutation to complete
-		await Promise.resolve()
-		await wrapper.vm.$nextTick()
-		await new Promise((r) => setTimeout(r, 0))
+		await flushPromises()
 		await wrapper.vm.$nextTick()
 
 		// Notes list updated via shared useState('notes-list')

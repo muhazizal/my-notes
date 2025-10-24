@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { mount, flushPromises } from '@vue/test-utils'
 import { ref } from 'vue'
 
 declare const useRouter: () => any
@@ -52,7 +52,7 @@ describe('components/Verify/Index.vue', () => {
 		})
 
 		// Ensure async onMounted + DOM update complete
-		await Promise.resolve()
+		await flushPromises()
 		await wrapper.vm.$nextTick()
 
 		expect(wrapper.text()).toContain('Success to verify your email')
@@ -72,13 +72,13 @@ describe('components/Verify/Index.vue', () => {
 			global: { stubs: { UButton: UButtonStub, UProgress: UProgressStub, AppLogo: AppLogoStub } },
 		})
 
-		await Promise.resolve()
+		await flushPromises()
 		await wrapper.vm.$nextTick()
 
 		const resendBtn = wrapper.findAll('button').find((b) => b.text() === 'Resend')!
 		await resendBtn.trigger('click')
 
-		await Promise.resolve()
+		await flushPromises()
 		await wrapper.vm.$nextTick()
 
 		expect(wrapper.text()).toContain('Success to send new verification URL')

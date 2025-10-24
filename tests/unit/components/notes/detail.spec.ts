@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { mount, flushPromises } from '@vue/test-utils'
 import { http, HttpResponse } from 'msw'
 import { ref } from 'vue'
 import { format } from 'date-fns'
@@ -105,8 +105,7 @@ describe('components/Notes/Detail.vue', () => {
 		})
 
 		// Flush async setup and subsequent updates
-		await Promise.resolve()
-		await new Promise((r) => setTimeout(r, 0))
+		await flushPromises()
 		const detail = wrapper.findComponent(DetailCtor)
 		if (detail.exists()) {
 			await detail.vm.$nextTick()
@@ -229,8 +228,7 @@ describe('components/Notes/Detail.vue', () => {
 		await wrapper.find('[data-test="textarea"]').setValue('Updated Description')
 		await wrapper.find('[data-test="form"]').trigger('submit')
 
-		await Promise.resolve()
-		await new Promise((r) => setTimeout(r, 0))
+		await flushPromises()
 		await detail.vm.$nextTick()
 
 		expect(toast.add).toHaveBeenCalledWith(
@@ -245,8 +243,7 @@ describe('components/Notes/Detail.vue', () => {
 
 		expect(openSpy).toHaveBeenCalledWith(false)
 
-		await Promise.resolve()
-		await new Promise((r) => setTimeout(r, 0))
+		await flushPromises()
 		await wrapper.vm.$nextTick()
 
 		const updateBtn2 = wrapper
@@ -315,8 +312,7 @@ describe('components/Notes/Detail.vue', () => {
 		await wrapper.find('[data-test="form"]').trigger('submit')
 
 		// Flush update pipeline
-		await Promise.resolve()
-		await new Promise((r) => setTimeout(r, 0))
+		await flushPromises()
 		await detail.vm.$nextTick()
 
 		// Toast uses provided message (left side of ||)
@@ -365,8 +361,7 @@ describe('components/Notes/Detail.vue', () => {
 		await deleteBtn.trigger('click')
 
 		// Flush delete pipeline
-		await Promise.resolve()
-		await new Promise((r) => setTimeout(r, 0))
+		await flushPromises()
 		await detail.vm.$nextTick()
 
 		// Covers OR fallback: 'Note deleted'
@@ -418,8 +413,7 @@ describe('components/Notes/Detail.vue', () => {
 		await wrapper.find('[data-test="textarea"]').setValue('Y')
 		await wrapper.find('[data-test="form"]').trigger('submit')
 
-		await Promise.resolve()
-		await new Promise((r) => setTimeout(r, 0))
+		await flushPromises()
 		await detail.vm.$nextTick()
 
 		expect(wrapper.find('h4.note__title').text()).toBe('First Note')
@@ -448,8 +442,7 @@ describe('components/Notes/Detail.vue', () => {
 			.find((b) => b.props('icon') === 'i-heroicons-trash')!
 		await deleteBtn.trigger('click')
 
-		await Promise.resolve()
-		await new Promise((r) => setTimeout(r, 0))
+		await flushPromises()
 		await detail.vm.$nextTick()
 
 		expect(routerMock.replace).not.toHaveBeenCalled()

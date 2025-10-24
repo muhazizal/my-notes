@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { mount, shallowMount } from '@vue/test-utils'
+import { mount, shallowMount, flushPromises } from '@vue/test-utils'
 import { ref } from 'vue'
 import ResetPassword from '@/components/ResetPassword/Index.vue'
 
@@ -114,10 +114,10 @@ describe('components/ResetPassword/Index.vue', () => {
 
 	it('both password inputs render with type="password" (positive)', async () => {
 		const wrapper = await mountComp()
-	
+
 		const inputs = wrapper.findAllComponents(UInputStub)
 		expect(inputs.length).toBeGreaterThanOrEqual(2)
-	
+
 		for (const input of inputs) {
 			expect(input.props('type')).toBe('password')
 			// Also reflected in stub DOM
@@ -160,10 +160,10 @@ describe('components/ResetPassword/Index.vue', () => {
 
 		const wrapper = await mountComp()
 		const vm = wrapper.vm as any
-	
+
 		await vm.handleResetPassword()
 		await wrapper.vm.$nextTick()
-	
+
 		// Success caption visible
 		expect(wrapper.text()).toContain('Success to reset your password')
 		// Form should be hidden after success
@@ -172,27 +172,27 @@ describe('components/ResetPassword/Index.vue', () => {
 
 	it('handleResetPassword success shows toast, success caption, and "Sign in" navigation (positive)', async () => {
 		resetPasswordMock.mockResolvedValueOnce({ message: 'Reset complete' })
-	
+
 		const wrapper = shallowComp()
 		const vm = wrapper.vm as any
-	
+
 		await vm.handleResetPassword()
-	
+
 		// Toast and success state
 		expect(toastAddSpy).toHaveBeenCalledWith(
 			expect.objectContaining({ title: 'Reset Password', description: 'Reset complete' })
 		)
 		expect(vm.isSuccessReset).toBe(true)
 		expect(vm.isFailedReset).toBe(false)
-	
+
 		// Success caption branch renders Sign in button
 		const signInBtn = wrapper.findAll('button').find((b) => b.text() === 'Sign in')!
 		expect(signInBtn.exists()).toBe(true)
-	
+
 		// Trigger native click for speed and correctness
 		await signInBtn.trigger('click')
 		expect(replaceSpy).toHaveBeenCalledWith('/sign-in')
-	
+
 		// Direct method call also covered
 		vm.handleRedirectSignIn()
 		expect(replaceSpy).toHaveBeenCalledWith('/sign-in')
@@ -200,13 +200,13 @@ describe('components/ResetPassword/Index.vue', () => {
 
 	it('failure branch hides form and shows "request new url" (negative)', async () => {
 		resetPasswordMock.mockResolvedValueOnce(false)
-	
+
 		const wrapper = await mountComp()
 		const vm = wrapper.vm as any
-	
+
 		await vm.handleResetPassword()
 		await wrapper.vm.$nextTick()
-	
+
 		// Failure caption visible
 		expect(wrapper.text()).toContain('failed to reset your password')
 		// Form should be hidden after failure
@@ -256,7 +256,7 @@ describe('components/ResetPassword/Index.vue', () => {
 		form.password.real = 'newpass!'
 
 		await wrapper.find('[data-test="form"]').trigger('submit')
-		await Promise.resolve()
+		await flushPromises()
 		await wrapper.vm.$nextTick()
 
 		expect(resetPasswordMock).toHaveBeenCalledWith({ password: 'newpass!' })
@@ -264,11 +264,13 @@ describe('components/ResetPassword/Index.vue', () => {
 
 	it('toast includes green color on success (positive)', async () => {
 		resetPasswordMock.mockResolvedValueOnce({ message: 'Reset complete' })
-	
+
 		const wrapper = await mountComp()
 		await (wrapper.vm as any).handleResetPassword()
+
+		await flushPromises()
 		await wrapper.vm.$nextTick()
-	
+
 		expect(toastAddSpy).toHaveBeenCalledWith(
 			expect.objectContaining({
 				color: 'green',

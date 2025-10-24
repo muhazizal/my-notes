@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { shallowMount } from '@vue/test-utils'
+import { shallowMount, flushPromises } from '@vue/test-utils'
 import { computed, ref } from 'vue'
 import Login from '@/components/Login/Index.vue'
 
@@ -181,7 +181,7 @@ describe('components/Login/Index.vue', () => {
 
 		// Submit the form to trigger handleLogin
 		await wrapper.find('[data-test="form"]').trigger('submit')
-		await Promise.resolve()
+		await flushPromises()
 		await wrapper.vm.$nextTick()
 
 		expect(toastAddSpy).toHaveBeenCalledWith(
@@ -200,7 +200,7 @@ describe('components/Login/Index.vue', () => {
 		const wrapper = mountComp()
 
 		await wrapper.find('[data-test="form"]').trigger('submit')
-		await Promise.resolve()
+		await flushPromises()
 		await wrapper.vm.$nextTick()
 
 		expect(toastAddSpy).not.toHaveBeenCalled()

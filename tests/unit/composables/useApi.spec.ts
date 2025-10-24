@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { useApi } from '~/composables/api/useApi'
+import { flushPromises } from '@vue/test-utils'
 
 declare const mswServer: ReturnType<typeof import('msw/node').setupServer>
 declare const useToast: () => any
@@ -67,7 +68,7 @@ describe('useApi', () => {
 		)
 
 		const result = await useApi('/api/test')
-		await Promise.resolve()
+		await flushPromises()
 
 		expect(result.error.value).not.toBeNull()
 		const err = result.error.value!
@@ -88,7 +89,7 @@ describe('useApi', () => {
 		)
 
 		const result = await useApi('/api/test')
-		await Promise.resolve()
+		await flushPromises()
 
 		expect(result.error.value).not.toBeNull()
 		const err = result.error.value!
@@ -128,7 +129,7 @@ describe('useApi', () => {
 		)
 
 		const result = await useApi('/api/test')
-		await Promise.resolve()
+		await flushPromises()
 
 		expect(result.error.value).not.toBeNull()
 		const err = result.error.value!
@@ -144,7 +145,7 @@ describe('useApi', () => {
 		)
 
 		const result = await useApi('/api/test', { excludeInterceptor: [401] })
-		await Promise.resolve()
+		await flushPromises()
 
 		expect(result.error.value).not.toBeNull()
 		const err = result.error.value!
@@ -163,7 +164,7 @@ describe('useApi', () => {
 		)
 
 		const result = await useApi('/api/test', { excludeInterceptor: [403] })
-		await Promise.resolve()
+		await flushPromises()
 
 		expect(result.error.value).not.toBeNull()
 		const err = result.error.value!
@@ -179,7 +180,7 @@ describe('useApi', () => {
 		)
 
 		const result = await useApi('/api/test')
-		await Promise.resolve()
+		await flushPromises()
 
 		expect(result.error.value).not.toBeNull()
 		const err = result.error.value!
@@ -196,7 +197,7 @@ describe('useApi', () => {
 		)
 
 		const result = await useApi('/api/test', { excludeInterceptor: [404] })
-		await Promise.resolve()
+		await flushPromises()
 
 		expect(result.error.value).not.toBeNull()
 		const err = result.error.value!
@@ -221,7 +222,7 @@ describe('useApi', () => {
 		)
 
 		const result = await useApi('/api/test')
-		await Promise.resolve()
+		await flushPromises()
 
 		expect(result.error.value).not.toBeNull()
 		const err = result.error.value!
@@ -244,7 +245,7 @@ describe('useApi', () => {
 		)
 
 		const result = await useApi('/api/test')
-		await Promise.resolve()
+		await flushPromises()
 
 		expect(result.error.value).not.toBeNull()
 		const err = result.error.value!
@@ -265,7 +266,7 @@ describe('useApi', () => {
 		)
 
 		const result = await useApi('/api/test')
-		await Promise.resolve()
+		await flushPromises()
 
 		expect(result.error.value).not.toBeNull()
 		const err = result.error.value!
@@ -285,7 +286,7 @@ describe('useApi', () => {
 		)
 
 		const result = await useApi('/api/test')
-		await Promise.resolve()
+		await flushPromises()
 
 		expect(result.error.value).not.toBeNull()
 		const err = result.error.value!

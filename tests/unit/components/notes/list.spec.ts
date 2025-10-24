@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { mount, flushPromises } from '@vue/test-utils'
 import { http, HttpResponse } from 'msw'
 import List from '~/components/Notes/List.vue'
 import { sampleNotes } from '../../../mocks/data'
@@ -15,8 +15,7 @@ describe('components/Notes/List.vue', () => {
 	}
 
 	const flushAsync = async (vm?: any) => {
-		await Promise.resolve()
-		await new Promise((r) => setTimeout(r, 0))
+		await flushPromises()
 		if (vm?.$nextTick) await vm.$nextTick()
 	}
 

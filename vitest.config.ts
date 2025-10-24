@@ -34,5 +34,8 @@ export default defineConfig({
 				branches: 95,
 			},
 		},
+		onConsoleLog(log) {
+			if (log.includes('<Suspense> is an experimental feature')) return false
+		},
 	},
 })

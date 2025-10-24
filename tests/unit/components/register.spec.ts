@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { mount, shallowMount } from '@vue/test-utils'
+import { mount, shallowMount, flushPromises } from '@vue/test-utils'
 import { ref } from 'vue'
 import Register from '@/components/Register/Index.vue'
 import { useAuth } from '@/composables/api/useAuth'
@@ -117,8 +117,7 @@ describe('components/Register/Index.vue', () => {
 
 		// Call handler and flush microtasks + DOM updates
 		await (wrapper.vm as any).handleRegister()
-		await Promise.resolve()
-		await wrapper.vm.$nextTick()
+		await flushPromises()
 		await wrapper.vm.$nextTick()
 
 		// Assert toast and state
@@ -134,7 +133,9 @@ describe('components/Register/Index.vue', () => {
 		const successCaption = wrapper.find('.form__caption--success')
 		expect(successCaption.exists()).toBe(true)
 		expect(successCaption.text()).toContain('Success to register your account')
-		expect(successCaption.text()).toContain('Please check your email to complete verification process')
+		expect(successCaption.text()).toContain(
+			'Please check your email to complete verification process'
+		)
 
 		// Default caption should be gone
 		expect(wrapper.text()).not.toContain('Already have an account?')

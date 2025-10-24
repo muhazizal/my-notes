@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { shallowMount, mount } from '@vue/test-utils'
+import { shallowMount, mount, flushPromises } from '@vue/test-utils'
 import { ref } from 'vue'
 import ForgotPassword from '@/components/ForgotPassword/Index.vue'
 import { useAuth } from '@/composables/api/useAuth'
@@ -118,7 +118,7 @@ describe('components/ForgotPassword/Index.vue', () => {
 		const wrapper = mountComp()
 
 		await wrapper.find('[data-test="form"]').trigger('submit')
-		await Promise.resolve()
+		await flushPromises()
 		await wrapper.vm.$nextTick()
 
 		expect(toastAddSpy).not.toHaveBeenCalled()
@@ -195,10 +195,11 @@ describe('components/ForgotPassword/Index.vue', () => {
 		await wrapper.vm.$nextTick()
 	
 		await wrapper.find('[data-test="form"]').trigger('submit')
-		await Promise.resolve()
+		await flushPromises()
 		await wrapper.vm.$nextTick()
-	
-		// Assert the API received current state
-		expect(forgotPasswordMock).toHaveBeenCalledWith({ email: 'payload@example.com' })
+
+	expect(toastAddSpy).not.toHaveBeenCalled()
+	// Assert the API received current state
+	expect(forgotPasswordMock).toHaveBeenCalledWith({ email: 'payload@example.com' })
 	})
 })
