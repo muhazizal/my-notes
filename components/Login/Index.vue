@@ -62,6 +62,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref } from 'vue'
 import type { ILoginBody } from '@/types/auth'
 import { loginSchema } from '@/schema/login'
 import { useAuth } from '@/composables/api/useAuth'
