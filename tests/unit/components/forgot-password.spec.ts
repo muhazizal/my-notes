@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { shallowMount, mount, flushPromises } from '@vue/test-utils'
+import { shallowMount, flushPromises } from '@vue/test-utils'
 import { ref } from 'vue'
 import ForgotPassword from '@/components/ForgotPassword/Index.vue'
 import { useAuth } from '@/composables/api/useAuth'
@@ -69,7 +69,7 @@ describe('components/ForgotPassword/Index.vue', () => {
 		})
 
 	const mountComp = () =>
-		mount(ForgotPassword, {
+		shallowMount(ForgotPassword, {
 			global: {
 				stubs: {
 					UButton: UButtonStub,
@@ -134,26 +134,24 @@ describe('components/ForgotPassword/Index.vue', () => {
 		;(wrapper.vm as any).isSuccessForgotPassword = true
 		await wrapper.vm.$nextTick()
 
-		expect(wrapper.text()).toContain(
-			'Success to send reset password URL, please check your email.'
-		)
+		expect(wrapper.text()).toContain('Success to send reset password URL, please check your email.')
 		expect(wrapper.text()).not.toContain('Already remember your password?')
 	})
 
 	it('inline @keypress handlers call preventSpace (positive)', async () => {
-	// Ensure clean call history
-	preventSpaceMock.mockClear()
+		// Ensure clean call history
+		preventSpaceMock.mockClear()
 
-	const wrapper = mountComp()
+		const wrapper = mountComp()
 
-	const inputs = wrapper.findAll('input')
-	for (const inp of inputs) {
-		await inp.trigger('keypress', { key: ' ' })
-	}
+		const inputs = wrapper.findAll('input')
+		for (const inp of inputs) {
+			await inp.trigger('keypress', { key: ' ' })
+		}
 
-	expect(preventSpaceMock).toHaveBeenCalled()
-	expect(preventSpaceMock.mock.calls.length).toBeGreaterThanOrEqual(inputs.length)
-})
+		expect(preventSpaceMock).toHaveBeenCalled()
+		expect(preventSpaceMock.mock.calls.length).toBeGreaterThanOrEqual(inputs.length)
+	})
 
 	it('clicking "Sign in" navigates to /sign-in (positive)', async () => {
 		const wrapper = mountComp()
@@ -164,16 +162,16 @@ describe('components/ForgotPassword/Index.vue', () => {
 	})
 
 	it('disables submit and shows loading when isLoadingForgotPassword is true (positive)', async () => {
-	// Toggle loading state before mount via mocked useAuth
-	useAuth().isLoadingForgotPassword.value = true
+		// Toggle loading state before mount via mocked useAuth
+		useAuth().isLoadingForgotPassword.value = true
 
-	const wrapper = mountComp()
+		const wrapper = mountComp()
 
-	const submitBtn = wrapper.find('button[type="submit"]')
-	expect(submitBtn.exists()).toBe(true)
-	expect(submitBtn.attributes('disabled')).toBeDefined()
-	expect(submitBtn.attributes('data-loading')).toBe('true')
-})
+		const submitBtn = wrapper.find('button[type="submit"]')
+		expect(submitBtn.exists()).toBe(true)
+		expect(submitBtn.attributes('disabled')).toBeDefined()
+		expect(submitBtn.attributes('data-loading')).toBe('true')
+	})
 
 	it('v-model setter updates email (positive)', async () => {
 		const wrapper = mountComp()
@@ -188,18 +186,18 @@ describe('components/ForgotPassword/Index.vue', () => {
 	// New: ensure submit passes current form payload to API
 	it('submitting form calls forgotPassword with current email payload (positive)', async () => {
 		const wrapper = mountComp()
-	
+
 		// Update form value via v-model
 		const emailInput = wrapper.find('input')
 		await emailInput.setValue('payload@example.com')
 		await wrapper.vm.$nextTick()
-	
+
 		await wrapper.find('[data-test="form"]').trigger('submit')
 		await flushPromises()
 		await wrapper.vm.$nextTick()
 
-	expect(toastAddSpy).not.toHaveBeenCalled()
-	// Assert the API received current state
-	expect(forgotPasswordMock).toHaveBeenCalledWith({ email: 'payload@example.com' })
+		expect(toastAddSpy).not.toHaveBeenCalled()
+		// Assert the API received current state
+		expect(forgotPasswordMock).toHaveBeenCalledWith({ email: 'payload@example.com' })
 	})
 })

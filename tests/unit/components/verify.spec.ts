@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { mount, flushPromises } from '@vue/test-utils'
+import { shallowMount, flushPromises } from '@vue/test-utils'
 import { ref } from 'vue'
 
 declare const useRouter: () => any
@@ -47,7 +47,7 @@ describe('components/Verify/Index.vue', () => {
 		const mod = await import('~/components/Verify/Index.vue')
 		const Comp = mod.default
 
-		const wrapper = mount(Comp, {
+		const wrapper = shallowMount(Comp, {
 			global: { stubs: { UButton: UButtonStub, UProgress: UProgressStub, AppLogo: AppLogoStub } },
 		})
 
@@ -68,7 +68,7 @@ describe('components/Verify/Index.vue', () => {
 		const mod = await import('~/components/Verify/Index.vue')
 		const Comp = mod.default
 
-		const wrapper = mount(Comp, {
+		const wrapper = shallowMount(Comp, {
 			global: { stubs: { UButton: UButtonStub, UProgress: UProgressStub, AppLogo: AppLogoStub } },
 		})
 
@@ -89,7 +89,7 @@ describe('components/Verify/Index.vue', () => {
 		const mod = await import('~/components/Verify/Index.vue')
 		const Comp = mod.default
 	
-		const wrapper = mount(Comp, {
+		const wrapper = shallowMount(Comp, {
 			global: { stubs: { UButton: UButtonStub, UProgress: UProgressStub, AppLogo: AppLogoStub } },
 		})
 	

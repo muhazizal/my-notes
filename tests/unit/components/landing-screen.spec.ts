@@ -1,49 +1,49 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { shallowMount } from '@vue/test-utils'
 
 declare const useRouter: () => any
 
 const UButtonStub = {
-  name: 'UButton',
-  template: '<button data-test="btn" @click="$emit(\'click\')"><slot /></button>',
+	name: 'UButton',
+	template: '<button data-test="btn" @click="$emit(\'click\')"><slot /></button>',
 }
 const AppLogoStub = { name: 'AppLogo', template: '<div data-test="logo">Logo</div>' }
 
 describe('components/LandingScreen/Index.vue', () => {
-  let replaceSpy: ReturnType<typeof vi.fn>
+	let replaceSpy: ReturnType<typeof vi.fn>
 
-  beforeEach(() => {
-    const routerStub = vi.mocked(useRouter as any)
-    replaceSpy = vi.fn()
-    routerStub.mockReturnValue({ replace: replaceSpy })
-  })
+	beforeEach(() => {
+		const routerStub = vi.mocked(useRouter as any)
+		replaceSpy = vi.fn()
+		routerStub.mockReturnValue({ replace: replaceSpy })
+	})
 
-  it('clicking "Sign in" navigates to /sign-in (positive)', async () => {
-    const mod = await import('~/components/LandingScreen/Index.vue')
-    const Comp = mod.default
+	it('clicking "Sign in" navigates to /sign-in (positive)', async () => {
+		const mod = await import('~/components/LandingScreen/Index.vue')
+		const Comp = mod.default
 
-    const wrapper = mount(Comp, {
-      global: { stubs: { UButton: UButtonStub, AppLogo: AppLogoStub } },
-    })
+		const wrapper = shallowMount(Comp, {
+			global: { stubs: { UButton: UButtonStub, AppLogo: AppLogoStub } },
+		})
 
-    const signInBtn = wrapper.findAll('button').find(b => b.text() === 'Sign in')!
-    await signInBtn.trigger('click')
+		const signInBtn = wrapper.findAll('button').find((b) => b.text() === 'Sign in')!
+		await signInBtn.trigger('click')
 
-    expect(replaceSpy).toHaveBeenCalledWith('/sign-in')
-  })
+		expect(replaceSpy).toHaveBeenCalledWith('/sign-in')
+	})
 
-  it('clicking "Sign up" navigates to /sign-up and not /sign-in (negative)', async () => {
-    const mod = await import('~/components/LandingScreen/Index.vue')
-    const Comp = mod.default
+	it('clicking "Sign up" navigates to /sign-up and not /sign-in (negative)', async () => {
+		const mod = await import('~/components/LandingScreen/Index.vue')
+		const Comp = mod.default
 
-    const wrapper = mount(Comp, {
-      global: { stubs: { UButton: UButtonStub, AppLogo: AppLogoStub } },
-    })
+		const wrapper = shallowMount(Comp, {
+			global: { stubs: { UButton: UButtonStub, AppLogo: AppLogoStub } },
+		})
 
-    const signUpBtn = wrapper.findAll('button').find(b => b.text() === 'Sign up')!
-    await signUpBtn.trigger('click')
+		const signUpBtn = wrapper.findAll('button').find((b) => b.text() === 'Sign up')!
+		await signUpBtn.trigger('click')
 
-    expect(replaceSpy).toHaveBeenCalledWith('/sign-up')
-    expect(replaceSpy).not.toHaveBeenCalledWith('/sign-in')
-  })
+		expect(replaceSpy).toHaveBeenCalledWith('/sign-up')
+		expect(replaceSpy).not.toHaveBeenCalledWith('/sign-in')
+	})
 })

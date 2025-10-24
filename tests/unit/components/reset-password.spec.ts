@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { mount, shallowMount, flushPromises } from '@vue/test-utils'
+import { shallowMount, flushPromises } from '@vue/test-utils'
 import { ref } from 'vue'
 import ResetPassword from '@/components/ResetPassword/Index.vue'
 
@@ -78,7 +78,7 @@ describe('components/ResetPassword/Index.vue', () => {
 	})
 
 	const mountComp = () =>
-		mount(ResetPassword, {
+		shallowMount(ResetPassword, {
 			global: {
 				stubs: {
 					UButton: UButtonStub,

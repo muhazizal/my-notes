@@ -1,12 +1,12 @@
 import { describe, it, expect } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { shallowMount } from '@vue/test-utils'
 
 describe('pages/sign-in.vue', () => {
   it('renders Login component inside UContainer (positive)', async () => {
     const mod = await import('~/pages/sign-in.vue')
     const Page = mod.default
 
-    const wrapper = mount(Page, {
+    const wrapper = shallowMount(Page, {
       global: {
         stubs: {
           UContainer: { template: '<div data-test="container"><slot /></div>' },
@@ -23,7 +23,7 @@ describe('pages/sign-in.vue', () => {
     const mod = await import('~/pages/sign-in.vue')
     const Page = mod.default
 
-    const wrapper = mount(Page, {
+    const wrapper = shallowMount(Page, {
       global: {
         stubs: {
           UContainer: { template: '<div data-test="container"><slot /></div>' },
@@ -42,7 +42,7 @@ describe('pages/sign-up.vue', () => {
     const mod = await import('~/pages/sign-up.vue')
     const Page = mod.default
 
-    const wrapper = mount(Page, {
+    const wrapper = shallowMount(Page, {
       global: {
         stubs: {
           UContainer: { template: '<div data-test="container"><slot /></div>' },
@@ -59,12 +59,11 @@ describe('pages/sign-up.vue', () => {
     const mod = await import('~/pages/sign-up.vue')
     const Page = mod.default
 
-    const wrapper = mount(Page, {
+    const wrapper = shallowMount(Page, {
       global: {
         stubs: {
           UContainer: { template: '<div data-test="container"><slot /></div>' },
           Register: { template: '<div data-test="register">Register</div>' },
-          Login: { template: '<div data-test="login">Login</div>' },
         },
       },
     })
@@ -78,7 +77,7 @@ describe('pages/forgot-password.vue', () => {
     const mod = await import('~/pages/forgot-password.vue')
     const Page = mod.default
 
-    const wrapper = mount(Page, {
+    const wrapper = shallowMount(Page, {
       global: {
         stubs: {
           UContainer: { template: '<div data-test="container"><slot /></div>' },
@@ -95,7 +94,7 @@ describe('pages/forgot-password.vue', () => {
     const mod = await import('~/pages/forgot-password.vue')
     const Page = mod.default
 
-    const wrapper = mount(Page, {
+    const wrapper = shallowMount(Page, {
       global: {
         stubs: {
           UContainer: { template: '<div data-test="container"><slot /></div>' },
