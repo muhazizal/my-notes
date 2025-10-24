@@ -2,7 +2,7 @@
 	<div class="form">
 		<AppLogo class="form__logo" />
 		<h2 class="form__title">Email Verification.</h2>
-		<template v-if="isWaitingVerify">
+		<template v-if="isLoadingVerify">
 			<div class="form__caption">
 				<p>Please wait, email verification is on progress</p>
 				<UProgress animation="carousel" />
@@ -48,31 +48,26 @@ import { useAuth } from '@/composables/api/useAuth'
 
 const route = useRoute()
 const router = useRouter()
-const { verify, resendVerification, isLoadingResendVerification } = useAuth()
+const { verify, resendVerification, isLoadingResendVerification, isLoadingVerify } = useAuth()
 
 const toast = useToast()
 const { token } = route.params
-const isWaitingVerify = ref<boolean>(true)
 const isSuccessVerify = ref<boolean>(false)
 const isSuccessResendVerification = ref<boolean>(false)
 
 const handleVerify = async (): Promise<void> => {
-	setTimeout(async (): Promise<void> => {
-		const data = await verify(token)
+	const data = await verify(token)
 
-		if (data) {
-			isWaitingVerify.value = false
-			isSuccessVerify.value = true
-			toast.add({
-				color: 'green',
-				title: 'Verify Email',
-				description: 'Success to verify email',
-			})
-		} else {
-			isWaitingVerify.value = false
-		}
-	}, 1500)
+	if (data) {
+		isSuccessVerify.value = true
+		toast.add({
+			color: 'green',
+			title: 'Verify Email',
+			description: 'Success to verify email',
+		})
+	}
 }
+
 const handleResendVerification = async (): Promise<void> => {
 	const data = await resendVerification(token)
 
