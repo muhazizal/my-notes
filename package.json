@@ -12,7 +12,10 @@
 		"preview": "nuxt preview",
 		"postinstall": "nuxt prepare",
 		"lint": "eslint .",
-		"lint:fix": "eslint . --fix"
+		"lint:fix": "eslint . --fix",
+		"test:unit": "vitest run",
+		"test:coverage": "vitest run --coverage",
+		"test:e2e": "playwright test"
 	},
 	"devDependencies": {
 		"@iconify-json/heroicons": "^1.2.2",
@@ -24,11 +27,13 @@
 		"@nuxtjs/device": "^3.2.2",
 		"@nuxtjs/google-fonts": "^3.2.0",
 		"@pinia/nuxt": "^0.5.4",
+		"@playwright/test": "^1.56.1",
 		"@types/validator": "^13.12.2",
 		"@vue/test-utils": "^2.4.6",
 		"@vueuse/core": "^11.1.0",
 		"@vueuse/nuxt": "^11.1.0",
 		"happy-dom": "^15.7.4",
+		"msw": "^2.11.6",
 		"nuxt": "^3.12.4",
 		"pinia": "^2.2.2",
 		"playwright-core": "^1.47.1",
