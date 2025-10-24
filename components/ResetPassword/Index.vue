@@ -74,6 +74,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import type { IResetPasswordForm } from '@/types/auth'
 import { resetPasswordSchema } from '@/schema/reset-password'
 import { useAuth } from '@/composables/api/useAuth'
