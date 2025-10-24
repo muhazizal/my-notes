@@ -5,7 +5,6 @@ export default defineNuxtConfig({
 		'@nuxt/ui',
 		'@pinia/nuxt',
 		'@vueuse/nuxt',
-		'@nuxt/test-utils/module',
 		'@nuxt/image',
 		'@nuxt/eslint',
 		'@nuxtjs/google-fonts',
