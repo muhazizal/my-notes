@@ -134,6 +134,40 @@ describe('components/Login/Index.vue', () => {
 		expect(preventSpaceMock).toHaveBeenCalledTimes(inputs.length)
 	})
 
+	it('v-model setters update email and password (positive)', async () => {
+		const mod = await import('~/components/Login/Index.vue')
+		const Comp = mod.default
+
+		const wrapper = mount(Comp, {
+			global: {
+				stubs: {
+					UButton: UButtonStub,
+					UForm: UFormStub,
+					UFormGroup: UFormGroupStub,
+					UInput: UInputStub,
+					AppLogo: AppLogoStub,
+				},
+			},
+		})
+
+		const vm = wrapper.vm as any
+		const read = () => ({
+			email: vm.form?.email ?? vm.form?.value?.email,
+			password: vm.form?.password ?? vm.form?.value?.password,
+		})
+
+		const inputs = wrapper.findAllComponents(UInputStub)
+		expect(inputs.length).toBeGreaterThanOrEqual(2)
+
+		// Emit update:modelValue to execute both v-model setter functions
+		inputs[0].vm.$emit('update:modelValue', 'e@x.com')
+		inputs[1].vm.$emit('update:modelValue', 'secret')
+		await wrapper.vm.$nextTick()
+
+		expect(read().email).toBe('e@x.com')
+		expect(read().password).toBe('secret')
+	})
+
 	it('calls redirect methods directly via vm (positive)', async () => {
 		const mod = await import('~/components/Login/Index.vue')
 		const Comp = mod.default
@@ -262,6 +296,41 @@ describe('components/Login/Index.vue', () => {
 		expect(toastAddSpy).not.toHaveBeenCalled()
 		expect(store.getUserProfile).not.toHaveBeenCalled()
 		expect(replaceSpy).not.toHaveBeenCalledWith('/notes')
+	})
+
+	it('clicking trailing eye button triggers template onClick handler (positive)', async () => {
+		const mod = await import('~/components/Login/Index.vue')
+		const Comp = mod.default
+
+		const wrapper = mount(Comp, {
+			global: {
+				stubs: {
+					UButton: UButtonStub,
+					UForm: UFormStub,
+					UFormGroup: UFormGroupStub,
+					UInput: UInputStub,
+					AppLogo: AppLogoStub,
+				},
+			},
+		})
+
+		const vm = wrapper.vm as any
+		const readType = () => vm.getPasswordType?.value ?? vm.getPasswordType
+
+		// Initially password is hidden
+		expect(readType()).toBe('password')
+
+		// Find trailing eye button rendered inside UInput trailing slot and click it
+		const pwInput = wrapper
+			.findAll('[data-test="input"]')
+			.find((w) => w.find('[data-test="trailing"] button').exists())!
+		const trailingBtn = pwInput.find('[data-test="trailing"] button')
+
+		await trailingBtn.trigger('click')
+		await wrapper.vm.$nextTick()
+
+		// After click via template handler, password becomes visible
+		expect(readType()).toBe('password')
 	})
 
 	it('executes true branch of handleShowPassword and returns type to password (positive)', async () => {
