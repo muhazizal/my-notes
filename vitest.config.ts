@@ -12,9 +12,24 @@ export default defineConfig({
 		environment: 'happy-dom',
 		setupFiles: ['tests/setup/vitest.setup.ts'],
 		coverage: {
-			reporter: ['text', 'html'],
-			include: ['components/**/*', 'composables/**/*', 'stores/**/*'],
-			exclude: ['tests/**/*', 'server/**/*'],
+			provider: 'v8',
+			reporter: ['text', 'text-summary', 'html', 'lcov'],
+			include: [
+				'components/**/*',
+				'composables/**/*',
+				'stores/**/*',
+				'middleware/**/*',
+				'plugins/**/*',
+				'pages/**/*',
+				'server/**/*',
+			],
+			exclude: ['tests/**/*', '**/*.d.ts', '**/*.test.*', '**/*.spec.*', 'node_modules/**/*'],
+			thresholds: {
+				branches: 80,
+				functions: 80,
+				lines: 80,
+				statements: 80,
+			},
 		},
 	},
 })
