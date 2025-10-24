@@ -11,6 +11,7 @@ export function useApi<T>(url: string, opts: CustomFetchOptions<T> = {}) {
 	const { excludeInterceptor, ...options } = opts
 
 	const defaults: UseFetchOptions<T> = {
+		credentials: 'include',
 		async onRequest({ options }) {
 			options.headers = new Headers(options.headers) || {}
 			options.headers.set('X-Requested-With', 'XMLHttpRequest')
@@ -45,15 +46,10 @@ export function useApi<T>(url: string, opts: CustomFetchOptions<T> = {}) {
 						title: 'Error 401',
 						description: message || fallbackMessage,
 					})
-
-					// clear auth state to avoid middleware bouncing back to protected routes
 					try {
 						const { handleClearUser } = useUserStore()
 						handleClearUser()
-					} catch (e) {
-						// ignore if store unavailable in rare contexts
-					}
-
+					} catch (e) {}
 					return navigateTo('/sign-in')
 				}
 

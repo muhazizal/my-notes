@@ -35,7 +35,6 @@ export const useUserStore = defineStore('userStore', () => {
 
 		const { data, error } = await useApi<IUserProfileResponse>('/api/user/profile', {
 			method: 'get',
-			credentials: 'include',
 			watch: false,
 		})
 
@@ -53,7 +52,6 @@ export const useUserStore = defineStore('userStore', () => {
 	const editUserProfile = async (body: IEditUserProfileBody) => {
 		return await useApi<IEditUserProfileResponse>('/api/user/profile', {
 			method: 'put',
-			credentials: 'include',
 			watch: false,
 			body,
 		})
@@ -63,7 +61,6 @@ export const useUserStore = defineStore('userStore', () => {
 	const deleteUserAccount = async () => {
 		return await useApi<IDeleteResponse>('/api/user', {
 			method: 'delete',
-			credentials: 'include',
 			watch: false,
 		})
 	}
