@@ -49,6 +49,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref, useTemplateRef } from 'vue'
+
 import AppCreateDialog from '~/components/App/CreateDialog.vue'
 import { useNotes } from '~/composables/api/useNotes'
 import { createNoteSchema } from '@/schema/notes'
