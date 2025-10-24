@@ -94,7 +94,7 @@ defineExpose({
 	}
 
 	&__actions {
-		@apply flex items-center justify-between !mt-12;
+		@apply flex items-center justify-end gap-3 !mt-12;
 
 		button {
 			@apply w-28 justify-center p-3 rounded-none;

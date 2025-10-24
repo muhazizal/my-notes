@@ -5,7 +5,7 @@ import type {
 	IEditUserProfileResponse,
 	IDeleteResponse,
 } from '~/types/user'
-import { useApi } from '@/composables/api/useApi.js'
+import { useApi } from '@/composables/api/useApi'
 
 export const useUserStore = defineStore('userStore', () => {
 	const isLoading = ref<boolean>(false)
