@@ -10,6 +10,21 @@ export function useApi<T>(url: string, opts: CustomFetchOptions<T> = {}) {
 
 	const { excludeInterceptor, ...options } = opts
 
+	// Map status codes to consistent, user-friendly messages
+	const getFriendlyErrorCopy = (
+		status: number,
+		message?: string,
+		statusText?: string
+	): { title: string; description: string } => {
+		const fallback = message || statusText
+		if (status === 401) return { title: 'Session expired', description: fallback || 'Please sign in again.' }
+		if (status === 403) return { title: 'Access denied', description: fallback || 'You don’t have permission to do that.' }
+		if (status === 404) return { title: 'Not found', description: fallback || 'The requested resource was not found.' }
+		if (status === 422) return { title: 'Validation error', description: fallback || 'Please check the input and try again.' }
+		if (status >= 500) return { title: 'Server error', description: fallback || 'Something went wrong on our side.' }
+		return { title: `Error ${status}`, description: fallback || 'An unexpected error occurred.' }
+	}
+
 	const defaults: UseFetchOptions<T> = {
 		credentials: 'include',
 		async onRequest({ options }) {
@@ -31,21 +46,14 @@ export function useApi<T>(url: string, opts: CustomFetchOptions<T> = {}) {
 			if (!excludedInterceptor(response.status)) {
 				const { message } = response._data
 				const fallbackMessage = response.statusText
+				const { title, description } = getFriendlyErrorCopy(response.status, message, fallbackMessage)
 
 				if (response.status === 422) {
-					toast.add({
-						color: 'red',
-						title: 'Error 422',
-						description: message || fallbackMessage,
-					})
+					toast.add({ color: 'red', title, description })
 				}
 
 				if (response.status === 401) {
-					toast.add({
-						color: 'red',
-						title: 'Error 401',
-						description: message || fallbackMessage,
-					})
+					toast.add({ color: 'red', title, description })
 					try {
 						const { handleClearUser } = useUserStore()
 						handleClearUser()
@@ -54,31 +62,17 @@ export function useApi<T>(url: string, opts: CustomFetchOptions<T> = {}) {
 				}
 
 				if (response.status === 403) {
-					toast.add({
-						color: 'red',
-						title: 'Error 403',
-						description: message || fallbackMessage,
-					})
-
-					throw createError({ statusCode: 403, statusMessage: message || fallbackMessage })
+					toast.add({ color: 'red', title, description })
+					throw createError({ statusCode: 403, statusMessage: description })
 				}
 
 				if (response.status === 404) {
-					toast.add({
-						color: 'red',
-						title: 'Error 404',
-						description: message || fallbackMessage,
-					})
-
-					throw createError({ statusCode: 404, statusMessage: message || fallbackMessage })
+					toast.add({ color: 'red', title, description })
+					throw createError({ statusCode: 404, statusMessage: description })
 				}
 
 				if (response.status >= 500) {
-					toast.add({
-						color: 'red',
-						title: `Error ${response.status}`,
-						description: message || fallbackMessage || 'Internal server error',
-					})
+					toast.add({ color: 'red', title, description })
 				}
 			}
 		},
