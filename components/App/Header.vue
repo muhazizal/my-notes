@@ -29,6 +29,7 @@
 import AppCreateDialog from '~/components/App/CreateDialog.vue'
 import UserLogout from '~/components/User/Logout.vue'
 import UserDelete from '~/components/User/Delete.vue'
+import { computed, ref, useTemplateRef } from 'vue'
 
 const { user } = storeToRefs(useUserStore())
 const getUserFirstFullname = computed(() => user.value.fullname.trim().split(' ')[0])
