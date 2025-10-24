@@ -73,6 +73,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import type { IRegisterForm } from '@/types/auth'
 import { registerSchema } from '@/schema/register'
 import { useAuth } from '@/composables/api/useAuth'
