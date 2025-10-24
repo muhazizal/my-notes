@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { shallowMount, mount } from '@vue/test-utils'
 import { ref } from 'vue'
+import ForgotPassword from '@/components/ForgotPassword/Index.vue'
+import { useAuth } from '@/composables/api/useAuth'
 
 declare const useRouter: () => any
 
@@ -52,41 +54,9 @@ describe('components/ForgotPassword/Index.vue', () => {
 		preventSpaceMock.mockReset()
 	})
 
-	it('initially shows default caption and form (negative)', async () => {
-		const mod = await import('~/components/ForgotPassword/Index.vue')
-		const Comp = mod.default
-
-		const wrapper = mount(Comp, {
-			global: {
-				stubs: {
-					UButton: UButtonStub,
-					UForm: UFormStub,
-					UFormGroup: UFormGroupStub,
-					UInput: UInputStub,
-					AppLogo: AppLogoStub,
-				},
-			},
-		})
-
-		expect(wrapper.text()).toContain('Already remember your password?')
-		expect(wrapper.text()).not.toContain(
-			'Success to send reset password URL, please check your email.'
-		)
-	})
-
-	it('handleForgotPassword success shows toast and success caption (positive)', async () => {
-		const { shallowMount } = await import('@vue/test-utils')
-		const { nextTick } = await import('vue')
-		const Comp = (await import('@/components/ForgotPassword/Index.vue')).default
-
-		const { useAuth } = await import('@/composables/api/useAuth')
-		const fp = useAuth().forgotPassword
-		vi.mocked(fp).mockResolvedValue({
-			code: 200,
-			message: 'Success to send reset password URL, please check your email.',
-		})
-
-		const wrapper = shallowMount(Comp, {
+	// Shared factories to reduce dynamic imports and boilerplate stubs
+	const shallowComp = () =>
+		shallowMount(ForgotPassword, {
 			global: {
 				stubs: {
 					UButton: true,
@@ -98,8 +68,39 @@ describe('components/ForgotPassword/Index.vue', () => {
 			},
 		})
 
+	const mountComp = () =>
+		mount(ForgotPassword, {
+			global: {
+				stubs: {
+					UButton: UButtonStub,
+					UForm: UFormStub,
+					UFormGroup: UFormGroupStub,
+					UInput: UInputStub,
+					AppLogo: AppLogoStub,
+				},
+			},
+		})
+
+	it('initially shows default caption and form (negative)', async () => {
+		const wrapper = mountComp()
+
+		expect(wrapper.text()).toContain('Already remember your password?')
+		expect(wrapper.text()).not.toContain(
+			'Success to send reset password URL, please check your email.'
+		)
+	})
+
+	it('handleForgotPassword success shows toast and success caption (positive)', async () => {
+		// Use mocked function directly instead of re-importing
+		forgotPasswordMock.mockResolvedValueOnce({
+			code: 200,
+			message: 'Success to send reset password URL, please check your email.',
+		})
+
+		const wrapper = shallowComp()
+
 		await (wrapper.vm as any).handleForgotPassword()
-		await nextTick()
+		await wrapper.vm.$nextTick()
 
 		const toast = (globalThis as any).useToast()
 		expect(toast.add).toHaveBeenCalledWith(
@@ -114,20 +115,7 @@ describe('components/ForgotPassword/Index.vue', () => {
 	it('handleForgotPassword failure keeps default caption and no toast (negative)', async () => {
 		forgotPasswordMock.mockResolvedValueOnce(null)
 
-		const mod = await import('~/components/ForgotPassword/Index.vue')
-		const Comp = mod.default
-
-		const wrapper = mount(Comp, {
-			global: {
-				stubs: {
-					UButton: UButtonStub,
-					UForm: UFormStub,
-					UFormGroup: UFormGroupStub,
-					UInput: UInputStub,
-					AppLogo: AppLogoStub,
-				},
-			},
-		})
+		const wrapper = mountComp()
 
 		await wrapper.find('[data-test="form"]').trigger('submit')
 		await Promise.resolve()
@@ -140,76 +128,35 @@ describe('components/ForgotPassword/Index.vue', () => {
 		)
 	})
 
-  it('renders success caption when isSuccessForgotPassword is true (positive)', async () => {
-    const { shallowMount } = await import('@vue/test-utils')
-    const { nextTick } = await import('vue')
-    const Comp = (await import('@/components/ForgotPassword/Index.vue')).default
+	it('renders success caption when isSuccessForgotPassword is true (positive)', async () => {
+		const wrapper = shallowComp()
 
-    const wrapper = shallowMount(Comp, {
-      global: {
-        stubs: {
-          AppLogo: true,
-          UButton: true,
-          UForm: true,
-          UFormGroup: true,
-          UInput: true,
-        },
-      },
-    })
+		;(wrapper.vm as any).isSuccessForgotPassword = true
+		await wrapper.vm.$nextTick()
 
-    ;(wrapper.vm as any).isSuccessForgotPassword = true
-    await nextTick()
+		expect(wrapper.text()).toContain(
+			'Success to send reset password URL, please check your email.'
+		)
+		expect(wrapper.text()).not.toContain('Already remember your password?')
+	})
 
-    expect(wrapper.text()).toContain(
-      'Success to send reset password URL, please check your email.',
-    )
-    expect(wrapper.text()).not.toContain('Already remember your password?')
-  })
+	it('inline @keypress handlers call preventSpace (positive)', async () => {
+	// Ensure clean call history
+	preventSpaceMock.mockClear()
 
-  it('inline @keypress handlers call preventSpace (positive)', async () => {
-    const mod = await import('~/components/ForgotPassword/Index.vue')
-    const Comp = mod.default
+	const wrapper = mountComp()
 
-    // Ensure clean call history
-    preventSpaceMock.mockClear()
+	const inputs = wrapper.findAll('input')
+	for (const inp of inputs) {
+		await inp.trigger('keypress', { key: ' ' })
+	}
 
-    // Use mount with our stubs so a real <input> exists and emits keypress
-    const wrapper = mount(Comp, {
-      global: {
-        stubs: {
-          UButton: UButtonStub,
-          UForm: UFormStub,
-          UFormGroup: UFormGroupStub,
-          UInput: UInputStub,
-          AppLogo: AppLogoStub,
-        },
-      },
-    })
-
-    const inputs = wrapper.findAll('input')
-    for (const inp of inputs) {
-      await inp.trigger('keypress', { key: ' ' })
-    }
-
-    expect(preventSpaceMock).toHaveBeenCalled()
-    expect(preventSpaceMock.mock.calls.length).toBeGreaterThanOrEqual(inputs.length)
-  })
+	expect(preventSpaceMock).toHaveBeenCalled()
+	expect(preventSpaceMock.mock.calls.length).toBeGreaterThanOrEqual(inputs.length)
+})
 
 	it('clicking "Sign in" navigates to /sign-in (positive)', async () => {
-		const mod = await import('~/components/ForgotPassword/Index.vue')
-		const Comp = mod.default
-
-		const wrapper = mount(Comp, {
-			global: {
-				stubs: {
-					UButton: UButtonStub,
-					UForm: UFormStub,
-					UFormGroup: UFormGroupStub,
-					UInput: UInputStub,
-					AppLogo: AppLogoStub,
-				},
-			},
-		})
+		const wrapper = mountComp()
 
 		const signInBtn = wrapper.findAll('button').find((b) => b.text() === 'Sign in')!
 		await signInBtn.trigger('click')
@@ -217,58 +164,41 @@ describe('components/ForgotPassword/Index.vue', () => {
 	})
 
 	it('disables submit and shows loading when isLoadingForgotPassword is true (positive)', async () => {
-		const mod = await import('~/components/ForgotPassword/Index.vue')
-		const Comp = mod.default
+	// Toggle loading state before mount via mocked useAuth
+	useAuth().isLoadingForgotPassword.value = true
 
-		// Toggle loading state before mount
-		const { useAuth } = await import('@/composables/api/useAuth')
-		useAuth().isLoadingForgotPassword.value = true
+	const wrapper = mountComp()
 
-		const wrapper = mount(Comp, {
-			global: {
-				stubs: {
-					UButton: UButtonStub,
-					UForm: UFormStub,
-					UFormGroup: UFormGroupStub,
-					UInput: UInputStub,
-					AppLogo: AppLogoStub,
-				},
-			},
-		})
-
-		// Find the submit button by type forwarded via UButtonStub
-		const submitBtn = wrapper.find('button[type="submit"]')
-		expect(submitBtn.exists()).toBe(true)
-
-		// Assert disabled attribute is present
-		expect(submitBtn.attributes('disabled')).toBeDefined()
-
-		// Assert loading flag forwarded via data attribute
-		expect(submitBtn.attributes('data-loading')).toBe('true')
-	})
+	const submitBtn = wrapper.find('button[type="submit"]')
+	expect(submitBtn.exists()).toBe(true)
+	expect(submitBtn.attributes('disabled')).toBeDefined()
+	expect(submitBtn.attributes('data-loading')).toBe('true')
+})
 
 	it('v-model setter updates email (positive)', async () => {
-		const mod = await import('~/components/ForgotPassword/Index.vue')
-		const Comp = mod.default
+		const wrapper = mountComp()
 
-		const wrapper = mount(Comp, {
-			global: {
-				stubs: {
-					UButton: UButtonStub,
-					UForm: UFormStub,
-					UFormGroup: UFormGroupStub,
-					UInput: UInputStub,
-					AppLogo: AppLogoStub,
-				},
-			},
-		})
-
-		// There is a single text input for email
 		const emailInput = wrapper.find('input')
 		await emailInput.setValue('user@example.com')
 		await wrapper.vm.$nextTick()
 
 		const vm = wrapper.vm as any
 		expect(vm.form.email).toBe('user@example.com')
+	})
+	// New: ensure submit passes current form payload to API
+	it('submitting form calls forgotPassword with current email payload (positive)', async () => {
+		const wrapper = mountComp()
+	
+		// Update form value via v-model
+		const emailInput = wrapper.find('input')
+		await emailInput.setValue('payload@example.com')
+		await wrapper.vm.$nextTick()
+	
+		await wrapper.find('[data-test="form"]').trigger('submit')
+		await Promise.resolve()
+		await wrapper.vm.$nextTick()
+	
+		// Assert the API received current state
+		expect(forgotPasswordMock).toHaveBeenCalledWith({ email: 'payload@example.com' })
 	})
 })
