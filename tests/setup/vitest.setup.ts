@@ -121,7 +121,6 @@ beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }))
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 
-
 // Nitro/h3 helper stubs for server route unit tests
 vi.stubGlobal('defineEventHandler', (fn: any) => fn)
 vi.stubGlobal('useRuntimeConfig', vi.fn(() => ({ apiBaseUrl: 'https://api.example' })))
@@ -129,3 +128,15 @@ vi.stubGlobal('proxyRequest', vi.fn())
 vi.stubGlobal('getRequestHeader', vi.fn())
 vi.stubGlobal('getRouterParam', vi.fn())
 vi.stubGlobal('getQuery', vi.fn())
+
+// Stub defineNuxtPlugin for plugin tests
+vi.stubGlobal('defineNuxtPlugin', (fn: any) => fn)
+
+// Persisting useCookie stub (so multiple calls share the same ref per name)
+const __cookieMap = new Map<string, any>()
+vi.stubGlobal('useCookie', (name: string) => {
+	if (__cookieMap.has(name)) return __cookieMap.get(name)
+	const r = ref<any>(undefined)
+	__cookieMap.set(name, r)
+	return r
+})
