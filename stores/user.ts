@@ -19,6 +19,15 @@ export const useUserStore = defineStore('userStore', () => {
 		username: '',
 	})
 
+	// Clear user data
+	const handleClearUser = () => {
+		isLoggedIn.value = false
+		user.value.email = ''
+		user.value.fullname = ''
+		user.value.isVerified = false
+		user.value.username = ''
+	}
+
 	// Get user profile
 	const getUserProfile = async (): Promise<void> => {
 		if (isLoading.value) return
@@ -31,7 +40,7 @@ export const useUserStore = defineStore('userStore', () => {
 		})
 
 		if (error.value) {
-			isLoggedIn.value = false
+			handleClearUser()
 			isLoading.value = false
 		} else if (data.value?.data) {
 			user.value = data.value?.data
@@ -48,15 +57,6 @@ export const useUserStore = defineStore('userStore', () => {
 			watch: false,
 			body,
 		})
-	}
-
-	// Clear user data
-	const handleClearUser = () => {
-		isLoggedIn.value = false
-		user.value.email = ''
-		user.value.fullname = ''
-		user.value.isVerified = false
-		user.value.username = ''
 	}
 
 	// Delete user account

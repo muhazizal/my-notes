@@ -7,7 +7,6 @@ type CustomFetchOptions<T> = UseFetchOptions<T> & {
 
 export function useApi<T>(url: string, opts: CustomFetchOptions<T> = {}) {
 	const toast = useToast()
-	const router = useRouter()
 
 	const { excludeInterceptor, ...options } = opts
 
@@ -46,9 +45,16 @@ export function useApi<T>(url: string, opts: CustomFetchOptions<T> = {}) {
 						title: 'Error 401',
 						description: message || fallbackMessage,
 					})
-					if (import.meta.client) {
-						router.replace('/sign-in')
+
+					// clear auth state to avoid middleware bouncing back to protected routes
+					try {
+						const { handleClearUser } = useUserStore()
+						handleClearUser()
+					} catch (e) {
+						// ignore if store unavailable in rare contexts
 					}
+
+					return navigateTo('/sign-in')
 				}
 
 				if (response.status === 403) {
@@ -58,7 +64,7 @@ export function useApi<T>(url: string, opts: CustomFetchOptions<T> = {}) {
 						description: message || fallbackMessage,
 					})
 
-					throw showError({ statusCode: 403 })
+					throw createError({ statusCode: 403, statusMessage: message || fallbackMessage })
 				}
 
 				if (response.status === 404) {
@@ -68,7 +74,7 @@ export function useApi<T>(url: string, opts: CustomFetchOptions<T> = {}) {
 						description: message || fallbackMessage,
 					})
 
-					throw showError({ statusCode: 404 })
+					throw createError({ statusCode: 404, statusMessage: message || fallbackMessage })
 				}
 
 				if (response.status >= 500) {

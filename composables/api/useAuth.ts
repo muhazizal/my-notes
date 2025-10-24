@@ -38,6 +38,8 @@ export function useAuth() {
 
 	const isLoadingLogin = useState('is-loading-login', () => false)
 	const { isLoggedIn } = storeToRefs(useUserStore())
+	const { handleClearUser } = useUserStore()
+
 	const login = async (body: ILoginBody) => {
 		if (isLoadingLogin.value) return
 		isLoadingLogin.value = true
@@ -50,7 +52,7 @@ export function useAuth() {
 
 		if (error.value) {
 			isLoadingLogin.value = false
-			isLoggedIn.value = false
+			handleClearUser()
 			return false
 		} else {
 			isLoadingLogin.value = false
