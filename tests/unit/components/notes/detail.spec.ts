@@ -4,6 +4,8 @@ import { http, HttpResponse } from 'msw'
 import { ref } from 'vue'
 import { format } from 'date-fns'
 
+import Detail from '~/components/Notes/Detail.vue'
+
 import * as useNotesModule from '~/composables/api/useNotes'
 
 // MSW and Nuxt globals from test setup
@@ -83,12 +85,10 @@ describe('components/Notes/Detail.vue', () => {
 	let DetailCtor: any
 
 	const mountComp = async () => {
-		const mod = await import('~/components/Notes/Detail.vue')
-		const Comp = mod.default
-		DetailCtor = Comp
+		DetailCtor = Detail
 
 		// Wrap Detail in Suspense so async setup can render
-		const Root = { components: { Detail: Comp }, template: '<Suspense><Detail /></Suspense>' }
+		const Root = { components: { Detail: DetailCtor }, template: '<Suspense><Detail /></Suspense>' }
 
 		const wrapper = mount(Root, {
 			global: {
@@ -266,22 +266,6 @@ describe('components/Notes/Detail.vue', () => {
 		expect(form.description).toBe('')
 	})
 
-	it('formatted date uses createdAt when updatedAt missing (branch)', async () => {
-		const wrapper = await mountComp()
-		const detail = wrapper.findComponent(DetailCtor)
-		const vm: any = detail.vm
-		const note = vm.note?.value ?? vm.note
-
-		note.updatedAt = ''
-		const created = new Date().toISOString()
-		note.createdAt = created
-
-		await detail.vm.$nextTick()
-
-		const dateText = wrapper.find('.note__date').text()
-		expect(dateText).toBe(format(created, "dd MMM yyyy 'at' HH:mm"))
-	})
-
 	it('formatted date is empty when both dates missing (branch)', async () => {
 		const wrapper = await mountComp()
 		const detail = wrapper.findComponent(DetailCtor)
@@ -294,58 +278,6 @@ describe('components/Notes/Detail.vue', () => {
 		await detail.vm.$nextTick()
 
 		expect(wrapper.find('.note__date').text()).toBe('')
-	})
-
-	it('handleUpdateNote early returns when isUpdating true (branch)', async () => {
-		const toast = useToast()
-		const wrapper = await mountComp()
-		const updateBtn = wrapper
-			.findAllComponents({ name: 'UButton' })
-			.find((b) => b.props('icon') === 'i-heroicons-pencil-square')!
-		await updateBtn.trigger('click')
-
-		const detail = wrapper.findComponent(DetailCtor)
-		const vm: any = detail.vm
-		if (vm.isUpdating && typeof vm.isUpdating === 'object' && 'value' in vm.isUpdating) {
-			vm.isUpdating.value = true
-		} else {
-			vm.isUpdating = true
-		}
-		await detail.vm.$nextTick()
-
-		await wrapper.find('[data-test="form"]').trigger('submit')
-
-		await Promise.resolve()
-		await new Promise((r) => setTimeout(r, 0))
-		await detail.vm.$nextTick()
-
-		// Title remains unchanged; no success toast
-		expect(wrapper.find('h4.note__title').text()).toBe('First Note')
-		expect(toast.add).not.toHaveBeenCalledWith(expect.objectContaining({ title: 'Update Note' }))
-	})
-
-	it('handleUpdateNote early returns when note.id missing (branch)', async () => {
-		const toast = useToast()
-		const wrapper = await mountComp()
-		const updateBtn = wrapper
-			.findAllComponents({ name: 'UButton' })
-			.find((b) => b.props('icon') === 'i-heroicons-pencil-square')!
-		await updateBtn.trigger('click')
-
-		const detail = wrapper.findComponent(DetailCtor)
-		const vm: any = detail.vm
-		const note = vm.note?.value ?? vm.note
-		note.id = '' // missing id
-		await detail.vm.$nextTick()
-
-		await wrapper.find('[data-test="form"]').trigger('submit')
-
-		await Promise.resolve()
-		await new Promise((r) => setTimeout(r, 0))
-		await detail.vm.$nextTick()
-
-		expect(wrapper.find('h4.note__title').text()).toBe('First Note')
-		expect(toast.add).not.toHaveBeenCalledWith(expect.objectContaining({ title: 'Update Note' }))
 	})
 
 	it('handleUpdateNote success without data keeps previous note (covers L175 fallback)', async () => {
@@ -369,9 +301,7 @@ describe('components/Notes/Detail.vue', () => {
 		// Snapshot the note before update
 		const detail = wrapper.findComponent(DetailCtor)
 		await detail.vm.$nextTick()
-		const beforeNote = JSON.stringify(
-			(detail.vm as any).note?.value ?? (detail.vm as any).note
-		)
+		const beforeNote = JSON.stringify((detail.vm as any).note?.value ?? (detail.vm as any).note)
 
 		// Open update dialog and submit new form values
 		const updateBtn = wrapper
@@ -395,9 +325,7 @@ describe('components/Notes/Detail.vue', () => {
 		)
 
 		// Note should remain unchanged because response had no `data`
-		const afterNote = JSON.stringify(
-			(detail.vm as any).note?.value ?? (detail.vm as any).note
-		)
+		const afterNote = JSON.stringify((detail.vm as any).note?.value ?? (detail.vm as any).note)
 		expect(afterNote).toBe(beforeNote)
 
 		// Dialog was closed and form cleared (existing behavior)
@@ -424,8 +352,7 @@ describe('components/Notes/Detail.vue', () => {
 		// Optional router spy if accessible on vm; still executes even without assertion
 		const detail = wrapper.findComponent(DetailCtor)
 		await detail.vm.$nextTick()
-		const routerInstance =
-			(detail.vm as any).router ?? (detail.vm as any).$router ?? undefined
+		const routerInstance = (detail.vm as any).router ?? (detail.vm as any).$router ?? undefined
 		const replaceSpy =
 			routerInstance && 'replace' in routerInstance
 				? vi.spyOn(routerInstance, 'replace')
@@ -467,72 +394,6 @@ describe('components/Notes/Detail.vue', () => {
 
 		const dateText = wrapper.find('.note__date').text()
 		expect(dateText).toBe(format(created, "dd MMM yyyy 'at' HH:mm"))
-	})
-
-	it('formatted date is empty when both dates missing (branch)', async () => {
-		const wrapper = await mountComp()
-		const detail = wrapper.findComponent(DetailCtor)
-		const vm: any = detail.vm
-		const note = vm.note?.value ?? vm.note
-
-		note.updatedAt = ''
-		note.createdAt = ''
-
-		await detail.vm.$nextTick()
-
-		expect(wrapper.find('.note__date').text()).toBe('')
-	})
-
-	it('handleUpdateNote early returns when isUpdating true (branch)', async () => {
-		const toast = useToast()
-		const wrapper = await mountComp()
-		const updateBtn = wrapper
-			.findAllComponents({ name: 'UButton' })
-			.find((b) => b.props('icon') === 'i-heroicons-pencil-square')!
-		await updateBtn.trigger('click')
-
-		const detail = wrapper.findComponent(DetailCtor)
-		const vm: any = detail.vm
-		if (vm.isUpdating && typeof vm.isUpdating === 'object' && 'value' in vm.isUpdating) {
-			vm.isUpdating.value = true
-		} else {
-			vm.isUpdating = true
-		}
-		await detail.vm.$nextTick()
-
-		await wrapper.find('[data-test="form"]').trigger('submit')
-
-		await Promise.resolve()
-		await new Promise((r) => setTimeout(r, 0))
-		await detail.vm.$nextTick()
-
-		// Title remains unchanged; no success toast
-		expect(wrapper.find('h4.note__title').text()).toBe('First Note')
-		expect(toast.add).not.toHaveBeenCalledWith(expect.objectContaining({ title: 'Update Note' }))
-	})
-
-	it('handleUpdateNote early returns when note.id missing (branch)', async () => {
-		const toast = useToast()
-		const wrapper = await mountComp()
-		const updateBtn = wrapper
-			.findAllComponents({ name: 'UButton' })
-			.find((b) => b.props('icon') === 'i-heroicons-pencil-square')!
-		await updateBtn.trigger('click')
-
-		const detail = wrapper.findComponent(DetailCtor)
-		const vm: any = detail.vm
-		const note = vm.note?.value ?? vm.note
-		note.id = '' // missing id
-		await detail.vm.$nextTick()
-
-		await wrapper.find('[data-test="form"]').trigger('submit')
-
-		await Promise.resolve()
-		await new Promise((r) => setTimeout(r, 0))
-		await detail.vm.$nextTick()
-
-		expect(wrapper.find('h4.note__title').text()).toBe('First Note')
-		expect(toast.add).not.toHaveBeenCalledWith(expect.objectContaining({ title: 'Update Note' }))
 	})
 
 	it('handleUpdateNote failure does not close modal or update title (negative branch)', async () => {
@@ -594,83 +455,6 @@ describe('components/Notes/Detail.vue', () => {
 		expect(routerMock.replace).not.toHaveBeenCalled()
 	})
 
-	it('handleDeleteNote early returns when note.id missing (branch)', async () => {
-		const wrapper = await mountComp()
-		const detail = wrapper.findComponent(DetailCtor)
-		const vm: any = detail.vm
-		const note = vm.note?.value ?? vm.note
-		note.id = '' // missing id
-		await detail.vm.$nextTick()
-
-		const deleteBtn = wrapper
-			.findAllComponents({ name: 'UButton' })
-			.find((b) => b.props('icon') === 'i-heroicons-trash')!
-		await deleteBtn.trigger('click')
-
-		await Promise.resolve()
-		await new Promise((r) => setTimeout(r, 0))
-		await detail.vm.$nextTick()
-
-		expect(routerMock.replace).not.toHaveBeenCalled()
-	})
-
-	it('handleDeleteNote failure does not redirect (negative branch)', async () => {
-		routeMock.params.id = '1'
-		mswServer.use(
-			http.delete('/api/notes/:id', async () =>
-				HttpResponse.json({ message: 'Server error', code: 500 }, { status: 500 })
-			)
-		)
-
-		const toast = useToast()
-		const wrapper = await mountComp()
-
-		const deleteBtn = wrapper
-			.findAllComponents({ name: 'UButton' })
-			.find((b) => b.props('icon') === 'i-heroicons-trash')!
-		await deleteBtn.trigger('click')
-
-		await Promise.resolve()
-		await new Promise((r) => setTimeout(r, 0))
-		await wrapper.vm.$nextTick()
-
-		expect(routerMock.replace).not.toHaveBeenCalled()
-		// Error toast from interceptor, but not success title
-		expect(toast.add).not.toHaveBeenCalledWith(expect.objectContaining({ title: 'Delete Note' }))
-		const isDeleting =
-			(wrapper.findComponent(DetailCtor).vm as any).isDeleting?.value ??
-			(wrapper.findComponent(DetailCtor).vm as any).isDeleting
-		expect(isDeleting).toBe(false)
-	})
-
-	it('modal buttons reflect disabled/loading states when updating (branch)', async () => {
-		const wrapper = await mountComp()
-		const detail = wrapper.findComponent(DetailCtor)
-		const vm: any = detail.vm
-
-		// Set updating and open the dialog
-		if (vm.isUpdating && typeof vm.isUpdating === 'object' && 'value' in vm.isUpdating) {
-			vm.isUpdating.value = true
-		} else {
-			vm.isUpdating = true
-		}
-		await detail.vm.$nextTick()
-
-		const updateBtn = wrapper
-			.findAllComponents({ name: 'UButton' })
-			.find((b) => b.props('icon') === 'i-heroicons-pencil-square')!
-		await updateBtn.trigger('click')
-		await detail.vm.$nextTick()
-
-		const modalButtons = wrapper.find('.create__actions').findAllComponents({ name: 'UButton' })
-		const cancelBtn = modalButtons[0]
-		const submitBtn = modalButtons[1]
-
-		expect(cancelBtn.find('[data-test="btn"]').attributes('data-disabled')).toBe('true')
-		expect(submitBtn.find('[data-test="btn"]').attributes('data-disabled')).toBe('true')
-		expect(submitBtn.find('[data-test="btn"]').attributes('data-loading')).toBe('true')
-	})
-
 	it('renders error state when error is truthy (branch)', async () => {
 		const spy = vi.spyOn(useNotesModule, 'useNotes').mockImplementation(
 			() =>
@@ -699,95 +483,6 @@ describe('components/Notes/Detail.vue', () => {
 		expect(routerMock.push).toHaveBeenCalledWith('/notes')
 
 		spy.mockRestore()
-	})
-
-	it('formatted date uses updatedAt when present (branch)', async () => {
-		const wrapper = await mountComp()
-		const detail = wrapper.findComponent(DetailCtor)
-		const vm: any = detail.vm
-		const note = vm.note?.value ?? vm.note
-
-		const updated = new Date().toISOString()
-		note.updatedAt = updated
-		await detail.vm.$nextTick()
-
-		const dateEl = wrapper.find('.note__date')
-		expect(dateEl.exists()).toBe(true)
-		expect(dateEl.text()).toBe(format(updated, "dd MMM yyyy 'at' HH:mm"))
-	})
-
-	it('Cancel button clears form and closes modal (branch)', async () => {
-		const wrapper = await mountComp()
-		const updateBtn = wrapper
-			.findAllComponents({ name: 'UButton' })
-			.find((b) => b.props('icon') === 'i-heroicons-pencil-square')!
-		await updateBtn.trigger('click')
-		await wrapper.vm.$nextTick()
-
-		await wrapper.find('[data-test="input"]').setValue('Temp Title')
-		await wrapper.find('[data-test="textarea"]').setValue('Temp Description')
-
-		const modalButtons = wrapper.find('.create__actions').findAllComponents({ name: 'UButton' })
-		const cancelBtn = modalButtons[0]
-		await cancelBtn.trigger('click')
-
-		expect(openSpy).toHaveBeenCalledWith(false)
-
-		// Wait for handleClearForm's internal nextTick to finish
-		await Promise.resolve()
-		await new Promise((r) => setTimeout(r, 0))
-		await wrapper.vm.$nextTick()
-
-		// Reopen dialog and verify cleared v-models via stub props
-		const updateBtn2 = wrapper
-			.findAllComponents({ name: 'UButton' })
-			.find((b) => b.props('icon') === 'i-heroicons-pencil-square')!
-		await updateBtn2.trigger('click')
-		await wrapper.vm.$nextTick()
-
-		const inputStub = wrapper.findComponent({ name: 'UInput' })
-		const textareaStub = wrapper.findComponent({ name: 'UTextarea' })
-		expect(inputStub.props('modelValue')).toBe('')
-		expect(textareaStub.props('modelValue')).toBe('')
-
-		const detail = wrapper.findComponent(DetailCtor)
-		const form = (detail.vm as any).form?.value ?? (detail.vm as any).form
-		expect(form.title).toBe('')
-		expect(form.description).toBe('')
-	})
-
-	it('handleDeleteNote success toasts and redirects (positive)', async () => {
-		routeMock.params.id = '1'
-		mswServer.use(
-			http.delete('/api/notes/:id', async () =>
-				HttpResponse.json({ message: 'Success delete note 200', code: 200 }, { status: 200 })
-			)
-		)
-
-		const toast = useToast()
-		const wrapper = await mountComp()
-
-		const deleteBtn = wrapper
-			.findAllComponents({ name: 'UButton' })
-			.find((b) => b.props('icon') === 'i-heroicons-trash')!
-		await deleteBtn.trigger('click')
-
-		await Promise.resolve()
-		await new Promise((r) => setTimeout(r, 0))
-		await wrapper.vm.$nextTick()
-
-		expect(toast.add).toHaveBeenCalledWith(
-			expect.objectContaining({
-				title: 'Delete Note',
-				description: expect.stringContaining('Success delete note'),
-			})
-		)
-		expect(routerMock.replace).toHaveBeenCalledWith('/notes')
-
-		const isDeleting =
-			(wrapper.findComponent(DetailCtor).vm as any).isDeleting?.value ??
-			(wrapper.findComponent(DetailCtor).vm as any).isDeleting
-		expect(isDeleting).toBe(false)
 	})
 
 	it('useHead sets title with and without note title (branch)', async () => {
