@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { mount, shallowMount } from '@vue/test-utils'
 import { ref } from 'vue'
+import ResetPassword from '@/components/ResetPassword/Index.vue'
 
 declare const useRouter: () => any
 declare const useToast: () => any
@@ -37,6 +38,7 @@ const UInputStub = {
     <div
       data-test="input"
       :data-placeholder="placeholder"
+      :data-type="type"
       @keypress="$emit('keypress', $event)"
     >
       <!-- minimal rendering -->
@@ -75,10 +77,8 @@ describe('components/ResetPassword/Index.vue', () => {
 		isLoadingResetPassword.value = false
 	})
 
-	const mountComp = async () => {
-		const mod = await import('~/components/ResetPassword/Index.vue')
-		const Comp = mod.default
-		return mount(Comp, {
+	const mountComp = () =>
+		mount(ResetPassword, {
 			global: {
 				stubs: {
 					UButton: UButtonStub,
@@ -89,7 +89,19 @@ describe('components/ResetPassword/Index.vue', () => {
 				},
 			},
 		})
-	}
+
+	const shallowComp = () =>
+		shallowMount(ResetPassword, {
+			global: {
+				stubs: {
+					AppLogo: true,
+					UButton: UButtonStub, // use real button stub for clicks
+					UForm: true,
+					UFormGroup: true,
+					UInput: true,
+				},
+			},
+		})
 
 	it('initially shows default caption and renders form (positive)', async () => {
 		const wrapper = await mountComp()
@@ -98,6 +110,19 @@ describe('components/ResetPassword/Index.vue', () => {
 
 		const inputs = wrapper.findAllComponents(UInputStub)
 		expect(inputs.length).toBeGreaterThanOrEqual(2)
+	})
+
+	it('both password inputs render with type="password" (positive)', async () => {
+		const wrapper = await mountComp()
+	
+		const inputs = wrapper.findAllComponents(UInputStub)
+		expect(inputs.length).toBeGreaterThanOrEqual(2)
+	
+		for (const input of inputs) {
+			expect(input.props('type')).toBe('password')
+			// Also reflected in stub DOM
+			expect(input.attributes('data-type')).toBe('password')
+		}
 	})
 
 	it('v-model setters update password fields (positive)', async () => {
@@ -130,43 +155,70 @@ describe('components/ResetPassword/Index.vue', () => {
 		expect(preventSpaceMock).toHaveBeenCalledTimes(2)
 	})
 
-	it('handleResetPassword success shows toast, success caption, and "Sign in" navigation (positive)', async () => {
+	it('success branch hides form and shows only caption (positive)', async () => {
 		resetPasswordMock.mockResolvedValueOnce({ message: 'Reset complete' })
 
 		const wrapper = await mountComp()
 		const vm = wrapper.vm as any
-		const form = vm.form?.value ?? vm.form
-		form.password.real = 'abc123'
-
-		// Call async handler directly to ensure we await its completion
+	
 		await vm.handleResetPassword()
+		await wrapper.vm.$nextTick()
+	
+		// Success caption visible
+		expect(wrapper.text()).toContain('Success to reset your password')
+		// Form should be hidden after success
+		expect(wrapper.find('[data-test="form"]').exists()).toBe(false)
+	})
 
+	it('handleResetPassword success shows toast, success caption, and "Sign in" navigation (positive)', async () => {
+		resetPasswordMock.mockResolvedValueOnce({ message: 'Reset complete' })
+	
+		const wrapper = shallowComp()
+		const vm = wrapper.vm as any
+	
+		await vm.handleResetPassword()
+	
 		// Toast and success state
 		expect(toastAddSpy).toHaveBeenCalledWith(
 			expect.objectContaining({ title: 'Reset Password', description: 'Reset complete' })
 		)
 		expect(vm.isSuccessReset).toBe(true)
 		expect(vm.isFailedReset).toBe(false)
-
+	
 		// Success caption branch renders Sign in button
 		const signInBtn = wrapper.findAll('button').find((b) => b.text() === 'Sign in')!
 		expect(signInBtn.exists()).toBe(true)
-
+	
+		// Trigger native click for speed and correctness
 		await signInBtn.trigger('click')
 		expect(replaceSpy).toHaveBeenCalledWith('/sign-in')
-
+	
 		// Direct method call also covered
-		;(wrapper.vm as any).handleRedirectSignIn()
+		vm.handleRedirectSignIn()
 		expect(replaceSpy).toHaveBeenCalledWith('/sign-in')
+	})
+
+	it('failure branch hides form and shows "request new url" (negative)', async () => {
+		resetPasswordMock.mockResolvedValueOnce(false)
+	
+		const wrapper = await mountComp()
+		const vm = wrapper.vm as any
+	
+		await vm.handleResetPassword()
+		await wrapper.vm.$nextTick()
+	
+		// Failure caption visible
+		expect(wrapper.text()).toContain('failed to reset your password')
+		// Form should be hidden after failure
+		expect(wrapper.find('[data-test="form"]').exists()).toBe(false)
 	})
 
 	it('handleResetPassword failure shows failure caption and "request new url" navigation (negative)', async () => {
 		resetPasswordMock.mockResolvedValueOnce(false)
 
-		const wrapper = await mountComp()
+		const wrapper = shallowComp()
 		const vm = wrapper.vm as any
 
-		// Call async handler directly
 		await vm.handleResetPassword()
 
 		// Failure state
@@ -174,11 +226,12 @@ describe('components/ResetPassword/Index.vue', () => {
 		expect(vm.isSuccessReset).toBe(false)
 		expect(wrapper.text()).toContain('failed to reset your password')
 
+		// Find and click the "request new url" button
 		const reqNewUrlBtn = wrapper.findAll('button').find((b) => b.text() === 'request new url')!
 		await reqNewUrlBtn.trigger('click')
 		expect(replaceSpy).toHaveBeenCalledWith('/forgot-password')
 
-		;(wrapper.vm as any).handleRedirectForgotPassword()
+		vm.handleRedirectForgotPassword()
 		expect(replaceSpy).toHaveBeenCalledWith('/forgot-password')
 	})
 
@@ -207,5 +260,21 @@ describe('components/ResetPassword/Index.vue', () => {
 		await wrapper.vm.$nextTick()
 
 		expect(resetPasswordMock).toHaveBeenCalledWith({ password: 'newpass!' })
+	})
+
+	it('toast includes green color on success (positive)', async () => {
+		resetPasswordMock.mockResolvedValueOnce({ message: 'Reset complete' })
+	
+		const wrapper = await mountComp()
+		await (wrapper.vm as any).handleResetPassword()
+		await wrapper.vm.$nextTick()
+	
+		expect(toastAddSpy).toHaveBeenCalledWith(
+			expect.objectContaining({
+				color: 'green',
+				title: 'Reset Password',
+				description: 'Reset complete',
+			})
+		)
 	})
 })
