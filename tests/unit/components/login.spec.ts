@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { shallowMount } from '@vue/test-utils'
 import { computed, ref } from 'vue'
+import Login from '@/components/Login/Index.vue'
 
 declare const useRouter: () => any
 declare const useUserStore: () => any
@@ -66,11 +67,9 @@ describe('components/Login/Index.vue', () => {
 		loginMock.mockReset()
 	})
 
-	it('asserts computed icon/type via DOM and toggle (positive)', async () => {
-		const mod = await import('~/components/Login/Index.vue')
-		const Comp = mod.default
-
-		const wrapper = mount(Comp, {
+	// Shared mount factory using shallowMount to reduce render cost
+	const mountComp = () =>
+		shallowMount(Login, {
 			global: {
 				stubs: {
 					UButton: UButtonStub,
@@ -81,6 +80,9 @@ describe('components/Login/Index.vue', () => {
 				},
 			},
 		})
+
+	it('asserts computed icon/type via DOM and toggle (positive)', async () => {
+		const wrapper = mountComp()
 
 		// Find password input (the one with trailing button)
 		let pwInput = wrapper
@@ -107,20 +109,7 @@ describe('components/Login/Index.vue', () => {
 	})
 
 	it('covers inline @keypress handlers on email and password inputs (positive)', async () => {
-		const mod = await import('~/components/Login/Index.vue')
-		const Comp = mod.default
-
-		const wrapper = mount(Comp, {
-			global: {
-				stubs: {
-					UButton: UButtonStub,
-					UForm: UFormStub,
-					UFormGroup: UFormGroupStub,
-					UInput: UInputStub,
-					AppLogo: AppLogoStub,
-				},
-			},
-		})
+		const wrapper = mountComp()
 
 		// Trigger keypress on both inputs to execute the inline handlers
 		const inputs = wrapper.findAll('[data-test="input"]')
@@ -135,20 +124,7 @@ describe('components/Login/Index.vue', () => {
 	})
 
 	it('v-model setters update email and password (positive)', async () => {
-		const mod = await import('~/components/Login/Index.vue')
-		const Comp = mod.default
-
-		const wrapper = mount(Comp, {
-			global: {
-				stubs: {
-					UButton: UButtonStub,
-					UForm: UFormStub,
-					UFormGroup: UFormGroupStub,
-					UInput: UInputStub,
-					AppLogo: AppLogoStub,
-				},
-			},
-		})
+		const wrapper = mountComp()
 
 		const vm = wrapper.vm as any
 		const read = () => ({
@@ -169,21 +145,7 @@ describe('components/Login/Index.vue', () => {
 	})
 
 	it('calls redirect methods directly via vm (positive)', async () => {
-		const mod = await import('~/components/Login/Index.vue')
-		const Comp = mod.default
-
-		const wrapper = mount(Comp, {
-			global: {
-				stubs: {
-					UButton: UButtonStub,
-					UForm: UFormStub,
-					UFormGroup: UFormGroupStub,
-					UInput: UInputStub,
-					AppLogo: AppLogoStub,
-				},
-			},
-		})
-
+		const wrapper = mountComp()
 		const vm = wrapper.vm as any
 
 		// Explicitly invoke both redirect functions so they count in function coverage
@@ -195,20 +157,7 @@ describe('components/Login/Index.vue', () => {
 	})
 
 	it('redirects to /sign-up via "Sign up." button (positive)', async () => {
-		const mod = await import('~/components/Login/Index.vue')
-		const Comp = mod.default
-
-		const wrapper = mount(Comp, {
-			global: {
-				stubs: {
-					UButton: UButtonStub,
-					UForm: UFormStub,
-					UFormGroup: UFormGroupStub,
-					UInput: UInputStub,
-					AppLogo: AppLogoStub,
-				},
-			},
-		})
+		const wrapper = mountComp()
 
 		const signUpBtn = wrapper.findAll('button').find((b) => b.text() === 'Sign up.')!
 		await signUpBtn.trigger('click')
@@ -217,20 +166,7 @@ describe('components/Login/Index.vue', () => {
 	})
 
 	it('redirects to /forgot-password via "Forgot password?" button (positive)', async () => {
-		const mod = await import('~/components/Login/Index.vue')
-		const Comp = mod.default
-
-		const wrapper = mount(Comp, {
-			global: {
-				stubs: {
-					UButton: UButtonStub,
-					UForm: UFormStub,
-					UFormGroup: UFormGroupStub,
-					UInput: UInputStub,
-					AppLogo: AppLogoStub,
-				},
-			},
-		})
+		const wrapper = mountComp()
 
 		const forgotBtn = wrapper.findAll('button').find((b) => b.text() === 'Forgot password?')!
 		await forgotBtn.trigger('click')
@@ -241,20 +177,7 @@ describe('components/Login/Index.vue', () => {
 	it('handleLogin success shows toast, fetches profile, and navigates to /notes (positive)', async () => {
 		loginMock.mockResolvedValueOnce({ message: 'Welcome' })
 
-		const mod = await import('~/components/Login/Index.vue')
-		const Comp = mod.default
-
-		const wrapper = mount(Comp, {
-			global: {
-				stubs: {
-					UButton: UButtonStub,
-					UForm: UFormStub,
-					UFormGroup: UFormGroupStub,
-					UInput: UInputStub,
-					AppLogo: AppLogoStub,
-				},
-			},
-		})
+		const wrapper = mountComp()
 
 		// Submit the form to trigger handleLogin
 		await wrapper.find('[data-test="form"]').trigger('submit')
@@ -274,20 +197,7 @@ describe('components/Login/Index.vue', () => {
 	it('handleLogin failure does not navigate or fetch profile (negative)', async () => {
 		loginMock.mockResolvedValueOnce(false)
 
-		const mod = await import('~/components/Login/Index.vue')
-		const Comp = mod.default
-
-		const wrapper = mount(Comp, {
-			global: {
-				stubs: {
-					UButton: UButtonStub,
-					UForm: UFormStub,
-					UFormGroup: UFormGroupStub,
-					UInput: UInputStub,
-					AppLogo: AppLogoStub,
-				},
-			},
-		})
+		const wrapper = mountComp()
 
 		await wrapper.find('[data-test="form"]').trigger('submit')
 		await Promise.resolve()
@@ -299,20 +209,7 @@ describe('components/Login/Index.vue', () => {
 	})
 
 	it('clicking trailing eye button triggers template onClick handler (positive)', async () => {
-		const mod = await import('~/components/Login/Index.vue')
-		const Comp = mod.default
-
-		const wrapper = mount(Comp, {
-			global: {
-				stubs: {
-					UButton: UButtonStub,
-					UForm: UFormStub,
-					UFormGroup: UFormGroupStub,
-					UInput: UInputStub,
-					AppLogo: AppLogoStub,
-				},
-			},
-		})
+		const wrapper = mountComp()
 
 		const vm = wrapper.vm as any
 		const readType = () => vm.getPasswordType?.value ?? vm.getPasswordType
@@ -334,20 +231,7 @@ describe('components/Login/Index.vue', () => {
 	})
 
 	it('executes true branch of handleShowPassword and returns type to password (positive)', async () => {
-		const mod = await import('~/components/Login/Index.vue')
-		const Comp = mod.default
-
-		const wrapper = mount(Comp, {
-			global: {
-				stubs: {
-					UButton: UButtonStub,
-					UForm: UFormStub,
-					UFormGroup: UFormGroupStub,
-					UInput: UInputStub,
-					AppLogo: AppLogoStub,
-				},
-			},
-		})
+		const wrapper = mountComp()
 
 		const vm = wrapper.vm as any
 		const readType = () => vm.getPasswordType?.value ?? vm.getPasswordType
@@ -360,7 +244,7 @@ describe('components/Login/Index.vue', () => {
 		await wrapper.vm.$nextTick()
 		expect(readType()).toBe('text')
 
-		// Second toggle: if branch at L85 (sets false)
+		// Second toggle: if branch (sets false)
 		vm.handleShowPassword()
 		await wrapper.vm.$nextTick()
 		expect(readType()).toBe('password')
