@@ -5,6 +5,6 @@ export interface IResponse<T = undefined> {
 }
 
 export interface IError {
-	statusCode: string
+	statusCode: number
 	statusMessage: string
 }
