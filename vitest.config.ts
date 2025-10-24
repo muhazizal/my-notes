@@ -17,10 +17,11 @@ export default defineConfig({
 			include: [
 				'components/**/*',
 				'composables/**/*',
-				'stores/**/*',
+				'layouts/**/*',
 				'middleware/**/*',
-				'plugins/**/*',
 				'pages/**/*',
+				'plugins/**/*',
+				'stores/**/*',
 				'server/**/*',
 			],
 			exclude: ['tests/**/*', '**/*.d.ts', '**/*.test.*', '**/*.spec.*', 'node_modules/**/*'],
