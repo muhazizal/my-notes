@@ -37,6 +37,7 @@
 </template>
 
 <script lang="ts" setup>
+import { ref, onMounted } from 'vue'
 import type { IEditUserProfileForm } from '~/types/user'
 import { editUserProfileSchema } from '~/schema/edit-user-profile'
 import { useNoSpace } from '@/composables/utils/input/useNoSpace'
