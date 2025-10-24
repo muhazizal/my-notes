@@ -44,6 +44,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
+
 import type { IForgotPasswordBody } from '@/types/auth'
 import { forgotPasswordSchema } from '@/schema/forgot-password'
 import { useAuth } from '@/composables/api/useAuth'
