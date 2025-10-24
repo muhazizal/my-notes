@@ -1,3 +1,5 @@
+import { ref } from 'vue'
+
 import type {
 	IUser,
 	IUserProfileResponse,

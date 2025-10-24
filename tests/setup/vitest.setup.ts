@@ -26,6 +26,11 @@ vi.stubGlobal('useState', (key: string, init?: () => any) => {
 	return r
 })
 
+vi.stubGlobal('defineStore', (name: string, setup: Function) => {
+	const store = setup()
+	return () => store
+})
+
 // Stub storeToRefs (return only refs from a store object)
 vi.stubGlobal('storeToRefs', (store: Record<string, any>) => {
 	const out: Record<string, any> = {}
@@ -35,6 +40,8 @@ vi.stubGlobal('storeToRefs', (store: Record<string, any>) => {
 	}
 	return out
 })
+
+vi.stubGlobal('defineNuxtRouteMiddleware', (fn: any) => fn)
 
 // Minimal stub for user store used by composables (shared instance)
 const __userStore = {
