@@ -44,6 +44,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
 import { useAuth } from '@/composables/api/useAuth'
 
 const route = useRoute()
