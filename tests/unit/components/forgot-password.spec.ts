@@ -18,7 +18,10 @@ const UFormGroupStub = { name: 'UFormGroup', template: '<div data-test="group"><
 // Emits keypress so parent’s @keypress handler receives it
 const UInputStub = {
 	name: 'UInput',
-	template: '<input data-test="input" @keypress="$emit(\'keypress\', $event)" />',
+	props: ['modelValue'],
+	emits: ['update:modelValue', 'keypress'],
+	template:
+		'<input data-test="input" :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" @keypress="$emit(\'keypress\', $event)" />',
 }
 const AppLogoStub = { name: 'AppLogo', template: '<div>Logo</div>' }
 
@@ -242,5 +245,30 @@ describe('components/ForgotPassword/Index.vue', () => {
 
 		// Assert loading flag forwarded via data attribute
 		expect(submitBtn.attributes('data-loading')).toBe('true')
+	})
+
+	it('v-model setter updates email (positive)', async () => {
+		const mod = await import('~/components/ForgotPassword/Index.vue')
+		const Comp = mod.default
+
+		const wrapper = mount(Comp, {
+			global: {
+				stubs: {
+					UButton: UButtonStub,
+					UForm: UFormStub,
+					UFormGroup: UFormGroupStub,
+					UInput: UInputStub,
+					AppLogo: AppLogoStub,
+				},
+			},
+		})
+
+		// There is a single text input for email
+		const emailInput = wrapper.find('input')
+		await emailInput.setValue('user@example.com')
+		await wrapper.vm.$nextTick()
+
+		const vm = wrapper.vm as any
+		expect(vm.form.email).toBe('user@example.com')
 	})
 })
