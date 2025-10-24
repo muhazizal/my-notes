@@ -16,28 +16,36 @@ export function useApi<T>(url: string, opts: CustomFetchOptions<T> = {}) {
 		message?: string,
 		statusText?: string
 	): { title: string; description: string } => {
-		const fallback = message || statusText
-		if (status === 401) return { title: 'Session expired', description: fallback || 'Please sign in again.' }
-		if (status === 403) return { title: 'Access denied', description: fallback || 'You don’t have permission to do that.' }
-		if (status === 404) return { title: 'Not found', description: fallback || 'The requested resource was not found.' }
-		if (status === 422) return { title: 'Validation error', description: fallback || 'Please check the input and try again.' }
-		if (status >= 500) return { title: 'Server error', description: fallback || 'Something went wrong on our side.' }
-		return { title: `Error ${status}`, description: fallback || 'An unexpected error occurred.' }
+		const fallback = (message || statusText) as string
+		if (status === 401) return { title: 'Session expired', description: fallback }
+		if (status === 403)
+			return {
+				title: 'Access denied',
+				description: fallback,
+			}
+		if (status === 404)
+			return {
+				title: 'Not found',
+				description: fallback,
+			}
+		if (status === 422)
+			return {
+				title: 'Validation error',
+				description: fallback,
+			}
+		if (status >= 500) return { title: 'Server error', description: fallback }
+		return { title: `Error ${status}`, description: fallback }
 	}
 
 	const defaults: UseFetchOptions<T> = {
 		credentials: 'include',
 		async onRequest({ options }) {
-			options.headers = new Headers(options.headers) || {}
+			options.headers = new Headers(options.headers)
 			options.headers.set('X-Requested-With', 'XMLHttpRequest')
 			options.headers.set('Content-Type', 'application/json')
 			options.headers.set('Accept', 'application/json')
 		},
 		async onResponseError({ response }) {
-			if (import.meta.server) {
-				console.error('useApi onResponseError', response)
-			}
-
 			const excludedInterceptor = (statusCode: number): boolean => {
 				if (!excludeInterceptor) return false
 				return excludeInterceptor.includes(statusCode)
@@ -46,7 +54,11 @@ export function useApi<T>(url: string, opts: CustomFetchOptions<T> = {}) {
 			if (!excludedInterceptor(response.status)) {
 				const { message } = response._data
 				const fallbackMessage = response.statusText
-				const { title, description } = getFriendlyErrorCopy(response.status, message, fallbackMessage)
+				const { title, description } = getFriendlyErrorCopy(
+					response.status,
+					message,
+					fallbackMessage
+				)
 
 				if (response.status === 422) {
 					toast.add({ color: 'red', title, description })
