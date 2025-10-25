@@ -16,8 +16,9 @@ export default defineConfig({
 		// Use non-deprecated reporter; mimic "basic" with summary disabled
 		reporters: [['default', { summary: false }]],
 		coverage: {
+			reporter: ['text', 'html', 'lcov'],
 			provider: 'v8',
-			reporter: ['text', 'text-summary', 'html', 'lcov'],
+			all: true,
 			include: [
 				'components/**/*',
 				'composables/**/*',
@@ -29,12 +30,7 @@ export default defineConfig({
 				'server/**/*',
 			],
 			exclude: ['tests/**/*', '**/*.d.ts', '**/*.test.*', '**/*.spec.*', 'node_modules/**/*'],
-			thresholds: {
-				lines: 90,
-				statements: 90,
-				functions: 90,
-				branches: 95,
-			},
+			thresholds: { lines: 100, branches: 100, functions: 100, statements: 100 },
 		},
 		onConsoleLog(log) {
 			// Silence noisy framework warnings during tests
