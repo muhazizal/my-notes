@@ -2,10 +2,10 @@
 	<div class="form">
 		<AppLogo class="form__logo" />
 		<h2 class="form__title">Forgot Password.</h2>
-		<template v-if="isSuccessForgotPassword">
+		<div v-if="isSuccessForgotPassword">
 			<p>Success to send reset password URL, please check your email.</p>
-		</template>
-		<template v-else>
+		</div>
+		<div v-else>
 			<div class="form__caption">
 				<p>Already remember your password?</p>
 				<UButton color="primary" variant="link" :padded="false" @click="handleRedirectSignIn"
@@ -39,7 +39,7 @@
 					>
 				</div>
 			</UForm>
-		</template>
+		</div>
 	</div>
 </template>
 

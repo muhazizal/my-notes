@@ -22,6 +22,7 @@ const UInputStub = {
 	name: 'UInput',
 	props: ['modelValue'],
 	emits: ['update:modelValue', 'keypress'],
+	inheritAttrs: false,
 	template:
 		'<input data-test="input" :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" @keypress="$emit(\'keypress\', $event)" />',
 }

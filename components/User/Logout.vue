@@ -35,6 +35,7 @@
 
 <script lang="ts" setup>
 import { useAuth } from '@/composables/api/useAuth'
+import { ref } from 'vue'
 
 const { handleClearUser } = useUserStore()
 const { logout } = useAuth()

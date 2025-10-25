@@ -5,7 +5,7 @@
 		<div v-if="!isFailedReset && !isSuccessReset" class="form__caption">
 			<p>Input your new password to reset your password</p>
 		</div>
-		<template v-if="isFailedReset">
+		<div v-if="isFailedReset">
 			<div class="form__caption">
 				<p>
 					failed to reset your password, please
@@ -18,8 +18,8 @@
 					>
 				</p>
 			</div>
-		</template>
-		<template v-else-if="isSuccessReset">
+		</div>
+		<div v-else-if="isSuccessReset">
 			<div class="form__caption">
 				<p>
 					Success to reset your password, please
@@ -29,8 +29,8 @@
 					to continue
 				</p>
 			</div>
-		</template>
-		<template v-else>
+		</div>
+		<div v-else>
 			<div class="form__caption">
 				<UForm
 					class="form__body"
@@ -69,7 +69,7 @@
 					</div>
 				</UForm>
 			</div>
-		</template>
+		</div>
 	</div>
 </template>
 

@@ -37,6 +37,7 @@
 </template>
 
 <script lang="ts" setup>
+import { ref } from 'vue'
 const { deleteUserAccount, handleClearUser } = useUserStore()
 const toast = useToast()
 const router = useRouter()

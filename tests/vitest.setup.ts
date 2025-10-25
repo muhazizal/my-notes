@@ -2,7 +2,45 @@
 import { vi, beforeAll, afterAll, afterEach } from 'vitest'
 import { ref } from 'vue'
 import { setupServer } from 'msw/node'
-import { handlers } from '../mocks/handlers'
+import { handlers } from './mocks/handlers'
+import { config } from '@vue/test-utils'
+
+// Global UI component stubs to resolve common components and reduce warnings
+config.global.stubs = {
+	UContainer: { name: 'UContainer', template: '<div data-test="container"><slot /></div>' },
+	UButton: {
+		name: 'UButton',
+		template: '<button data-test="btn" @click="$emit(\'click\', $event)"><slot /></button>',
+	},
+	UForm: {
+		name: 'UForm',
+		template: '<form data-test="form" @submit.prevent="$emit(\'submit\')"><slot /></form>',
+	},
+	UFormGroup: { name: 'UFormGroup', template: '<div data-test="group"><slot /></div>' },
+	UInput: {
+		name: 'UInput',
+		inheritAttrs: false,
+		template:
+			'<input data-test="input" @input="$emit(\'update:modelValue\', $event && $event.target ? $event.target.value : \'\')" />',
+	},
+	UTextarea: {
+		name: 'UTextarea',
+		inheritAttrs: false,
+		template:
+			'<textarea data-test="textarea" @input="$emit(\'update:modelValue\', $event && $event.target ? $event.target.value : \'\')"></textarea>',
+	},
+	UIcon: { name: 'UIcon', template: '<span data-test="icon"><slot /></span>' },
+	UProgress: { name: 'UProgress', template: '<div data-test="progress" />' },
+	UDropdown: { name: 'UDropdown', template: '<div data-test="dropdown"><slot /></div>' },
+	UModal: { name: 'UModal', template: '<div data-test="modal"><slot /></div>' },
+	UCard: { name: 'UCard', template: '<div data-test="card"><slot /></div>' },
+	UCheckbox: {
+		name: 'UCheckbox',
+		template:
+			'<input type="checkbox" data-test="checkbox" @change="$emit(\'update:modelValue\', $event && $event.target ? !!$event.target.checked : false)" />',
+	},
+	AppLogo: { name: 'AppLogo', template: '<div data-test="logo"></div>' },
+}
 
 // Stub common Nuxt/Vue app globals
 const __toast = { add: vi.fn() }
@@ -127,7 +165,10 @@ afterAll(() => server.close())
 
 // Nitro/h3 helper stubs for server route unit tests
 vi.stubGlobal('defineEventHandler', (fn: any) => fn)
-vi.stubGlobal('useRuntimeConfig', vi.fn(() => ({ apiBaseUrl: 'https://api.example' })))
+vi.stubGlobal(
+	'useRuntimeConfig',
+	vi.fn(() => ({ apiBaseUrl: 'https://api.example' }))
+)
 vi.stubGlobal('proxyRequest', vi.fn())
 vi.stubGlobal('getRequestHeader', vi.fn())
 vi.stubGlobal('getRouterParam', vi.fn())

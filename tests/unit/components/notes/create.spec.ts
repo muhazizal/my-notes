@@ -30,12 +30,14 @@ const UInputStub = {
 	name: 'UInput',
 	props: ['modelValue', 'placeholder', 'size'],
 	emits: ['update:modelValue'],
+	inheritAttrs: false,
 	template: `<input data-test="input" :placeholder="placeholder" @input="$emit('update:modelValue', $event?.target?.value)" />`,
 }
 const UTextareaStub = {
 	name: 'UTextarea',
 	props: ['modelValue', 'placeholder', 'size', 'ui', 'autoresize'],
 	emits: ['update:modelValue'],
+	inheritAttrs: false,
 	template: `<textarea data-test="textarea" :placeholder="placeholder" @input="$emit('update:modelValue', $event?.target?.value)"></textarea>`,
 }
 const UIconStub = { name: 'UIcon', template: `<span data-test="icon"><slot /></span>` }
