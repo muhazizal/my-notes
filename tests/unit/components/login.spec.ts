@@ -6,34 +6,13 @@ import Login from '@/components/Login/Index.vue'
 declare const useRouter: () => any
 declare const useUserStore: () => any
 
-const UButtonStub = {
-	name: 'UButton',
-	props: ['icon'],
-	template:
-		'<button data-test="btn" :data-icon="icon" @click="$emit(\'click\', $event)"><slot /></button>',
-}
-const UFormStub = {
-	name: 'UForm',
-	template: '<form data-test="form" @submit.prevent="$emit(\'submit\')"><slot /></form>',
-}
-const UFormGroupStub = { name: 'UFormGroup', template: '<div data-test="group"><slot/></div>' }
-
-// Render trailing slot only when provided, and expose current type
-const UInputStub = {
-	name: 'UInput',
-	props: ['type', 'modelValue', 'placeholder', 'size', 'class'],
-	setup(props: any, ctx: any) {
-		const currentType = computed(() => props.type || 'password')
-		const hasTrailing = computed(() => !!ctx.slots.trailing)
-		return { currentType, hasTrailing }
-	},
-	template: `
-    <div data-test="input" :data-type="currentType">
-      <div v-if="hasTrailing" data-test="trailing"><slot name="trailing" /></div>
-    </div>
-  `,
-}
-const AppLogoStub = { name: 'AppLogo', template: '<div>Logo</div>' }
+import {
+	UButtonStub,
+	UFormStub,
+	UFormGroupStub,
+	UInputTrailingStub,
+	AppLogoStub,
+} from '~/tests/helpers/uiStubs'
 
 // New: mock useNoSpace to capture inline @keypress handler execution
 const preventSpaceMock = vi.fn()
@@ -75,7 +54,7 @@ describe('components/Login/Index.vue', () => {
 					UButton: UButtonStub,
 					UForm: UFormStub,
 					UFormGroup: UFormGroupStub,
-					UInput: UInputStub,
+					UInput: UInputTrailingStub,
 					AppLogo: AppLogoStub,
 				},
 			},
@@ -132,7 +111,7 @@ describe('components/Login/Index.vue', () => {
 			password: vm.form?.password ?? vm.form?.value?.password,
 		})
 
-		const inputs = wrapper.findAllComponents(UInputStub)
+		const inputs = wrapper.findAllComponents({ name: 'UInput' })
 		expect(inputs.length).toBeGreaterThanOrEqual(2)
 
 		// Emit update:modelValue to execute both v-model setter functions
@@ -227,7 +206,7 @@ describe('components/Login/Index.vue', () => {
 		await wrapper.vm.$nextTick()
 
 		// After click via template handler, password becomes visible
-		expect(readType()).toBe('password')
+		expect(readType()).toBe('text')
 	})
 
 	it('executes true branch of handleShowPassword and returns type to password (positive)', async () => {

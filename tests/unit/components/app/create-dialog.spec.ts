@@ -1,16 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
 import CreateDialog from '~/components/App/CreateDialog.vue'
-
-const UModalStub = {
-  name: 'UModal',
-  props: { modelValue: { type: Boolean, default: false } },
-  template: '<div data-test="modal" :data-open="modelValue"><slot /></div>',
-}
-const UCardStub = {
-  name: 'UCard',
-  template: '<div data-test="card"><slot name="header"></slot><slot /></div>',
-}
+import { UModalStub, UCardStub } from '~/tests/helpers/uiStubs'
 
 describe('App/CreateDialog.vue', () => {
   it('opens and renders title + body slot (positive)', async () => {

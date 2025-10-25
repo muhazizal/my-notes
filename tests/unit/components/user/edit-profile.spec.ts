@@ -6,47 +6,13 @@ declare const useUserStore: () => any
 declare const useToast: () => any
 import EditProfile from '~/components/User/EditProfile.vue'
 
-// Button stub: expose disabled/loading via data attributes and emit click
-const UButtonStub = {
-	name: 'UButton',
-	props: ['type', 'size', 'square', 'loading', 'disabled', 'variant', 'color', 'padded', 'icon'],
-	template: `
-    <button
-      data-test="btn"
-      :data-disabled="disabled ? 'true' : 'false'"
-      :data-loading="loading ? 'true' : 'false'"
-      @click="$emit('click', $event)"
-    >
-      <slot />
-    </button>
-  `,
-}
-
-// Simple form stubs
-const UFormStub = {
-	name: 'UForm',
-	template: `<form data-test="form" @submit.prevent="$emit('submit')"><slot /></form>`,
-}
-const UFormGroupStub = { name: 'UFormGroup', template: `<div data-test="group"><slot /></div>` }
-
-// Input stub: expose placeholder for identification and support v-model + keypress
-const UInputStub = {
-	name: 'UInput',
-	props: ['modelValue', 'placeholder', 'size', 'class', 'type'],
-	emits: ['update:modelValue', 'keypress'],
-	template: `
-    <div
-      data-test="input"
-      :data-placeholder="placeholder"
-      @keypress="$emit('keypress', $event)"
-    >
-      <!-- minimal rendering; events are emitted via component VM in tests -->
-    </div>
-  `,
-}
-
-// AppLogo isn't used in assertions but stub to avoid real render
-const AppLogoStub = { name: 'AppLogo', template: '<div>Logo</div>' }
+import {
+	UButtonStub,
+	UFormStub,
+	UFormGroupStub,
+	UInputStub,
+	AppLogoStub,
+} from '~/tests/helpers/uiStubs'
 
 // Mock useNoSpace to capture inline @keypress handler execution
 const preventSpaceMock = vi.fn()

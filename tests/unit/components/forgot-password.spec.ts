@@ -6,27 +6,13 @@ import { useAuth } from '@/composables/api/useAuth'
 
 declare const useRouter: () => any
 
-const UButtonStub = {
-	name: 'UButton',
-	// Forward key props so we can assert disabled/loading and submit type
-	template:
-		'<button data-test="btn" :type="$attrs.type || \'button\'" :disabled="$attrs.disabled" :data-loading="$attrs.loading" @click="$emit(\'click\', $event)"><slot /></button>',
-}
-const UFormStub = {
-	name: 'UForm',
-	template: '<form data-test="form" @submit.prevent="$emit(\'submit\')"><slot /></form>',
-}
-const UFormGroupStub = { name: 'UFormGroup', template: '<div data-test="group"><slot /></div>' }
-// Emits keypress so parent’s @keypress handler receives it
-const UInputStub = {
-	name: 'UInput',
-	props: ['modelValue'],
-	emits: ['update:modelValue', 'keypress'],
-	inheritAttrs: false,
-	template:
-		'<input data-test="input" :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" @keypress="$emit(\'keypress\', $event)" />',
-}
-const AppLogoStub = { name: 'AppLogo', template: '<div>Logo</div>' }
+import {
+	UButtonStub,
+	UFormStub,
+	UFormGroupStub,
+	UInputStub,
+	AppLogoStub,
+} from '~/tests/helpers/uiStubs'
 
 // Mocks
 const forgotPasswordMock = vi.fn().mockResolvedValue(null)

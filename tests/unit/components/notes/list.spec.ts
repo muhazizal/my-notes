@@ -2,18 +2,14 @@ import { describe, it, expect, vi } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import { http, HttpResponse } from 'msw'
 import List from '~/components/Notes/List.vue'
-import { sampleNotes } from '../../../mocks/data'
+import { sampleNotes } from '~/tests/mocks/data'
+import { NotesItemStub } from '~/tests/helpers/uiStubs'
 
 // MSW and Nuxt globals from test setup
 declare const mswServer: ReturnType<typeof import('msw/node').setupServer>
 declare const useToast: () => any
 
 describe('components/Notes/List.vue', () => {
-	const NotesItemStub = {
-		name: 'NotesItem',
-		template: '<div class="notes-item-stub" role="button" @click="$emit(\'click\')"><slot /></div>',
-	}
-
 	const flushAsync = async (vm?: any) => {
 		await flushPromises()
 		if (vm?.$nextTick) await vm.$nextTick()

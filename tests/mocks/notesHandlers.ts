@@ -8,7 +8,7 @@ import type {
 	IDeleteNoteResponse,
 	INote,
 } from '@/types/notes'
-import { sampleNotes } from './data'
+import { sampleNotes } from '~/tests/mocks/data'
 
 export const notesHandlers = [
 	http.get('/api/notes', async () => {

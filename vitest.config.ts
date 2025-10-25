@@ -16,7 +16,7 @@ export default defineConfig({
 		// Use non-deprecated reporter; mimic "basic" with summary disabled
 		reporters: [['default', { summary: false }]],
 		coverage: {
-			reporter: ['text', 'html', 'lcov'],
+			reporter: ['text', 'text-summary', 'html', 'lcov'],
 			provider: 'v8',
 			all: true,
 			include: [

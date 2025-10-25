@@ -3,11 +3,7 @@ import { shallowMount } from '@vue/test-utils'
 
 declare const useRouter: () => any
 
-const UButtonStub = {
-	name: 'UButton',
-	template: '<button data-test="btn" @click="$emit(\'click\')"><slot /></button>',
-}
-const AppLogoStub = { name: 'AppLogo', template: '<div data-test="logo">Logo</div>' }
+import { UButtonStub, AppLogoStub } from '~/tests/helpers/uiStubs'
 
 describe('components/LandingScreen/Index.vue', () => {
 	let replaceSpy: ReturnType<typeof vi.fn>

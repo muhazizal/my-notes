@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { shallowMount, flushPromises } from '@vue/test-utils'
 import { ref } from 'vue'
+import { UButtonStub, UProgressStub, AppLogoStub } from '~/tests/helpers/uiStubs'
 
 declare const useRouter: () => any
 declare const useRoute: () => any
@@ -20,13 +21,6 @@ vi.mock('@/composables/api/useAuth', () => {
 		}),
 	}
 })
-
-const UButtonStub = {
-	name: 'UButton',
-	template: '<button @click="$emit(\'click\', $event)"><slot /></button>',
-}
-const UProgressStub = { name: 'UProgress', template: '<div data-test="progress"></div>' }
-const AppLogoStub = { name: 'AppLogo', template: '<div>Logo</div>' }
 
 describe('components/Verify/Index.vue', () => {
 	let replaceSpy: ReturnType<typeof vi.fn>
@@ -88,14 +82,14 @@ describe('components/Verify/Index.vue', () => {
 	it('shows loading caption and progress when isLoadingVerify is true (positive)', async () => {
 		const mod = await import('~/components/Verify/Index.vue')
 		const Comp = mod.default
-	
+
 		const wrapper = shallowMount(Comp, {
 			global: { stubs: { UButton: UButtonStub, UProgress: UProgressStub, AppLogo: AppLogoStub } },
 		})
-	
+
 		;(wrapper.vm as any).isLoadingVerify = true
 		await wrapper.vm.$nextTick()
-	
+
 		expect(wrapper.text()).toContain('Please wait, email verification is on progress')
 		expect(wrapper.find('[data-test="progress"]').exists()).toBe(true)
 	})

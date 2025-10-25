@@ -6,47 +6,7 @@ import ResetPassword from '@/components/ResetPassword/Index.vue'
 declare const useRouter: () => any
 declare const useToast: () => any
 
-// Button stub: expose disabled/loading via data attributes and emit click
-const UButtonStub = {
-	name: 'UButton',
-	props: ['type', 'size', 'square', 'loading', 'disabled', 'variant', 'color', 'padded', 'icon'],
-	template: `
-    <button
-      data-test="btn"
-      :data-disabled="disabled ? 'true' : 'false'"
-      :data-loading="loading ? 'true' : 'false'"
-      @click="$emit('click', $event)"
-    >
-      <slot />
-    </button>
-  `,
-}
-
-// Form stubs
-const UFormStub = {
-	name: 'UForm',
-	template: `<form data-test="form" @submit.prevent="$emit('submit')"><slot /></form>`,
-}
-const UFormGroupStub = { name: 'UFormGroup', template: `<div data-test="group"><slot /></div>` }
-
-// Input stub: supports v-model and keypress, exposes placeholder for identification
-const UInputStub = {
-	name: 'UInput',
-	props: ['modelValue', 'placeholder', 'size', 'class', 'type'],
-	emits: ['update:modelValue', 'keypress'],
-	template: `
-    <div
-      data-test="input"
-      :data-placeholder="placeholder"
-      :data-type="type"
-      @keypress="$emit('keypress', $event)"
-    >
-      <!-- minimal rendering -->
-    </div>
-  `,
-}
-
-const AppLogoStub = { name: 'AppLogo', template: '<div>Logo</div>' }
+import { UButtonStub, UFormStub, UFormGroupStub, UInputStub, AppLogoStub } from '~/tests/helpers/uiStubs'
 
 // Mock useNoSpace to capture inline @keypress handler execution
 const preventSpaceMock = vi.fn()

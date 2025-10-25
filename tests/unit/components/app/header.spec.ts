@@ -10,60 +10,27 @@ vi.mock('@vueuse/core', () => ({
 	useTemplateRef: () => ref(null),
 }))
 
-const UContainerStub = {
-	name: 'UContainer',
-	template: '<div data-test="container"><slot /></div>',
-}
-const UButtonStub = {
-	name: 'UButton',
-	template: '<button data-test="btn"><slot /></button>',
-}
-const makeDropdownStub = () => ({
-	name: 'UDropdown',
-	props: {
-		items: { type: Array, default: () => [] },
-		popper: { type: Object, default: () => ({}) },
-	},
-	template: `
-    <div data-test="dropdown">
-      <div data-test="trigger"><slot /></div>
-      <ul>
-        <template v-for="(grp, gi) in items">
-          <li v-for="(item, ii) in grp" :key="gi+'-'+ii">
-            <button
-              :data-test="'action-'+String(item.label).toLowerCase().replace(/\\s+/g,'-')"
-              @click="item.click && item.click()"
-            >{{ item.label }}</button>
-          </li>
-        </template>
-      </ul>
-    </div>
-  `,
-})
+import {
+	UContainerStub,
+	UButtonStub,
+	UDropdownStub,
+	createAppCreateDialogStub,
+} from '~/tests/helpers/uiStubs'
 
 describe('App/Header.vue', () => {
 	let editSpy: ReturnType<typeof vi.fn>
 	let logoutSpy: ReturnType<typeof vi.fn>
 	let deleteSpy: ReturnType<typeof vi.fn>
+	let AppCreateDialogStub: any
 
 	beforeEach(() => {
 		editSpy = vi.fn()
 		logoutSpy = vi.fn()
 		deleteSpy = vi.fn()
+		AppCreateDialogStub = createAppCreateDialogStub(editSpy, 'edit-dialog')
 		const store = useUserStore()
 		store.user.value.fullname = 'John Doe'
 	})
-
-	const AppCreateDialogStub = {
-		name: 'AppCreateDialog',
-		props: { title: { type: String, default: '' } },
-		template: '<div data-test="edit-dialog"></div>',
-		setup() {
-			return {
-				handleOpenModal: (payload: boolean) => editSpy(payload),
-			}
-		},
-	}
 
 	const UserLogoutStub = {
 		name: 'UserLogout',
@@ -96,7 +63,7 @@ describe('App/Header.vue', () => {
 				stubs: {
 					UContainer: UContainerStub,
 					UButton: UButtonStub,
-					UDropdown: makeDropdownStub(),
+					UDropdown: UDropdownStub,
 					AppCreateDialog: AppCreateDialogStub,
 					UserLogout: UserLogoutStub,
 					UserDelete: UserDeleteStub,
@@ -107,9 +74,11 @@ describe('App/Header.vue', () => {
 
 		expect(wrapper.text()).toContain('Hello John')
 
-		wrapper.find('[data-test="action-edit-profile"]').trigger('click')
-		wrapper.find('[data-test="action-logout"]').trigger('click')
-		wrapper.find('[data-test="action-delete-account"]').trigger('click')
+		const dropdown = wrapper.findComponent({ name: 'UDropdown' })
+		const items: any[] = dropdown.props('items')
+		items[0][0].click()
+		items[1][0].click()
+		items[2][0].click()
 
 		expect(editSpy).toHaveBeenCalledWith(true)
 		expect(logoutSpy).toHaveBeenCalledWith(true)
@@ -122,7 +91,7 @@ describe('App/Header.vue', () => {
 				stubs: {
 					UContainer: UContainerStub,
 					UButton: UButtonStub,
-					UDropdown: makeDropdownStub(),
+					UDropdown: UDropdownStub,
 					AppCreateDialog: AppCreateDialogStub,
 					UserLogout: UserLogoutStub,
 					UserDelete: UserDeleteStub,
@@ -131,7 +100,9 @@ describe('App/Header.vue', () => {
 			},
 		})
 
-		wrapper.find('[data-test="action-logout"]').trigger('click')
+		const dropdown = wrapper.findComponent({ name: 'UDropdown' })
+		const items: any[] = dropdown.props('items')
+		items[1][0].click()
 
 		expect(logoutSpy).toHaveBeenCalledTimes(1)
 		expect(editSpy).not.toHaveBeenCalled()

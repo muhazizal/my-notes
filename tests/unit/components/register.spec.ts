@@ -7,35 +7,7 @@ import { useAuth } from '@/composables/api/useAuth'
 // Allow mocking the router instance returned by global useRouter
 declare const useRouter: () => any
 
-// Component stubs
-const UButtonStub = {
-	name: 'UButton',
-	// Forward key props so we can assert disabled/loading and submit type
-	template:
-		'<button data-test="btn" :type="$attrs.type || \'button\'" :disabled="$attrs.disabled" :data-loading="$attrs.loading" @click="$emit(\'click\', $event)"><slot /></button>',
-}
-const UFormStub = {
-	name: 'UForm',
-	template: '<form data-test="form" @submit.prevent="$emit(\'submit\')"><slot /></form>',
-}
-const UFormGroupStub = { name: 'UFormGroup', template: '<div data-test="group"><slot /></div>' }
-// Emits keypress and supports v-model so parent’s handlers receive updates
-const UInputStub = {
-	name: 'UInput',
-	props: ['modelValue'],
-	emits: ['update:modelValue', 'keypress'],
-	inheritAttrs: false,
-	template:
-		'<input data-test="input" :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" @keypress="$emit(\'keypress\', $event)" />',
-}
-const UCheckboxStub = {
-	name: 'UCheckbox',
-	props: ['modelValue', 'name', 'label'],
-	emits: ['update:modelValue'],
-	template:
-		'<input type="checkbox" data-test="checkbox" :checked="modelValue" @change="$emit(\'update:modelValue\', $event.target.checked)" />',
-}
-const AppLogoStub = { name: 'AppLogo', template: '<div>Logo</div>' }
+import { UButtonStub, UFormStub, UFormGroupStub, UInputStub, UCheckboxStub, AppLogoStub } from '~/tests/helpers/uiStubs'
 
 // Mocks
 const registerMock = vi.fn().mockResolvedValue(null)

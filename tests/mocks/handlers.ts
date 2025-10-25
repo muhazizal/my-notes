@@ -1,5 +1,5 @@
-import { authHandlers } from './authHandlers'
-import { userHandlers } from './userHandlers'
-import { notesHandlers } from './notesHandlers'
+import { authHandlers } from '~/tests/mocks/authHandlers'
+import { userHandlers } from '~/tests/mocks/userHandlers'
+import { notesHandlers } from '~/tests/mocks/notesHandlers'
 
 export const handlers = [...authHandlers, ...userHandlers, ...notesHandlers]

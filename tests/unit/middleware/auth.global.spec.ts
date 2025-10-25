@@ -9,7 +9,7 @@ describe('middleware/auth.global', () => {
     const storeMod = await import('@/stores/user')
     useStore = storeMod.useUserStore as any
 
-    const mod = await import('../../../middleware/auth.global')
+    const mod = await import('~/middleware/auth.global')
     middleware = mod.default as any
   })
 

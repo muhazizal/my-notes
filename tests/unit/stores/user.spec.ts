@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { ref, type Ref } from 'vue'
 import { http, HttpResponse } from 'msw'
 import { useUserStore } from '@/stores/user'
-import { sampleUser } from '../../mocks/data'
+import { sampleUser } from '~/tests/mocks/data'
 import * as useApiMod from '@/composables/api/useApi'
 
 describe('stores/user', () => {

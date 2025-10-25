@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, afterEach } from 'vitest'
 import { shallowMount } from '@vue/test-utils'
 import LoadingBar from '~/components/App/LoadingBar.vue'
+import { UProgressStub } from '~/tests/helpers/uiStubs'
 
 // Mock vue-router so we can capture guards
 vi.mock('vue-router', () => {
@@ -29,12 +30,6 @@ vi.mock('vue-router', () => {
 afterEach(() => {
 	vi.useRealTimers()
 })
-
-const UProgressStub = {
-	name: 'UProgress',
-	props: { value: { type: Number, default: 0 } },
-	template: '<div data-test="progress" :data-value="value"></div>',
-}
 
 describe('App/LoadingBar.vue', () => {
 	it('shows, ramps up, then completes and hides (positive)', async () => {

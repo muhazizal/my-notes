@@ -6,63 +6,25 @@ import { useNotes } from '~/composables/api/useNotes'
 declare const mswServer: ReturnType<typeof import('msw/node').setupServer>
 declare const useToast: () => any
 
-// UI stubs
-const UButtonStub = {
-	name: 'UButton',
-	props: ['type', 'size', 'square', 'loading', 'disabled', 'variant', 'color'],
-	template: `
-    <button
-      data-test="btn"
-      :data-disabled="disabled ? 'true' : 'false'"
-      :data-loading="loading ? 'true' : 'false'"
-      @click="$emit('click')"
-    >
-      <slot />
-    </button>
-  `,
-}
-const UFormStub = {
-	name: 'UForm',
-	template: `<form data-test="form" @submit.prevent="$emit('submit')"><slot /></form>`,
-}
-const UFormGroupStub = { name: 'UFormGroup', template: `<div data-test="group"><slot /></div>` }
-const UInputStub = {
-	name: 'UInput',
-	props: ['modelValue', 'placeholder', 'size'],
-	emits: ['update:modelValue'],
-	inheritAttrs: false,
-	template: `<input data-test="input" :placeholder="placeholder" @input="$emit('update:modelValue', $event?.target?.value)" />`,
-}
-const UTextareaStub = {
-	name: 'UTextarea',
-	props: ['modelValue', 'placeholder', 'size', 'ui', 'autoresize'],
-	emits: ['update:modelValue'],
-	inheritAttrs: false,
-	template: `<textarea data-test="textarea" :placeholder="placeholder" @input="$emit('update:modelValue', $event?.target?.value)"></textarea>`,
-}
-const UIconStub = { name: 'UIcon', template: `<span data-test="icon"><slot /></span>` }
-const NotesItemStub = {
-	name: 'NotesItem',
-	props: ['role'],
-	template: `<div data-test="create-item" @click="$emit('click')"><slot /></div>`,
-}
+import {
+	UButtonStub,
+	UFormStub,
+	UFormGroupStub,
+	UInputStub,
+	UTextareaStub,
+	UIconStub,
+	NotesItemStub,
+	createAppCreateDialogStub,
+} from '~/tests/helpers/uiStubs'
 
 // AppCreateDialog stub exposing handleOpenModal
 let openSpy: ReturnType<typeof vi.fn>
-const AppCreateDialogStub = {
-	name: 'AppCreateDialog',
-	props: { title: { type: String, default: '' } },
-	template: `<div data-test="dialog"><slot name="body" /></div>`,
-	setup(_: any, ctx: { expose: (arg0: { handleOpenModal: (payload: any) => any }) => void }) {
-		const handleOpenModal = (payload: any) => openSpy(payload)
-		ctx.expose({ handleOpenModal })
-		return {}
-	},
-}
+let AppCreateDialogStub: any
 
 describe('components/Notes/Create.vue', () => {
 	beforeEach(() => {
 		openSpy = vi.fn()
+		AppCreateDialogStub = createAppCreateDialogStub(openSpy)
 		const toast = useToast()
 		toast.add.mockReset()
 
