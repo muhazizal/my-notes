@@ -1,16 +1,28 @@
 <template>
 	<div class="form">
 		<AppLogo class="form__logo" />
-		<h2 class="form__title">Welcome back!</h2>
-		<div class="form__caption">
+		<h2 class="form__title" data-test="login-title">Welcome back!</h2>
+		<div class="form__caption" data-test="login-caption">
 			<p>Don't have an account yet?</p>
-			<UButton color="primary" variant="link" :padded="false" @click="handleRedirectSignUp"
+			<UButton
+				data-test="login-sign-up-button"
+				color="primary"
+				variant="link"
+				:padded="false"
+				@click="handleRedirectSignUp"
 				>Sign up.</UButton
 			>
 		</div>
-		<UForm class="form__body" :schema="loginSchema" :state="form" @submit="handleLogin">
+		<UForm
+			data-test="login-form"
+			class="form__body"
+			:schema="loginSchema"
+			:state="form"
+			@submit="handleLogin"
+		>
 			<UFormGroup name="email" size="xl" eager-validation>
 				<UInput
+					data-test="login-email-input"
 					v-model="form.email"
 					class="form__input"
 					placeholder="Email address"
@@ -20,6 +32,7 @@
 			</UFormGroup>
 			<UFormGroup name="password" size="xl" eager-validation>
 				<UInput
+					data-test="login-password-input"
 					v-model="form.password"
 					placeholder="Password"
 					size="xl"
@@ -28,6 +41,7 @@
 				>
 					<template #trailing>
 						<UButton
+							data-test="login-show-password-button"
 							color="gray"
 							variant="link"
 							:padded="false"
@@ -39,6 +53,7 @@
 			</UFormGroup>
 			<div class="form__footer">
 				<UButton
+					data-test="login-forgot-password-button"
 					color="primary"
 					variant="link"
 					:padded="false"
@@ -50,10 +65,12 @@
 				<UButton
 					class="form__actions__login"
 					type="submit"
+					data-test="login-button"
 					size="xl"
 					:square="true"
 					:loading="isLoadingLogin"
 					:disabled="isLoadingLogin"
+					@click="handleLogin"
 					>Log in</UButton
 				>
 			</div>

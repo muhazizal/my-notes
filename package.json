@@ -13,7 +13,8 @@
 		"test:unit": "vitest run tests/unit",
 		"test:integration": "vitest run tests/integration",
 		"test:coverage": "vitest run --coverage --reporter=basic",
-		"test:e2e": "playwright test"
+		"test:e2e": "playwright test",
+		"test:e2e:ui": "playwright test --ui"
 	},
 	"devDependencies": {
 		"@iconify-json/heroicons": "^1.2.2",

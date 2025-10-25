@@ -1,5 +1,5 @@
 <template>
-	<div class="flex flex-row gap-5 flex-wrap">
+	<div class="flex flex-row gap-5 flex-wrap" data-test="notes-index">
 		<NotesCreate />
 		<NotesList />
 	</div>
