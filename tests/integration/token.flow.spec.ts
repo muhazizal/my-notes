@@ -1,7 +1,7 @@
 import { nextTick } from 'vue'
-import { createRouter, createWebHistory } from 'vue-router'
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { mount, flushPromises } from '@vue/test-utils'
+import { flushPromises } from '@vue/test-utils'
+import { mountRouterView, commonStubs } from '~/tests/helpers/testUtils'
 
 import VerifyPage from '~/pages/verify/[token].vue'
 import ResetPasswordPage from '~/pages/reset-password/[token].vue'
@@ -10,68 +10,36 @@ import Verify from '~/components/Verify/Index.vue'
 import ResetPassword from '~/components/ResetPassword/Index.vue'
 import Login from '~/components/Login/Index.vue'
 
+import {
+	AppLogoStub,
+	UContainerStub,
+	UButtonStub,
+	UFormStub,
+	UFormGroupStub,
+	UInputStub,
+	UProgressStub,
+} from '~/tests/helpers/uiStubs'
+
 declare const useToast: () => any
+// Declare Nuxt composables used in tests
+declare const useRouter: () => any
+declare const useRoute: () => any
 
 const stubs = {
-	AppLogo: { template: '<div data-test="logo" />' },
-	UContainer: { template: '<div data-test="container"><slot /></div>' },
-	UButton: {
-		props: ['icon', 'loading', 'disabled', 'type'],
-		template: `<button data-test="btn" :type="type || 'button'" :data-icon="icon" :data-loading="loading" :data-disabled="disabled" @click="$emit('click', $event)"><slot /></button>`,
-	},
-	UForm: { template: `<form data-test="form" @submit.prevent="$emit('submit')"><slot /></form>` },
-	UFormGroup: { template: `<div data-test="group"><slot /></div>` },
-	UInput: {
-		props: ['modelValue', 'placeholder'],
-		emits: ['update:modelValue'],
-		template: `<input data-test="input" :placeholder="placeholder" :value="modelValue" @input="$emit('update:modelValue', $event && $event.target ? $event.target.value : '')" />`,
-	},
-	UProgress: { template: '<div data-test="progress" />' },
+	AppLogo: AppLogoStub,
+	UContainer: UContainerStub,
+	UButton: UButtonStub,
+	UForm: UFormStub,
+	UFormGroup: UFormGroupStub,
+	UInput: UInputStub,
+	UProgress: UProgressStub,
 }
 
-const createTestRouter = () => {
-	const router = createRouter({
-		history: createWebHistory(),
-		routes: [
-			{ path: '/verify/:token', component: VerifyPage },
-			{ path: '/reset-password/:token', component: ResetPasswordPage },
-			{ path: '/sign-in', component: SignInPage },
-		],
-	})
-	return router
-}
-
-const mountRouterView = async (route: string) => {
-	const router = createTestRouter()
-	router.push(route)
-	await router.isReady()
-
-	const useRouterMock = useRouter as ReturnType<typeof vi.fn>
-	useRouterMock.mockReturnValue(router)
-
-	const useRouteMock = useRoute as ReturnType<typeof vi.fn>
-	useRouteMock.mockReturnValue(router.currentRoute.value)
-
-	const wrapper = mount(
-		{ template: '<Suspense><router-view /></Suspense>' },
-		{
-			global: {
-				plugins: [router],
-				stubs: { ...stubs, Suspense: false },
-				components: {
-					Verify,
-					ResetPassword,
-					Login,
-				},
-			},
-		}
-	)
-
-	await flushPromises()
-	await nextTick()
-
-	return wrapper
-}
+const routes = [
+	{ path: '/verify/:token', component: VerifyPage },
+	{ path: '/reset-password/:token', component: ResetPasswordPage },
+	{ path: '/sign-in', component: SignInPage },
+]
 
 describe('🔗 Token flows integration (Nuxt + MSW)', () => {
 	beforeEach(() => {
@@ -79,7 +47,12 @@ describe('🔗 Token flows integration (Nuxt + MSW)', () => {
 	})
 
 	it('verify → success then clicking Sign in navigates to /sign-in', async () => {
-		const app = await mountRouterView('/verify/abc123')
+		const app = await mountRouterView(
+			'/verify/abc123',
+			routes,
+			{ Verify, ResetPassword, Login },
+			{ ...commonStubs, ...stubs }
+		)
 
 		await flushPromises()
 		await nextTick()
@@ -96,7 +69,13 @@ describe('🔗 Token flows integration (Nuxt + MSW)', () => {
 	})
 
 	it('reset-password → submits, shows toast, then Sign in navigates', async () => {
-		const app = await mountRouterView('/reset-password/tok987')
+		const app = await mountRouterView(
+			'/reset-password/tok987',
+			routes,
+			{ Verify, ResetPassword, Login },
+			{ ...commonStubs, ...stubs }
+		)
+
 
 		const inputs = app.findAll('[data-test="input"]')
 		expect(inputs.length).toBeGreaterThanOrEqual(2)

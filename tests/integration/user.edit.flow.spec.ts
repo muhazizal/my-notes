@@ -1,17 +1,15 @@
 import { nextTick, ref } from 'vue'
-import { createRouter, createWebHistory } from 'vue-router'
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { mount, flushPromises } from '@vue/test-utils'
+import { flushPromises } from '@vue/test-utils'
+import { mountWithRouter } from '~/tests/helpers/testUtils'
 import { http, HttpResponse } from 'msw'
 
 import UserEditProfile from '~/components/User/EditProfile.vue'
-import { sampleUser } from '../mocks/data'
+import { sampleUser } from '~/tests/mocks/data'
 
 // MSW and Nuxt globals from setup
 declare const mswServer: ReturnType<typeof import('msw/node').setupServer>
 declare const useToast: () => any
-
-type RouterLike = ReturnType<typeof createRouter>
 
 // Real store: use actual implementation for API calls
 let realUseUserStore: any
@@ -55,33 +53,22 @@ const stubs = {
 	},
 }
 
-const createTestRouter = (): RouterLike => {
-	const router = createRouter({
-		history: createWebHistory(),
-		routes: [
-			{ path: '/', component: { template: '<div>Home</div>' } },
-			{ path: '/profile', component: { template: '<div>Profile</div>' } },
-		],
-	})
-	return router
-}
+const routes = [
+	{ path: '/', component: { template: '<div>Home</div>' } },
+	{ path: '/profile', component: { template: '<div>Profile</div>' } },
+]
 
 const mountEditFlow = async (route: string) => {
-	const router = createTestRouter()
-	router.push(route)
-	await router.isReady()
-
 	const Root = {
 		components: { UserEditProfile },
 		template:
 			'<div><AppCreateDialog title="Edit Profile"><template #body="{ onOpenModal }"><UserEditProfile @on-open-modal="onOpenModal" /></template></AppCreateDialog><router-view /></div>',
 	}
 
-	const wrapper = mount(Root as any, {
-		global: {
-			plugins: [router],
-			stubs,
-		},
+	const wrapper = await mountWithRouter(Root as any, {
+		routes,
+		startPath: route,
+		stubs,
 	})
 
 	await flushPromises()

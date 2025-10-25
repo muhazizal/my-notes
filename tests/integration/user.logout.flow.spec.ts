@@ -1,20 +1,14 @@
-import { nextTick, ref } from 'vue'
-import { createRouter, createWebHistory } from 'vue-router'
+import { nextTick } from 'vue'
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { mount, flushPromises } from '@vue/test-utils'
+import { flushPromises } from '@vue/test-utils'
+import { mountWithRouter } from '~/tests/helpers/testUtils'
 import { http, HttpResponse } from 'msw'
 
 import UserLogout from '~/components/User/Logout.vue'
-import { sampleUser } from '../mocks/data'
-
-// Global setup
+import { sampleUser } from '~/tests/mocks/data'
 
 declare const mswServer: ReturnType<typeof import('msw/node').setupServer>
-declare const useRouter: ReturnType<typeof vi.fn>
-declare const useRoute: ReturnType<typeof vi.fn>
 declare const useToast: () => any
-
-type RouterLike = ReturnType<typeof createRouter>
 
 let realUseUserStore: any
 
@@ -32,16 +26,10 @@ const stubs = {
 	},
 }
 
-const createTestRouter = (): RouterLike => {
-	const router = createRouter({
-		history: createWebHistory(),
-		routes: [
-			{ path: '/', component: { template: '<div>Home</div>' } },
-			{ path: '/profile', component: { template: '<div>Profile</div>' } },
-		],
-	})
-	return router
-}
+const routes = [
+	{ path: '/', component: { template: '<div>Home</div>' } },
+	{ path: '/profile', component: { template: '<div>Profile</div>' } },
+]
 
 describe('👤 User Logout integration flow', () => {
 	beforeEach(async () => {
@@ -50,10 +38,7 @@ describe('👤 User Logout integration flow', () => {
 		vi.stubGlobal('useUserStore', realUseUserStore)
 
 		useToast().add.mockReset()
-		vi.stubGlobal(
-			'useHead',
-			vi.fn((arg: any) => (typeof arg === 'function' ? arg() : arg))
-		)
+		vi.stubGlobal('useHead', vi.fn((arg: any) => (typeof arg === 'function' ? arg() : arg)))
 
 		const store = realUseUserStore()
 		store.user.value = { ...sampleUser }
@@ -61,21 +46,10 @@ describe('👤 User Logout integration flow', () => {
 	})
 
 	it('logs out successfully; toast shown; user cleared; navigates home; modal closes', async () => {
-		const router = createTestRouter()
-		router.push('/profile')
-		await router.isReady()
-
-		// Bind router composables used in component
-		const useRouterMock = useRouter as ReturnType<typeof vi.fn>
-		useRouterMock.mockReturnValue(router)
-		const useRouteMock = useRoute as ReturnType<typeof vi.fn>
-		useRouteMock.mockReturnValue(router.currentRoute.value)
-
-		const app = mount(UserLogout, {
-			global: {
-				plugins: [router],
-				stubs,
-			},
+		const app = await mountWithRouter(UserLogout, {
+			routes,
+			startPath: '/profile',
+			stubs,
 		})
 
 		;(app.vm as any).handleOpenModal(true)
@@ -88,22 +62,18 @@ describe('👤 User Logout integration flow', () => {
 		await flushPromises()
 		await nextTick()
 
-		// Toast from component
 		expect(useToast().add).toHaveBeenCalled()
 		const [payload] = useToast().add.mock.calls[0]
 		expect(payload.title).toBe('Logout')
 
-		// User cleared
 		const store = realUseUserStore()
 		expect(store.user.value.email).toBe('')
 		expect(store.user.value.username).toBe('')
 		expect(store.user.value.fullname).toBe('')
 		expect(store.isLoggedIn.value).toBe(false)
 
-		// Navigated home
-		expect(router.currentRoute.value.path).toBe('/')
+		expect((app.vm as any).$router.currentRoute.value.path).toBe('/')
 
-		// Modal closed
 		expect(app.find('[data-test="modal"]').exists()).toBe(false)
 	})
 
@@ -114,21 +84,10 @@ describe('👤 User Logout integration flow', () => {
 			)
 		)
 
-		const router = createTestRouter()
-		router.push('/profile')
-		await router.isReady()
-
-		// Bind router composables used in component
-		const useRouterMock = useRouter as ReturnType<typeof vi.fn>
-		useRouterMock.mockReturnValue(router)
-		const useRouteMock = useRoute as ReturnType<typeof vi.fn>
-		useRouteMock.mockReturnValue(router.currentRoute.value)
-
-		const app = mount(UserLogout, {
-			global: {
-				plugins: [router],
-				stubs,
-			},
+		const app = await mountWithRouter(UserLogout, {
+			routes,
+			startPath: '/profile',
+			stubs,
 		})
 
 		;(app.vm as any).handleOpenModal(true)
@@ -141,33 +100,21 @@ describe('👤 User Logout integration flow', () => {
 		await flushPromises()
 		await nextTick()
 
-		// Interceptor toast
 		expect(useToast().add).toHaveBeenCalledWith(expect.objectContaining({ title: 'Server error' }))
 
-		// User unchanged
 		const store = realUseUserStore()
 		expect(store.user.value).toEqual(sampleUser)
 		expect(store.isLoggedIn.value).toBe(true)
 
-		// Stays on profile
-		expect(router.currentRoute.value.path).toBe('/profile')
-
-		// Modal closed
+		expect((app.vm as any).$router.currentRoute.value.path).toBe('/profile')
 		expect(app.find('[data-test="modal"]').exists()).toBe(false)
 	})
 
 	it('cancel closes modal; no toast; user unchanged; stays on route', async () => {
-		const router = createTestRouter()
-		router.push('/profile')
-		await router.isReady()
-
-		const useRouterMock = useRouter as ReturnType<typeof vi.fn>
-		useRouterMock.mockReturnValue(router)
-		const useRouteMock = useRoute as ReturnType<typeof vi.fn>
-		useRouteMock.mockReturnValue(router.currentRoute.value)
-
-		const app = mount(UserLogout, {
-			global: { plugins: [router], stubs },
+		const app = await mountWithRouter(UserLogout, {
+			routes,
+			startPath: '/profile',
+			stubs,
 		})
 
 		;(app.vm as any).handleOpenModal(true)
@@ -185,22 +132,15 @@ describe('👤 User Logout integration flow', () => {
 		expect(store.user.value).toEqual(sampleUser)
 		expect(store.isLoggedIn.value).toBe(true)
 
-		expect(router.currentRoute.value.path).toBe('/profile')
+		expect((app.vm as any).$router.currentRoute.value.path).toBe('/profile')
 		expect(app.find('[data-test="modal"]').exists()).toBe(false)
 	})
 
 	it('guard prevents logout when already loading; modal stays open', async () => {
-		const router = createTestRouter()
-		router.push('/profile')
-		await router.isReady()
-
-		const useRouterMock = useRouter as ReturnType<typeof vi.fn>
-		useRouterMock.mockReturnValue(router)
-		const useRouteMock = useRoute as ReturnType<typeof vi.fn>
-		useRouteMock.mockReturnValue(router.currentRoute.value)
-
-		const app = mount(UserLogout, {
-			global: { plugins: [router], stubs },
+		const app = await mountWithRouter(UserLogout, {
+			routes,
+			startPath: '/profile',
+			stubs,
 		})
 
 		;(app.vm as any).handleOpenModal(true)
@@ -218,22 +158,15 @@ describe('👤 User Logout integration flow', () => {
 		expect(store.user.value).toEqual(sampleUser)
 		expect(store.isLoggedIn.value).toBe(true)
 
-		expect(router.currentRoute.value.path).toBe('/profile')
+		expect((app.vm as any).$router.currentRoute.value.path).toBe('/profile')
 		expect(app.find('[data-test="modal"]').exists()).toBe(true)
 	})
 
 	it('v-model setter updates isOpen when modal emits update', async () => {
-		const router = createTestRouter()
-		router.push('/profile')
-		await router.isReady()
-
-		const useRouterMock = useRouter as ReturnType<typeof vi.fn>
-		useRouterMock.mockReturnValue(router)
-		const useRouteMock = useRoute as ReturnType<typeof vi.fn>
-		useRouteMock.mockReturnValue(router.currentRoute.value)
-
-		const app = mount(UserLogout, {
-			global: { plugins: [router], stubs },
+		const app = await mountWithRouter(UserLogout, {
+			routes,
+			startPath: '/profile',
+			stubs,
 		})
 
 		;(app.vm as any).handleOpenModal(true)

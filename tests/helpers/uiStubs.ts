@@ -91,7 +91,7 @@ export const UProgressStub = {
 	name: 'UProgress',
 	props: ['value', 'max', 'ui'],
 	template: `
-    <div data-test="progress"><slot /></div>
+    <div data-test="progress" :data-value="value"><slot /></div>
   `,
 }
 
@@ -103,7 +103,7 @@ export const UIconStub = {
 
 export const UCardStub = {
 	name: 'UCard',
-	template: `<div data-test="card"><slot /></div>`,
+	template: `<div data-test="card"><slot name="header"></slot><slot /></div>`,
 }
 
 export const UModalStub = {
@@ -111,7 +111,7 @@ export const UModalStub = {
 	props: ['modelValue', 'preventClose'],
 	emits: ['update:modelValue'],
 	template: `
-    <div data-test="modal" v-show="modelValue">
+    <div data-test="modal" :data-open="modelValue" v-show="modelValue">
       <slot />
     </div>
   `,
@@ -119,7 +119,7 @@ export const UModalStub = {
 
 export const AppLogoStub = {
 	name: 'AppLogo',
-	template: '<div>Logo</div>',
+	template: '<div data-test="logo">Logo</div>',
 }
 
 export const UInputTrailingStub = {
@@ -159,4 +159,27 @@ export const UDropdownStub = {
 export const UContainerStub = {
 	name: 'UContainer',
 	template: '<div data-test="container"><slot /></div>',
+}
+
+export const NotesItemStub = {
+	name: 'NotesItem',
+	props: ['role'],
+	template:
+		"<div class=\"notes-item-stub\" data-test=\"create-item\" role=\"button\" @click=\"$emit('click')\"><slot /></div>",
+}
+
+export function createAppCreateDialogStub(
+	spy: (payload: boolean) => any,
+	dataTest: string = 'dialog'
+) {
+	return {
+		name: 'AppCreateDialog',
+		props: { title: { type: String, default: '' } },
+		template: `<div :data-test="'${dataTest}'"><slot name="body" /></div>`,
+		setup(_: any, ctx: any) {
+			const handleOpenModal = (payload: boolean) => spy(payload)
+			ctx.expose({ handleOpenModal })
+			return {}
+		},
+	}
 }

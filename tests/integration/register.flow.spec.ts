@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { nextTick } from 'vue'
-import { createRouter, createWebHistory } from 'vue-router'
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+
+import { describe, it, expect, beforeEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import { http, HttpResponse } from 'msw'
 
@@ -11,37 +11,12 @@ import Register from '~/components/Register/Index.vue'
 declare const useToast: () => any
 declare const mswServer: any
 
-type RouterLike = ReturnType<typeof createRouter>
+import { mountWithRouter } from '~/tests/helpers/testUtils'
 
-const createTestRouter = (): RouterLike => {
-	const router = createRouter({
-		history: createWebHistory(),
-		routes: [
-			{ path: '/sign-up', component: SignUpPage },
-			{ path: '/sign-in', component: { template: '<div>SignIn</div>' } },
-		],
-	})
-	return router
-}
-
-const mountRegister = async () => {
-	const router = createTestRouter()
-
-	const useRouterMock = useRouter as ReturnType<typeof vi.fn>
-	useRouterMock.mockReturnValue(router)
-
-	const useRouteMock = useRoute as ReturnType<typeof vi.fn>
-	useRouteMock.mockReturnValue(router.currentRoute.value)
-
-	const wrapper = mount(Register, {
-		global: { plugins: [router] },
-	})
-
-	await flushPromises()
-	await nextTick()
-
-	return wrapper
-}
+const routes = [
+	{ path: '/sign-up', component: SignUpPage },
+	{ path: '/sign-in', component: { template: '<div>SignIn</div>' } },
+]
 
 describe('👤 Register integration flow', () => {
 	beforeEach(() => {
@@ -49,7 +24,7 @@ describe('👤 Register integration flow', () => {
 	})
 
 	it('register success shows success caption and toasts', async () => {
-		const app = await mountRegister()
+		const app = await mountWithRouter(Register, { routes, startPath: '/sign-up' })
 
 		const inputs = app.findAll('[data-test="input"]')
 		expect(inputs.length).toBeGreaterThanOrEqual(5)
@@ -81,7 +56,7 @@ describe('👤 Register integration flow', () => {
 			})
 		)
 
-		const app = await mountRegister()
+		const app = await mountWithRouter(Register, { routes, startPath: '/sign-up' })
 
 		const inputs = app.findAll('[data-test="input"]')
 		await inputs[0].setValue('John Tester')
