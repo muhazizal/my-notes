@@ -12,8 +12,14 @@ export default defineConfig({
 	},
 	test: {
 		environment: 'happy-dom',
+		include: [
+			'tests/unit/**/*.test.{js,ts,jsx,tsx}',
+			'tests/integration/**/*.test.{js,ts,jsx,tsx}',
+			'tests/unit/**/*.spec.{js,ts,jsx,tsx}',
+			'tests/integration/**/*.spec.{js,ts,jsx,tsx}',
+		],
+		exclude: ['node_modules', 'dist', '.output', '.nuxt'],
 		setupFiles: ['tests/vitest.setup.ts'],
-		// Use non-deprecated reporter; mimic "basic" with summary disabled
 		reporters: [['default', { summary: false }]],
 		coverage: {
 			reporter: ['text', 'text-summary', 'html', 'lcov'],
