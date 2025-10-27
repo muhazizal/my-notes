@@ -1,12 +1,15 @@
 import type { Page } from '@playwright/test'
 import { sampleUser, sampleNotes } from '../mocks/data'
 
-export async function stubAuthLoginSuccess(page: Page) {
+export async function stubAuthLogin(page: Page, mode: 'success' | 'error') {
 	await page.route('**/api/auth/login', async (route) => {
 		await route.fulfill({
-			status: 200,
+			status: mode === 'success' ? 200 : 422,
 			contentType: 'application/json',
-			body: JSON.stringify({ message: 'Success login user', code: 200 }),
+			body: JSON.stringify({
+				message: mode === 'success' ? 'Success login user' : 'Invalid email or password',
+				code: mode === 'success' ? 200 : 422,
+			}),
 		})
 	})
 }
