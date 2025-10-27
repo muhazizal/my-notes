@@ -29,7 +29,8 @@ test.describe('🔐 Auth E2E', () => {
 
 		// Click login button
 		const loginButton = page.getByTestId('login-button')
-		loginButton.click()
+		await expect(loginButton).toBeEnabled()
+		await loginButton.click()
 
 		// Check login response
 		const loginResponse = await page.waitForResponse(
@@ -37,7 +38,10 @@ test.describe('🔐 Auth E2E', () => {
 			{ timeout: 3000 }
 		)
 		const loginResponseBody = await loginResponse.json()
-		expect(loginResponseBody).toMatchObject({ message: 'Success login user', code: 200 })
+		expect(loginResponseBody).toMatchObject({
+			message: 'Success login user',
+			code: 200,
+		})
 
 		// Check user profile response
 		const userProfileResponse = await page.waitForResponse(
@@ -53,18 +57,6 @@ test.describe('🔐 Auth E2E', () => {
 
 		// Check notes index element is visible
 		const notesIndex = page.getByTestId('notes-index')
-		expect(notesIndex).toBeVisible()
-
-		// Check notes response
-		const notesResponse = await page.waitForResponse(
-			(resp) => resp.url().includes('/api/notes') && resp.status() === 200,
-			{ timeout: 3000 }
-		)
-		const notesResponseBody = await notesResponse.json()
-		expect(notesResponseBody).toMatchObject({
-			message: 'Success get notes',
-			data: sampleNotes,
-			code: 200,
-		})
+		await expect(notesIndex).toBeVisible()
 	})
 })

@@ -3,7 +3,7 @@ import { defineConfig } from '@playwright/test'
 export default defineConfig({
 	testDir: 'tests/e2e',
 	use: {
-		baseURL: process.env.NUXT_API_BASE_URL,
+		baseURL: 'http://localhost:3000',
 		testIdAttribute: 'data-test',
 		trace: 'on-first-retry',
 		video: 'retain-on-failure',
@@ -16,7 +16,7 @@ export default defineConfig({
 	},
 	webServer: {
 		command: 'npm run dev',
-		port: 3000,
+		url: 'http://localhost:3000',
 		timeout: 120_000,
 		reuseExistingServer: true,
 	},

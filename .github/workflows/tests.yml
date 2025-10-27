@@ -51,11 +51,10 @@ jobs:
       - name: Install Playwright browsers and OS deps
         run: npx playwright install --with-deps
 
-      - name: Build app for preview
-        run: npm run build
-
-      - name: Run Playwright e2e (preview server)
-        run: npx playwright test -c playwright.preview.config.ts --reporter=line --reporter=html
+      - name: Run Playwright e2e (dev server)
+        env:
+          NUXT_API_BASE_URL: http://localhost:3000
+        run: npx playwright test --reporter=line --reporter=html
 
       - name: Upload Playwright HTML report
         if: always()
