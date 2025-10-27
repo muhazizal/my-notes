@@ -217,4 +217,29 @@ describe('components/Login/Index.vue', () => {
 		await wrapper.vm.$nextTick()
 		expect(readType()).toBe('password')
 	})
+
+	it('clicking trailing show-password button triggers inline @click and toggles (positive)', async () => {
+		const wrapper = mountComp()
+		const vm = wrapper.vm as any
+		const readType = () => vm.getPasswordType?.value ?? vm.getPasswordType
+
+		// Initial state
+		expect(readType()).toBe('password')
+
+		// Find trailing slot container and the stubbed button inside
+		const trailing = wrapper.find('[data-test="trailing"]')
+		expect(trailing.exists()).toBe(true)
+		const showBtn = trailing.find('button')
+		expect(showBtn.exists()).toBe(true)
+
+		// Click once: should set showPassword to true -> type 'text'
+		await showBtn.trigger('click')
+		await wrapper.vm.$nextTick()
+		expect(readType()).toBe('text')
+
+		// Click again: should set showPassword to false -> type 'password'
+		await showBtn.trigger('click')
+		await wrapper.vm.$nextTick()
+		expect(readType()).toBe('password')
+	})
 })
