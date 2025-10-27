@@ -116,4 +116,46 @@ test.describe('🔐 Auth E2E', () => {
 			code: 422,
 		})
 	})
+
+	test('redirect to sign-up page when click sign-up button', async ({ page }) => {
+		// Redirect to sign in page
+		await page.goto('/sign-in')
+		await page.waitForLoadState('domcontentloaded')
+		await page.waitForLoadState('networkidle')
+
+		// Get sign-up button element
+		const signUpButton = page.getByTestId('login-sign-up-button')
+		await expect(signUpButton).toBeVisible()
+
+		// Click sign-up button
+		signUpButton.click()
+
+		// Check redirect to sign-up page
+		await expect(page).toHaveURL('/sign-up')
+
+		// Check sign-up title is visible
+		const signUpTitle = page.getByTestId('register-title')
+		await expect(signUpTitle).toBeVisible()
+	})
+
+	test('redirect to forgot password page when click forgot password button', async ({ page }) => {
+		// Redirect to sign in page
+		await page.goto('/sign-in')
+		await page.waitForLoadState('domcontentloaded')
+		await page.waitForLoadState('networkidle')
+
+		// Get forgot password button element
+		const forgotPasswordButton = page.getByTestId('login-forgot-password-button')
+		await expect(forgotPasswordButton).toBeVisible()
+
+		// Click forgot password button
+		forgotPasswordButton.click()
+
+		// Check redirect to forgot password page
+		await expect(page).toHaveURL('/forgot-password')
+
+		// Check forgot password title is visible
+		const forgotPasswordTitle = page.getByTestId('forgot-password-title')
+		await expect(forgotPasswordTitle).toBeVisible()
+	})
 })

@@ -1,7 +1,7 @@
 <template>
 	<div class="form">
 		<AppLogo class="form__logo" />
-		<h2 class="form__title">Forgot Password.</h2>
+		<h2 class="form__title" data-test="forgot-password-title">Forgot Password.</h2>
 		<div v-if="isSuccessForgotPassword">
 			<p>Success to send reset password URL, please check your email.</p>
 		</div>

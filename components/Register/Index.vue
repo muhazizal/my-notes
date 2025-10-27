@@ -1,7 +1,7 @@
 <template>
 	<div class="form">
 		<AppLogo class="form__logo" />
-		<h2 class="form__title">Create new account.</h2>
+		<h2 class="form__title" data-test="register-title">Create new account.</h2>
 		<template v-if="isRegisterSuccess">
 			<div class="form__caption--success">
 				<p>Success to register your account</p>
