@@ -1,6 +1,19 @@
 import type { Page } from '@playwright/test'
 import { sampleUser, sampleNotes } from '../mocks/data'
 
+export async function stubAuthRegister(page: Page, mode: 'success' | 'error') {
+	await page.route('**/api/auth/register', async (route) => {
+		await route.fulfill({
+			status: mode === 'success' ? 200 : 422,
+			contentType: 'application/json',
+			body: JSON.stringify({
+				message: mode === 'success' ? 'Success register user' : 'User already exists',
+				code: mode === 'success' ? 200 : 422,
+			}),
+		})
+	})
+}
+
 export async function stubAuthLogin(page: Page, mode: 'success' | 'error') {
 	await page.route('**/api/auth/login', async (route) => {
 		await route.fulfill({

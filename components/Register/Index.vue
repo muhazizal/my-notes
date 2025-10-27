@@ -3,7 +3,7 @@
 		<AppLogo class="form__logo" />
 		<h2 class="form__title" data-test="register-title">Create new account.</h2>
 		<template v-if="isRegisterSuccess">
-			<div class="form__caption--success">
+			<div class="form__caption--success" data-test="register-success-caption">
 				<p>Success to register your account</p>
 				<p>Please check your email to complete verification process</p>
 			</div>
@@ -11,13 +11,29 @@
 		<template v-else>
 			<div class="form__caption">
 				<p>Already have an account?</p>
-				<UButton color="primary" variant="link" :padded="false" @click="handleRedirectSignIn"
+				<UButton
+					color="primary"
+					variant="link"
+					:padded="false"
+					@click="handleRedirectSignIn"
+					data-test="register-sign-in-button"
 					>Sign in</UButton
 				>
 			</div>
-			<UForm class="form__body" :schema="registerSchema" :state="form" @submit="handleRegister">
+			<UForm
+				class="form__body"
+				:schema="registerSchema"
+				:state="form"
+				@submit="handleRegister"
+				data-test="register-form"
+			>
 				<UFormGroup name="fullname" size="xl" eager-validation>
-					<UInput v-model="form.fullname" placeholder="Full name" size="xl" />
+					<UInput
+						v-model="form.fullname"
+						placeholder="Full name"
+						size="xl"
+						data-test="register-fullname-input"
+					/>
 				</UFormGroup>
 				<UFormGroup name="username" size="xl" eager-validation>
 					<UInput
@@ -25,6 +41,7 @@
 						placeholder="Username"
 						size="xl"
 						@keypress="preventSpace"
+						data-test="register-username-input"
 					/>
 				</UFormGroup>
 				<UFormGroup name="email" size="xl" eager-validation>
@@ -33,6 +50,7 @@
 						placeholder="Email address"
 						size="xl"
 						@keypress="preventSpace"
+						data-test="register-email-input"
 					/>
 				</UFormGroup>
 				<UFormGroup name="password.real" size="xl" eager-validation>
@@ -42,6 +60,7 @@
 						size="xl"
 						type="password"
 						@keypress="preventSpace"
+						data-test="register-password-input"
 					/>
 				</UFormGroup>
 				<UFormGroup name="password.confirmation" size="xl" eager-validation>
@@ -51,10 +70,16 @@
 						size="xl"
 						type="password"
 						@keypress="preventSpace"
+						data-test="register-confirm-password-input"
 					/>
 				</UFormGroup>
 				<UFormGroup name="tnc" size="xl" eager-validation>
-					<UCheckbox v-model="form.tnc" name="tnc" label="Term & Conditions" />
+					<UCheckbox
+						v-model="form.tnc"
+						name="tnc"
+						label="Term & Conditions"
+						data-test="register-tnc-checkbox"
+					/>
 				</UFormGroup>
 				<div class="form__actions">
 					<UButton
@@ -64,6 +89,8 @@
 						:square="true"
 						:loading="isLoadingRegister"
 						:disabled="isLoadingRegister"
+						@click="handleRegister"
+						data-test="register-button"
 						>Sign Up</UButton
 					>
 				</div>

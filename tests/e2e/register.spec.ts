@@ -1,0 +1,111 @@
+import { test, expect } from '@playwright/test'
+import { stubAuthRegister } from '@/tests/helpers/network'
+
+test.describe('Register E2E', () => {
+	test('register success and display success caption', async ({ page }) => {
+		// Stub register API
+		await stubAuthRegister(page, 'success')
+
+		// Redirect to register page
+		await page.goto('/sign-up')
+		await page.waitForLoadState('domcontentloaded')
+		await page.waitForLoadState('networkidle')
+
+		// Fill register form
+		const fullnameInput = page.getByTestId('register-fullname-input')
+		await fullnameInput.fill('Test User')
+
+		const usernameInput = page.getByTestId('register-username-input')
+		await usernameInput.fill('testuser')
+
+		const emailInput = page.getByTestId('register-email-input')
+		await emailInput.fill('test@example.com')
+
+		const passwordInput = page.getByTestId('register-password-input')
+		await passwordInput.fill('password123')
+
+		const confirmPasswordInput = page.getByTestId('register-confirm-password-input')
+		await confirmPasswordInput.fill('password123')
+
+		// Click register button
+		const registerButton = page.getByTestId('register-button')
+		registerButton.click()
+
+		// Check register response
+		const registerResponse = await page.waitForResponse(
+			(resp) => resp.url().includes('/api/auth/register') && resp.status() === 200,
+			{ timeout: 3000 }
+		)
+		const registerResponseBody = await registerResponse.json()
+		expect(registerResponseBody).toMatchObject({
+			message: 'Success register user',
+			code: 200,
+		})
+
+		// Check success caption
+		const successCaption = page.getByTestId('register-success-caption')
+		await expect(successCaption).toBeVisible()
+	})
+
+	test('register with same email show error message', async ({ page }) => {
+		// Stub register API
+		await stubAuthRegister(page, 'error')
+
+		// Redirect to register page
+		await page.goto('/sign-up')
+		await page.waitForLoadState('domcontentloaded')
+		await page.waitForLoadState('networkidle')
+
+		// Fill register form
+		const fullnameInput = page.getByTestId('register-fullname-input')
+		await fullnameInput.fill('Test User')
+
+		const usernameInput = page.getByTestId('register-username-input')
+		await usernameInput.fill('testuser')
+
+		const emailInput = page.getByTestId('register-email-input')
+		await emailInput.fill('test@example.com')
+
+		const passwordInput = page.getByTestId('register-password-input')
+		await passwordInput.fill('password123')
+
+		const confirmPasswordInput = page.getByTestId('register-confirm-password-input')
+		await confirmPasswordInput.fill('password123')
+
+		// Click register button
+		const registerButton = page.getByTestId('register-button')
+		registerButton.click()
+
+		// Check register response
+		const registerResponse = await page.waitForResponse(
+			(resp) => resp.url().includes('/api/auth/register') && resp.status() === 422,
+			{ timeout: 3000 }
+		)
+		const registerResponseBody = await registerResponse.json()
+		expect(registerResponseBody).toMatchObject({
+			message: 'User already exists',
+			code: 422,
+		})
+	})
+
+	test('redirect to sign in page when click sign in button', async ({ page }) => {
+		// Redirect to register page
+		await page.goto('/sign-up')
+		await page.waitForLoadState('domcontentloaded')
+		await page.waitForLoadState('networkidle')
+
+		// Get sign in button element
+		const signInButton = page.getByTestId('register-sign-in-button')
+		await expect(signInButton).toBeVisible()
+
+		// Click sign in button
+		signInButton.click()
+
+		// Check redirect to sign in page
+		await expect(page).toHaveURL('/sign-in')
+
+		// Check login title
+		const loginTitle = page.getByTestId('login-title')
+		await expect(loginTitle).toBeVisible()
+	})
+})
