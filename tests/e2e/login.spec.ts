@@ -57,6 +57,9 @@ test.describe('🔐 Auth E2E', () => {
 			code: 200,
 		})
 
+		// Check redirect to notes index page
+		await expect(page).toHaveURL('/notes')
+
 		// Check notes index response
 		const notesIndexResponse = await page.waitForResponse(
 			(resp) => resp.url().includes('/api/notes') && resp.status() === 200,
