@@ -9,6 +9,7 @@
 			v-for="(note, index) in notes"
 			:key="`notes-${index}`"
 			role="button"
+			data-test="note-item"
 			@click="handleRedirectNote(note.id)"
 		>
 			<div class="flex flex-col items-center justify-center p-3">

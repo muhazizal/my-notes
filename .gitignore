@@ -26,3 +26,4 @@ logs
 # Coverage
 coverage
 test-results
+playwright-report

@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { stubAuthLogin, stubUserProfile, stubNotesIndex } from '@/tests/helpers/network'
-import { sampleUser } from '@/tests/mocks/data'
+import { sampleUser, sampleNotes } from '@/tests/mocks/data'
 
 test.describe('🔐 Auth E2E', () => {
 	test.beforeEach(async ({ page }) => {
@@ -57,9 +57,25 @@ test.describe('🔐 Auth E2E', () => {
 			code: 200,
 		})
 
+		// Check notes index response
+		const notesIndexResponse = await page.waitForResponse(
+			(resp) => resp.url().includes('/api/notes') && resp.status() === 200,
+			{ timeout: 3000 }
+		)
+		const notesIndexResponseBody = await notesIndexResponse.json()
+		expect(notesIndexResponseBody).toMatchObject({
+			message: 'Success get notes',
+			data: sampleNotes,
+			code: 200,
+		})
+
 		// Check notes index element is visible
 		const notesIndex = page.getByTestId('notes-index')
 		await expect(notesIndex).toBeVisible()
+
+		const noteItems = page.getByTestId('note-item')
+		const allNotes = await noteItems.all()
+		expect(allNotes).toHaveLength(sampleNotes.length)
 	})
 
 	test('sign in with invalid credentials shows validation error', async ({ page }) => {
