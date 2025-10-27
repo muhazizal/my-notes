@@ -82,7 +82,9 @@ describe('🔐 Auth integration (Nuxt + MSW)', () => {
     await inputs[0].setValue('test@example.com')
     await inputs[1].setValue('password123')
 
-    await app.find('[data-test="form"]').trigger('submit')
+    const formComp = app.findComponent({ name: 'UForm' })
+    expect(formComp.exists()).toBe(true)
+    formComp.vm.$emit('submit')
 
     await flushPromises()
     await nextTick()
@@ -111,7 +113,9 @@ describe('🔐 Auth integration (Nuxt + MSW)', () => {
     const emailInput = comp.find('[data-test="input"]')
     await emailInput.setValue('user@example.com')
 
-    await comp.find('[data-test="form"]').trigger('submit')
+    const formComp = comp.findComponent({ name: 'UForm' })
+    expect(formComp.exists()).toBe(true)
+    formComp.vm.$emit('submit')
 
     await flushPromises()
     await nextTick()

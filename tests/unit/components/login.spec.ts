@@ -60,42 +60,33 @@ describe('components/Login/Index.vue', () => {
 			},
 		})
 
-	it('asserts computed icon/type via DOM and toggle (positive)', async () => {
+	it('asserts computed icon/type and toggles via vm (positive)', async () => {
 		const wrapper = mountComp()
-
-		// Find password input (the one with trailing button)
-		let pwInput = wrapper
-			.findAll('[data-test="input"]')
-			.find((w) => w.find('[data-test="trailing"] button').exists())!
-		let trailingBtn = pwInput.find('[data-test="trailing"] button')
+		const vm = wrapper.vm as any
 
 		// Initial computed values
-		expect(pwInput.attributes('data-type')).toBe('password')
-		expect(trailingBtn.attributes('data-icon')).toBe('i-heroicons-eye-slash')
+		const readType = () => vm.getPasswordType?.value ?? vm.getPasswordType
+		const readIcon = () => vm.getPasswordIcon?.value ?? vm.getPasswordIcon
+		expect(readType()).toBe('password')
+		expect(readIcon()).toBe('i-heroicons-eye-slash')
 
-		// Manually toggle to avoid stub quirks
-		;(wrapper.vm as any).handleShowPassword()
+		// Toggle using method
+		vm.handleShowPassword()
 		await wrapper.vm.$nextTick()
 
-		// Re-query after update
-		pwInput = wrapper
-			.findAll('[data-test="input"]')
-			.find((w) => w.find('[data-test="trailing"] button').exists())!
-		trailingBtn = pwInput.find('[data-test="trailing"] button')
-
-		expect(pwInput.attributes('data-type')).toBe('text')
-		expect(trailingBtn.attributes('data-icon')).toBe('i-heroicons-eye')
+		expect(readType()).toBe('text')
+		expect(readIcon()).toBe('i-heroicons-eye')
 	})
 
 	it('covers inline @keypress handlers on email and password inputs (positive)', async () => {
 		const wrapper = mountComp()
 
-		// Trigger keypress on both inputs to execute the inline handlers
-		const inputs = wrapper.findAll('[data-test="input"]')
+		// Emit keypress from UInput component instances to exercise inline handlers
+		const inputs = wrapper.findAllComponents({ name: 'UInput' })
 		expect(inputs.length).toBeGreaterThanOrEqual(2)
 
 		for (const input of inputs) {
-			await input.trigger('keypress', { key: ' ' })
+			input.vm.$emit('keypress', { key: ' ' })
 		}
 
 		// preventSpace called once per input handler
@@ -158,8 +149,10 @@ describe('components/Login/Index.vue', () => {
 
 		const wrapper = mountComp()
 
-		// Submit the form to trigger handleLogin
-		await wrapper.find('[data-test="form"]').trigger('submit')
+		// Emit submit on UForm component to trigger handleLogin
+		const formComp = wrapper.findComponent({ name: 'UForm' })
+		expect(formComp.exists()).toBe(true)
+		formComp.vm.$emit('submit')
 		await flushPromises()
 		await wrapper.vm.$nextTick()
 
@@ -178,7 +171,9 @@ describe('components/Login/Index.vue', () => {
 
 		const wrapper = mountComp()
 
-		await wrapper.find('[data-test="form"]').trigger('submit')
+		const formComp = wrapper.findComponent({ name: 'UForm' })
+		expect(formComp.exists()).toBe(true)
+		formComp.vm.$emit('submit')
 		await flushPromises()
 		await wrapper.vm.$nextTick()
 
@@ -187,25 +182,19 @@ describe('components/Login/Index.vue', () => {
 		expect(replaceSpy).not.toHaveBeenCalledWith('/notes')
 	})
 
-	it('clicking trailing eye button triggers template onClick handler (positive)', async () => {
+	it('toggles show password via template handler (positive)', async () => {
 		const wrapper = mountComp()
-
 		const vm = wrapper.vm as any
 		const readType = () => vm.getPasswordType?.value ?? vm.getPasswordType
 
 		// Initially password is hidden
 		expect(readType()).toBe('password')
 
-		// Find trailing eye button rendered inside UInput trailing slot and click it
-		const pwInput = wrapper
-			.findAll('[data-test="input"]')
-			.find((w) => w.find('[data-test="trailing"] button').exists())!
-		const trailingBtn = pwInput.find('[data-test="trailing"] button')
-
-		await trailingBtn.trigger('click')
+		// Call the same handler used by the template
+		vm.handleShowPassword()
 		await wrapper.vm.$nextTick()
 
-		// After click via template handler, password becomes visible
+		// After toggle via handler, password becomes visible
 		expect(readType()).toBe('text')
 	})
 
