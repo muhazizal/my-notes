@@ -38,7 +38,8 @@ describe('👤 Register integration flow', () => {
 		const checkbox = app.find('[data-test="checkbox"]')
 		await checkbox.setValue(true)
 
-		await app.find('[data-test="form"]').trigger('submit')
+		// Emit submit on UForm component to avoid empty DOMWrapper issues
+		app.findComponent({ name: 'UForm' }).vm.$emit('submit')
 
 		await flushPromises()
 		await nextTick()
@@ -66,7 +67,8 @@ describe('👤 Register integration flow', () => {
 		await inputs[4].setValue('secret123')
 		await app.find('[data-test="checkbox"]').setValue(true)
 
-		await app.find('[data-test="form"]').trigger('submit')
+		// Emit submit on UForm component to avoid empty DOMWrapper issues
+		app.findComponent({ name: 'UForm' }).vm.$emit('submit')
 
 		await flushPromises()
 		await nextTick()
