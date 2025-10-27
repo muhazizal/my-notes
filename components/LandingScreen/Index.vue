@@ -1,16 +1,26 @@
 <template>
 	<div class="form">
 		<AppLogo class="form__logo" />
-		<h2 class="form__title">Never Forget Anything 📝</h2>
+		<h2 class="form__title" data-test="landing-title">Never Forget Anything 📝</h2>
 		<div class="form__caption">
 			<p>Write your notes and you will save time-energy to remember.</p>
 		</div>
 		<div class="form__actions">
-			<UButton class="form__actions__item" size="xl" :square="true" @click="handleRedirectSignIn"
+			<UButton
+				class="form__actions__item"
+				size="xl"
+				:square="true"
+				@click="handleRedirectSignIn"
+				data-test="landing-sign-in-button"
 				>Sign in</UButton
 			>
 			<span>or</span>
-			<UButton class="form__actions__item" size="xl" :square="true" @click="handleRedirectSignUp"
+			<UButton
+				class="form__actions__item"
+				size="xl"
+				:square="true"
+				@click="handleRedirectSignUp"
+				data-test="landing-sign-up-button"
 				>Sign up</UButton
 			>
 		</div>
