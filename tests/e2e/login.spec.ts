@@ -34,6 +34,11 @@ test.describe('Login E2E', () => {
 		await expect(loginButton).toBeEnabled()
 		loginButton.click()
 
+		// Check login form submit
+		const loginForm = page.getByTestId('login-form')
+		await expect(loginForm).toBeVisible()
+		await loginForm.dispatchEvent('submit')
+
 		// Check login response
 		const loginResponse = await page.waitForResponse(
 			(resp) => resp.url().includes('/api/auth/login') && resp.status() === 200,
