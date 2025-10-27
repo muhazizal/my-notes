@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 import { stubAuthLogin, stubUserProfile, stubNotesIndex } from '@/tests/helpers/network'
 import { sampleUser, sampleNotes } from '@/tests/mocks/data'
 
-test.describe('🔐 Auth E2E', () => {
+test.describe('Login E2E', () => {
 	test.beforeEach(async ({ page }) => {
 		await stubUserProfile(page)
 		await stubNotesIndex(page)
@@ -81,7 +81,7 @@ test.describe('🔐 Auth E2E', () => {
 		expect(allNotes).toHaveLength(sampleNotes.length)
 	})
 
-	test('sign in with invalid credentials shows validation error', async ({ page }) => {
+	test('sign in with invalid credentials shows error message', async ({ page }) => {
 		// Stub network
 		await stubAuthLogin(page, 'error')
 		await stubNotesIndex(page)
@@ -118,6 +118,28 @@ test.describe('🔐 Auth E2E', () => {
 			message: 'Invalid email or password',
 			code: 422,
 		})
+	})
+
+	test('sign-in with empty credentials show validation error', async ({ page }) => {
+		// Redirect to sign in page
+		await page.goto('/sign-in')
+		await page.waitForLoadState('domcontentloaded')
+		await page.waitForLoadState('networkidle')
+
+		// Click login button
+		const loginButton = page.getByTestId('login-button')
+		await expect(loginButton).toBeEnabled()
+		loginButton.click()
+
+		// Check login form email is required
+		const loginForm = page.getByTestId('login-form')
+
+		const loginEmailError = loginForm.getByText('Email is required')
+		await expect(loginEmailError).toBeVisible()
+
+		// Check login form password is required
+		const loginPasswordError = loginForm.getByText('Password is required')
+		await expect(loginPasswordError).toBeVisible()
 	})
 
 	test('redirect to sign-up page when click sign-up button', async ({ page }) => {

@@ -70,7 +70,6 @@
 					:square="true"
 					:loading="isLoadingLogin"
 					:disabled="isLoadingLogin"
-					@click="handleLogin"
 					>Log in</UButton
 				>
 			</div>

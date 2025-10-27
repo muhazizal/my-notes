@@ -21,11 +21,11 @@
 				>
 			</div>
 			<UForm
+				data-test="register-form"
 				class="form__body"
 				:schema="registerSchema"
 				:state="form"
 				@submit="handleRegister"
-				data-test="register-form"
 			>
 				<UFormGroup name="fullname" size="xl" eager-validation>
 					<UInput
@@ -89,7 +89,6 @@
 						:square="true"
 						:loading="isLoadingRegister"
 						:disabled="isLoadingRegister"
-						@click="handleRegister"
 						data-test="register-button"
 						>Sign Up</UButton
 					>

@@ -27,6 +27,9 @@ test.describe('Register E2E', () => {
 		const confirmPasswordInput = page.getByTestId('register-confirm-password-input')
 		await confirmPasswordInput.fill('password123')
 
+		const tncCheckbox = page.getByTestId('register-tnc-checkbox')
+		await tncCheckbox.check()
+
 		// Click register button
 		const registerButton = page.getByTestId('register-button')
 		registerButton.click()
@@ -72,6 +75,9 @@ test.describe('Register E2E', () => {
 		const confirmPasswordInput = page.getByTestId('register-confirm-password-input')
 		await confirmPasswordInput.fill('password123')
 
+		const tncCheckbox = page.getByTestId('register-tnc-checkbox')
+		await tncCheckbox.check()
+
 		// Click register button
 		const registerButton = page.getByTestId('register-button')
 		registerButton.click()
@@ -86,6 +92,47 @@ test.describe('Register E2E', () => {
 			message: 'User already exists',
 			code: 422,
 		})
+	})
+
+	test('register with empty credentials show validation error', async ({ page }) => {
+		// Redirect to register page
+		await page.goto('/sign-up')
+		await page.waitForLoadState('domcontentloaded')
+		await page.waitForLoadState('networkidle')
+
+		// Click register button
+		const registerButton = page.getByTestId('register-button')
+		await expect(registerButton).toBeEnabled()
+		registerButton.click()
+
+		// Check register form fullname is required
+		const registerForm = page.getByTestId('register-form')
+
+		const registerFullnameError = registerForm.getByText('Full name is required')
+		await expect(registerFullnameError).toBeVisible()
+
+		// Check register form username is required
+		const registerUsernameError = registerForm.getByText(
+			'Username must be at least 3 characters long'
+		)
+		await expect(registerUsernameError).toBeVisible()
+
+		// Check register form email is required
+		const registerEmailError = registerForm.getByText('Email is required')
+		await expect(registerEmailError).toBeVisible()
+
+		// Check register form password is required
+		const registerPasswordError = registerForm.getByText(
+			'Password must be at least 5 characters long'
+		)
+		const firstPasswordError = registerPasswordError.nth(0)
+		const secondPasswordError = registerPasswordError.nth(1)
+		await expect(firstPasswordError).toBeVisible()
+		await expect(secondPasswordError).toBeVisible()
+
+		// Check register form tnc is required
+		const registerTncError = registerForm.getByText('Term and conditions must be checked')
+		await expect(registerTncError).toBeVisible()
 	})
 
 	test('redirect to sign in page when click sign in button', async ({ page }) => {
