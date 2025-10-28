@@ -48,7 +48,8 @@ describe('🔗 Token flow integration errors (Nuxt + MSW)', () => {
 		useToast().add.mockReset()
 	})
 
-	it('verify → invalid token shows toast and stays on /verify', async () => {
+  it('verify → invalid token shows toast and stays on /verify', async () => {
+    vi.useFakeTimers()
 		mswServer.use(
 			http.get('/api/auth/verify/:token', async () => {
 				return HttpResponse.json({ message: 'Invalid verification token' }, { status: 422 })
@@ -62,8 +63,10 @@ describe('🔗 Token flow integration errors (Nuxt + MSW)', () => {
 			{ ...commonStubs, ...stubs }
 		)
 
-		await flushPromises()
-		await nextTick()
+    // Advance past verify delay
+    vi.advanceTimersByTime(1600)
+    await flushPromises()
+    await nextTick()
 
 		expect(useToast().add).toHaveBeenCalledWith(
 			expect.objectContaining({ title: 'Validation error' })
@@ -71,7 +74,8 @@ describe('🔗 Token flow integration errors (Nuxt + MSW)', () => {
 
 		const router = (app.vm as any).$router
 		expect(router.currentRoute.value.path).toBe('/verify/badtoken')
-	})
+    vi.useRealTimers()
+  })
 
 	it('reset-password → invalid token shows toast and stays on /reset-password', async () => {
 		mswServer.use(

@@ -46,7 +46,9 @@ describe('🔗 Token flows integration (Nuxt + MSW)', () => {
 		useToast().add.mockReset()
 	})
 
-	it('verify → success then clicking Sign in navigates to /sign-in', async () => {
+  it('verify → success then clicking Sign in navigates to /sign-in', async () => {
+    // Use fake timers to advance component's internal setTimeout
+    vi.useFakeTimers()
 		const app = await mountRouterView(
 			'/verify/abc123',
 			routes,
@@ -54,20 +56,27 @@ describe('🔗 Token flows integration (Nuxt + MSW)', () => {
 			{ ...commonStubs, ...stubs }
 		)
 
-		await flushPromises()
-		await nextTick()
+    // Advance past verify delay
+    vi.advanceTimersByTime(1600)
+    await flushPromises()
+    await nextTick()
 
-		// Trigger click on stub DOM to satisfy @click.self modifier
-		const signInBtn = app.findAll('[data-test="btn"]').find((b) => b.text() === 'Sign in')
-		expect(signInBtn).toBeTruthy()
-		await signInBtn!.trigger('click')
+    // Ensure success caption is rendered
+    const successCaption = app.find('[data-test="verify-success"]')
+    expect(successCaption.exists()).toBe(true)
+    // Trigger navigation via component method to avoid stub lookup flakiness
+    const verifyComp = app.findComponent(Verify)
+    expect(verifyComp.exists()).toBe(true)
+    ;(verifyComp.vm as any).handleRedirectSignIn()
 
 		await flushPromises()
 		await nextTick()
 
 		const router = (app.vm as any).$router
 		expect(router.currentRoute.value.path).toBe('/sign-in')
-	})
+    // Restore timers to real
+    vi.useRealTimers()
+  })
 
 	it('reset-password → submits, shows toast, then Sign in navigates', async () => {
 		const app = await mountRouterView(

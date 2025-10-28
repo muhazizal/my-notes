@@ -3,7 +3,7 @@ import { stubAuthVerify, stubResendVerification } from '@/tests/helpers/network'
 
 test.describe('Verify E2E', () => {
 	test.afterEach(async ({ network }) => {
-		network.resetHandlers()
+		await network.resetHandlers()
 	})
 
 	test('success verify and redirect to sign-in page', async ({ page, network }) => {

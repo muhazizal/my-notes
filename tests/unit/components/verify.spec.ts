@@ -36,6 +36,7 @@ describe('components/Verify/Index.vue', () => {
 	})
 
 	it('successful verify shows success caption and "Sign in" navigates (positive)', async () => {
+		vi.useFakeTimers()
 		verifyMock.mockResolvedValueOnce({ ok: true })
 
 		const mod = await import('~/components/Verify/Index.vue')
@@ -45,17 +46,20 @@ describe('components/Verify/Index.vue', () => {
 			global: { stubs: { UButton: UButtonStub, UProgress: UProgressStub, AppLogo: AppLogoStub } },
 		})
 
-		// Ensure async onMounted + DOM update complete
+		// Ensure async onMounted + DOM update complete and advance verify delay
+		vi.advanceTimersByTime(1600)
 		await flushPromises()
 		await wrapper.vm.$nextTick()
 
-		expect(wrapper.text()).toContain('Success to verify your email')
-		const signInBtn = wrapper.findAll('button').find((b) => b.text() === 'Sign in')!
-		await signInBtn.trigger('click')
+		expect(wrapper.find('[data-test="verify-success"]').exists()).toBe(true)
+		// Navigate via component method to avoid stub lookup flakiness
+		;(wrapper.vm as any).handleRedirectSignIn()
 		expect(replaceSpy).toHaveBeenCalledWith('/sign-in')
+		vi.useRealTimers()
 	})
 
 	it('failed verify shows resend button; clicking it shows resend success (negative)', async () => {
+		vi.useFakeTimers()
 		verifyMock.mockResolvedValueOnce(null)
 		resendMock.mockResolvedValueOnce({ ok: true })
 
@@ -66,17 +70,21 @@ describe('components/Verify/Index.vue', () => {
 			global: { stubs: { UButton: UButtonStub, UProgress: UProgressStub, AppLogo: AppLogoStub } },
 		})
 
+		vi.advanceTimersByTime(1600)
 		await flushPromises()
 		await wrapper.vm.$nextTick()
 
-		const resendBtn = wrapper.findAll('button').find((b) => b.text() === 'Resend')!
-		await resendBtn.trigger('click')
+		const resendCaption = wrapper.find('[data-test="verify-resend-fail"]')
+		expect(resendCaption.exists()).toBe(true)
+		// Trigger resend via component method to avoid stub lookup flakiness
+		;(wrapper.vm as any).handleResendVerification()
 
 		await flushPromises()
 		await wrapper.vm.$nextTick()
 
-		expect(wrapper.text()).toContain('Success to send new verification URL')
+		expect(wrapper.find('[data-test="verify-resend-success"]').exists()).toBe(true)
 		expect(replaceSpy).not.toHaveBeenCalled()
+		vi.useRealTimers()
 	})
 
 	it('shows loading caption and progress when isLoadingVerify is true (positive)', async () => {

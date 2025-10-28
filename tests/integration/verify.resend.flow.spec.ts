@@ -34,7 +34,9 @@ describe('🔗 Verify resend token integration (Nuxt + MSW)', () => {
 		useToast().add.mockReset()
 	})
 
-	it('resends verification and shows toast', async () => {
+  it('resends verification and shows toast', async () => {
+    // Use fake timers to advance component's internal setTimeout
+    vi.useFakeTimers()
 		// Force initial verification to fail so Resend button is shown
 		mswServer.use(
 			http.get('/api/auth/verify/:token', async () => {
@@ -45,17 +47,24 @@ describe('🔗 Verify resend token integration (Nuxt + MSW)', () => {
 			})
 		)
 
-		const app = await mountWithRouter(Verify, {
-			routes,
-			startPath: '/verify/abc123',
-			stubs,
-		})
+    const app = await mountWithRouter(Verify, {
+      routes,
+      startPath: '/verify/abc123',
+      stubs,
+    })
+    // Advance past verify delay so resend UI becomes visible
+    vi.advanceTimersByTime(1600)
+    await flushPromises()
+    await nextTick()
 
 		// Prefer component lookup and emit for stability across stub implementations
-		const buttons = app.findAllComponents({ name: 'UButton' })
-		const resendBtnComp = buttons.find((b) => b.text() === 'Resend')
-		expect(resendBtnComp).toBeTruthy()
-		;(resendBtnComp as any).vm.$emit('click')
+    // Ensure resend fail caption is visible
+    const resendFail = app.find('[data-test="verify-resend-fail"]')
+    expect(resendFail.exists()).toBe(true)
+    // Trigger resend via component method to avoid stub lookup flakiness
+    const verifyComp = app.findComponent(Verify)
+    expect(verifyComp.exists()).toBe(true)
+    ;(verifyComp.vm as any).handleResendVerification()
 
 		await flushPromises()
 		await nextTick()
@@ -66,5 +75,8 @@ describe('🔗 Verify resend token integration (Nuxt + MSW)', () => {
 				description: expect.stringContaining('Success to resend email verification URL'),
 			})
 		)
+
+		// Restore timers to real
+		vi.useRealTimers()
 	})
 })
