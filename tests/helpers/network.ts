@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test'
-import { sampleUser, sampleNotes } from '../mocks/data'
+import { sampleUser, sampleNotes } from './data'
 
 export async function stubAuthRegister(page: Page, mode: 'success' | 'error') {
 	await page.route('**/api/auth/register', async (route) => {
