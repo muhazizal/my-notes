@@ -5,7 +5,7 @@ import { mountWithRouter } from '~/tests/helpers/testUtils'
 import { http, HttpResponse } from 'msw'
 
 import UserEditProfile from '~/components/User/EditProfile.vue'
-import { sampleUser } from '~/tests/mocks/data'
+import { sampleUser } from '@/tests/helpers/data'
 
 // MSW and Nuxt globals from setup
 declare const mswServer: ReturnType<typeof import('msw/node').setupServer>

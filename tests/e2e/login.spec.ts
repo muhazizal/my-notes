@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { stubAuthLogin, stubUserProfile, stubNotesIndex } from '@/tests/helpers/network'
-import { sampleUser, sampleNotes } from '@/tests/mocks/data'
+import { sampleUser, sampleNotes } from '@/tests/helpers/data'
 
 test.describe('Login E2E', () => {
 	test.beforeEach(async ({ page }) => {

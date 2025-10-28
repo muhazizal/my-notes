@@ -2,7 +2,7 @@
 import { vi, beforeAll, afterAll, afterEach } from 'vitest'
 import { ref } from 'vue'
 import { setupServer } from 'msw/node'
-import { handlers } from '~/tests/mocks/handlers'
+import { handlers } from '@/tests/helpers/handlers'
 import { config } from '@vue/test-utils'
 import {
 	UContainerStub,

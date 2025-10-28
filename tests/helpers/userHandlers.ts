@@ -5,7 +5,7 @@ import type {
 	IEditUserProfileResponse,
 	IDeleteResponse,
 } from '~/types/user'
-import { sampleUser } from '~/tests/mocks/data'
+import { sampleUser } from '@/tests/helpers/data'
 
 export const userHandlers = [
 	http.get('/api/user/profile', async () => {

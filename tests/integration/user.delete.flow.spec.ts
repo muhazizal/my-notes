@@ -5,7 +5,7 @@ import { mountWithRouter } from '~/tests/helpers/testUtils'
 import { http, HttpResponse } from 'msw'
 
 import UserDelete from '~/components/User/Delete.vue'
-import { sampleUser } from '~/tests/mocks/data'
+import { sampleUser } from '@/tests/helpers/data'
 
 // Globals
 declare const mswServer: ReturnType<typeof import('msw/node').setupServer>

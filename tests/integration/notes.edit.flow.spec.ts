@@ -11,7 +11,7 @@ import NotesDetail from '~/components/Notes/Detail.vue'
 import NotesList from '~/components/Notes/List.vue'
 import NotesItem from '~/components/Notes/Item.vue'
 import NotesCreate from '~/components/Notes/Create.vue'
-import { sampleNotes } from '~/tests/mocks/data'
+import { sampleNotes } from '@/tests/helpers/data'
 import {
 	AppLogoStub,
 	UContainerStub,

@@ -5,7 +5,7 @@ import { mountWithRouter } from '~/tests/helpers/testUtils'
 import { http, HttpResponse } from 'msw'
 
 import UserLogout from '~/components/User/Logout.vue'
-import { sampleUser } from '~/tests/mocks/data'
+import { sampleUser } from '@/tests/helpers/data'
 
 declare const mswServer: ReturnType<typeof import('msw/node').setupServer>
 declare const useToast: () => any
@@ -38,7 +38,10 @@ describe('👤 User Logout integration flow', () => {
 		vi.stubGlobal('useUserStore', realUseUserStore)
 
 		useToast().add.mockReset()
-		vi.stubGlobal('useHead', vi.fn((arg: any) => (typeof arg === 'function' ? arg() : arg)))
+		vi.stubGlobal(
+			'useHead',
+			vi.fn((arg: any) => (typeof arg === 'function' ? arg() : arg))
+		)
 
 		const store = realUseUserStore()
 		store.user.value = { ...sampleUser }

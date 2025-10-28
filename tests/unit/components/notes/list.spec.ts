@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import { http, HttpResponse } from 'msw'
 import List from '~/components/Notes/List.vue'
-import { sampleNotes } from '~/tests/mocks/data'
+import { sampleNotes } from '@/tests/helpers/data'
 import { NotesItemStub } from '~/tests/helpers/uiStubs'
 
 // MSW and Nuxt globals from test setup

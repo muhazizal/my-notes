@@ -12,7 +12,7 @@ import NotesList from '~/components/Notes/List.vue'
 import NotesItem from '~/components/Notes/Item.vue'
 import NotesCreate from '~/components/Notes/Create.vue'
 
-import { sampleNotes } from '~/tests/mocks/data'
+import { sampleNotes } from '@/tests/helpers/data'
 import {
 	UContainerStub,
 	UButtonStub,

@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import type { Ref } from 'vue'
 import plugin from '~/plugins/user.server'
 import { useUserStore } from '@/stores/user'
-import { sampleUser } from '~/tests/mocks/data'
+import { sampleUser } from '@/tests/helpers/data'
 
 describe('plugins/user.server', () => {
 	let store: ReturnType<typeof useUserStore>
