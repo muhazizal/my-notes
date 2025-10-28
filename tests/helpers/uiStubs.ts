@@ -1,5 +1,6 @@
 export const UButtonStub = {
 	name: 'UButton',
+	inheritAttrs: false,
 	props: ['type', 'size', 'square', 'loading', 'disabled', 'variant', 'color', 'padded', 'icon'],
 	emits: ['click'],
 	template: `
@@ -19,6 +20,7 @@ export const UButtonStub = {
 
 export const UFormStub = {
 	name: 'UForm',
+	inheritAttrs: false,
 	emits: ['submit'],
 	template: `
     <form data-test="form" @submit.prevent="$emit('submit', $event)">
@@ -58,6 +60,7 @@ export const UInputStub = {
 
 export const UTextareaStub = {
 	name: 'UTextarea',
+	inheritAttrs: false,
 	props: ['modelValue', 'placeholder', 'size', 'ui', 'autoresize', 'maxrows'],
 	emits: ['update:modelValue'],
 	template: `
@@ -165,7 +168,7 @@ export const NotesItemStub = {
 	name: 'NotesItem',
 	props: ['role'],
 	template:
-		"<div class=\"notes-item-stub\" data-test=\"create-item\" role=\"button\" @click=\"$emit('click')\"><slot /></div>",
+		'<div class="notes-item-stub" data-test="create-item" role="button" @click="$emit(\'click\')"><slot /></div>',
 }
 
 export function createAppCreateDialogStub(
