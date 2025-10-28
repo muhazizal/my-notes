@@ -1,7 +1,8 @@
 <template>
-	<div class="note">
+	<div class="note" data-test="note-detail">
 		<div class="note__header">
 			<UButton
+				data-test="detail-back-button"
 				color="gray"
 				variant="link"
 				icon="i-heroicons-arrow-left"
@@ -13,6 +14,7 @@
 
 			<div class="note__actions">
 				<UButton
+					data-test="detail-update-button"
 					size="sm"
 					icon="i-heroicons-pencil-square"
 					color="primary"
@@ -23,6 +25,7 @@
 					Update
 				</UButton>
 				<UButton
+					data-test="detail-delete-button"
 					size="sm"
 					icon="i-heroicons-trash"
 					color="red"
@@ -46,27 +49,33 @@
 
 		<div v-else-if="error" class="note__error">
 			<p class="mb-4">Unable to load note. It may have been moved or deleted.</p>
-			<UButton color="gray" variant="link" :padded="false" @click="handleBack"
+			<UButton
+				data-test="detail-error-back-button"
+				color="gray"
+				variant="link"
+				:padded="false"
+				@click="handleBack"
 				>Back to Notes</UButton
 			>
 		</div>
 
 		<template v-else>
 			<p class="note__date">{{ formattedUpdatedDate }}</p>
-			<h4 class="note__title">{{ note.title }}</h4>
-			<p class="note__desc whitespace-pre-line">{{ note.description }}</p>
+			<h4 class="note__title" data-test="note-title">{{ note.title }}</h4>
+			<p class="note__desc whitespace-pre-line" data-test="note-description">{{ note.description }}</p>
 		</template>
 
 		<AppCreateDialog ref="updateNoteRef" title="Update Note">
 			<template #body>
 				<UForm
+					data-test="update-form"
 					class="create__body"
 					:schema="createNoteSchema"
 					:state="form"
 					@submit="handleUpdateNote"
 				>
 					<UFormGroup name="title" size="xl" eager-validation>
-						<UInput v-model="form.title" placeholder="Title" size="xl" />
+						<UInput v-model="form.title" placeholder="Title" size="xl" data-test="update-title-input" />
 					</UFormGroup>
 					<UFormGroup name="description" size="xl" eager-validation>
 						<UTextarea
@@ -76,10 +85,12 @@
 							placeholder="Description"
 							size="xl"
 							:ui="{ rounded: 'rounded-none' }"
+							data-test="update-description-textarea"
 						/>
 					</UFormGroup>
 					<div class="create__actions">
 						<UButton
+							data-test="update-cancel-button"
 							size="xl"
 							variant="outline"
 							color="gray"
@@ -89,6 +100,7 @@
 							>Cancel</UButton
 						>
 						<UButton
+							data-test="update-submit-button"
 							type="submit"
 							size="xl"
 							:square="true"
