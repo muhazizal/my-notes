@@ -1,11 +1,15 @@
-import { test, expect } from '@playwright/test'
-import { stubAuthForgotPassword } from '@/tests/helpers/network'
+import { test, expect } from '@/tests/playwright.setup'
+import { http, HttpResponse } from 'msw'
 
 test.describe('Forgot Password E2E', () => {
-	test('forgot password success and display success message', async ({ page }) => {
-		// Stub forgot password API
-		await stubAuthForgotPassword(page, 'success')
+	test.beforeEach(async ({ network }) => {
+		await network.resetHandlers()
+	})
+	test.afterEach(async ({ network }) => {
+		await network.resetHandlers()
+	})
 
+	test('forgot password success and display success message', async ({ page }) => {
 		// Redirect to forgot password page
 		await page.goto('/forgot-password')
 		await page.waitForLoadState('domcontentloaded')
@@ -36,9 +40,13 @@ test.describe('Forgot Password E2E', () => {
 		await expect(successMessage).toBeVisible()
 	})
 
-	test('forgot password failed and display error message', async ({ page }) => {
-		// Stub forgot password API
-		await stubAuthForgotPassword(page, 'error')
+	test('forgot password failed and display error message', async ({ page, network }) => {
+		// Override forgot password API to return an error
+		await network.use(
+			http.post('/api/auth/forgot-password', () =>
+				HttpResponse.json({ message: 'Invalid email address', code: 422 }, { status: 422 })
+			)
+		)
 
 		// Redirect to forgot password page
 		await page.goto('/forgot-password')
@@ -54,22 +62,13 @@ test.describe('Forgot Password E2E', () => {
 		await expect(submitButton).toBeEnabled()
 		submitButton.click()
 
-		// Check forgot password response
-		const forgotPasswordResponse = await page.waitForResponse(
-			(resp) => resp.url().includes('/api/auth/forgot-password') && resp.status() === 422,
-			{ timeout: 3000 }
-		)
-		const forgotPasswordResponseBody = await forgotPasswordResponse.json()
-		expect(forgotPasswordResponseBody).toMatchObject({
-			message: 'Invalid email address',
-			code: 422,
-		})
+		// Assert error feedback via toast and no success caption
+		await expect(page.getByText('Validation error').first()).toBeVisible()
+		const successCaption = page.getByTestId('forgot-password-success')
+		expect(await successCaption.count()).toBe(0)
 	})
 
 	test('forgot password with empty email address', async ({ page }) => {
-		// Stub forgot password API
-		await stubAuthForgotPassword(page, 'error')
-
 		// Redirect to forgot password page
 		await page.goto('/forgot-password')
 		await page.waitForLoadState('domcontentloaded')
@@ -91,9 +90,6 @@ test.describe('Forgot Password E2E', () => {
 	})
 
 	test('forgot password with invalid email address', async ({ page }) => {
-		// Stub forgot password API
-		await stubAuthForgotPassword(page, 'error')
-
 		// Redirect to forgot password page
 		await page.goto('/forgot-password')
 		await page.waitForLoadState('domcontentloaded')

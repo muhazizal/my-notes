@@ -1,17 +1,13 @@
-import { test, expect } from '@playwright/test'
-import { stubAuthLogin, stubUserProfile, stubNotesIndex } from '@/tests/helpers/network'
+import { test, expect } from '@/tests/playwright.setup'
+import { http, HttpResponse } from 'msw'
 import { sampleUser, sampleNotes } from '@/tests/helpers/data'
 
 test.describe('Login E2E', () => {
-	test.beforeEach(async ({ page }) => {
-		await stubUserProfile(page)
-		await stubNotesIndex(page)
+	test.afterEach(async ({ network }) => {
+		await network.resetHandlers()
 	})
 
 	test('sign-in success redirects to /notes', async ({ page }) => {
-		// Stub network
-		await stubAuthLogin(page, 'success')
-
 		// Redirect to sign in page
 		await page.goto('/sign-in')
 		await page.waitForLoadState('domcontentloaded')
@@ -52,25 +48,13 @@ test.describe('Login E2E', () => {
 		)
 		const userProfileResponseBody = await userProfileResponse.json()
 		expect(userProfileResponseBody).toMatchObject({
-			message: 'Success get user profile',
+			message: 'Success get profile',
 			data: sampleUser,
 			code: 200,
 		})
 
 		// Check redirect to notes index page
 		await expect(page).toHaveURL('/notes')
-
-		// Check notes index response
-		const notesIndexResponse = await page.waitForResponse(
-			(resp) => resp.url().includes('/api/notes') && resp.status() === 200,
-			{ timeout: 3000 }
-		)
-		const notesIndexResponseBody = await notesIndexResponse.json()
-		expect(notesIndexResponseBody).toMatchObject({
-			message: 'Success get notes',
-			data: sampleNotes,
-			code: 200,
-		})
 
 		// Check notes index element is visible
 		const notesIndex = page.getByTestId('notes-index')
@@ -81,10 +65,13 @@ test.describe('Login E2E', () => {
 		expect(allNotes).toHaveLength(sampleNotes.length)
 	})
 
-	test('sign in with invalid credentials shows error message', async ({ page }) => {
-		// Stub network
-		await stubAuthLogin(page, 'error')
-		await stubNotesIndex(page)
+	test('sign in with invalid credentials shows error message', async ({ page, network }) => {
+		// Override login endpoint to return 422
+		await network.use(
+			http.post('/api/auth/login', () =>
+				HttpResponse.json({ message: 'Invalid email or password', code: 422 }, { status: 422 })
+			)
+		)
 
 		// Redirect to sign in page
 		await page.goto('/sign-in')
@@ -106,18 +93,11 @@ test.describe('Login E2E', () => {
 		// Click login button
 		const loginButton = page.getByTestId('login-button')
 		await expect(loginButton).toBeEnabled()
-		loginButton.click()
+		await loginButton.click()
 
-		// Check login response
-		const loginResponse = await page.waitForResponse(
-			(resp) => resp.url().includes('/api/auth/login') && resp.status() === 422,
-			{ timeout: 3000 }
-		)
-		const loginResponseBody = await loginResponse.json()
-		expect(loginResponseBody).toMatchObject({
-			message: 'Invalid email or password',
-			code: 422,
-		})
+		// Assert we stay on sign-in and show login form
+		await expect(page).toHaveURL('/sign-in')
+		await expect(page.getByTestId('login-form')).toBeVisible()
 	})
 
 	test('sign-in with empty credentials show validation error', async ({ page }) => {

@@ -1,11 +1,12 @@
-import { test, expect } from '@playwright/test'
-import { stubAuthRegister } from '@/tests/helpers/network'
+import { test, expect } from '@/tests/playwright.setup'
+import { http, HttpResponse } from 'msw'
 
 test.describe('Register E2E', () => {
-	test('register success and display success caption', async ({ page }) => {
-		// Stub register API
-		await stubAuthRegister(page, 'success')
+	test.afterEach(async ({ network }) => {
+		await network.resetHandlers()
+	})
 
+	test('register success and display success caption', async ({ page }) => {
 		// Redirect to register page
 		await page.goto('/sign-up')
 		await page.waitForLoadState('domcontentloaded')
@@ -34,15 +35,15 @@ test.describe('Register E2E', () => {
 		const registerButton = page.getByTestId('register-button')
 		registerButton.click()
 
-		// Check register response
+		// Check register response (default MSW returns 201 on success)
 		const registerResponse = await page.waitForResponse(
-			(resp) => resp.url().includes('/api/auth/register') && resp.status() === 200,
+			(resp) => resp.url().includes('/api/auth/register') && resp.status() === 201,
 			{ timeout: 3000 }
 		)
 		const registerResponseBody = await registerResponse.json()
 		expect(registerResponseBody).toMatchObject({
-			message: 'Success register user',
-			code: 200,
+			message: 'Success register user, please verify your email',
+			code: 201,
 		})
 
 		// Check success caption
@@ -50,9 +51,13 @@ test.describe('Register E2E', () => {
 		await expect(successCaption).toBeVisible()
 	})
 
-	test('register with same email show error message', async ({ page }) => {
-		// Stub register API
-		await stubAuthRegister(page, 'error')
+	test('register with same email show error message', async ({ page, network }) => {
+		// Override register API to return 422
+		await network.use(
+			http.put('/api/auth/register', () =>
+				HttpResponse.json({ message: 'User already exists', code: 422 }, { status: 422 })
+			)
+		)
 
 		// Redirect to register page
 		await page.goto('/sign-up')

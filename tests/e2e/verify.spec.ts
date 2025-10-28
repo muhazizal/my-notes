@@ -1,15 +1,15 @@
 import { test, expect } from '@/tests/playwright.setup'
-import { stubAuthVerify, stubResendVerification } from '@/tests/helpers/network'
+import { http, HttpResponse } from 'msw'
 
 test.describe('Verify E2E', () => {
+	test.beforeEach(async ({ network }) => {
+		await network.resetHandlers()
+	})
 	test.afterEach(async ({ network }) => {
 		await network.resetHandlers()
 	})
 
-	test('success verify and redirect to sign-in page', async ({ page, network }) => {
-		// Stub verify response to success
-		await stubAuthVerify(network, 'success')
-
+	test('success verify and redirect to sign-in page', async ({ page }) => {
 		// Redirect to verify page
 		await page.goto('/verify/tok123')
 		await page.waitForLoadState('domcontentloaded')
@@ -42,13 +42,15 @@ test.describe('Verify E2E', () => {
 
 		const loginTitle = page.getByTestId('login-title')
 		await expect(loginTitle).toBeVisible()
-
-		await network.stop()
 	})
 
 	test('failed verify displays resend fail', async ({ page, network }) => {
-		// Stub verify response to fail
-		await stubAuthVerify(network, 'error')
+		// Override verify response to fail
+		await network.use(
+			http.get('/api/auth/verify/:token', () =>
+				HttpResponse.json({ code: 422, message: 'Failed verify user email' }, { status: 422 })
+			)
+		)
 
 		// Redirect to verify page
 		await page.goto('/verify/tok123')
@@ -64,16 +66,21 @@ test.describe('Verify E2E', () => {
 
 		const resendBtn = page.getByTestId('verify-resend-btn')
 		await expect(resendBtn).toBeVisible()
-
-		await network.stop()
 	})
 
 	test('failed verify -> resend verification shows success', async ({ page, network }) => {
-		// Stub verify response to fail
-		await stubAuthVerify(network, 'error')
-
-		// Stub resend verification response to success
-		await stubResendVerification(network, 'success')
+		// Override verify response to fail
+		await network.use(
+			http.get('/api/auth/verify/:token', () =>
+				HttpResponse.json({ code: 422, message: 'Failed verify user email' }, { status: 422 })
+			)
+		)
+		// Override resend verification response to success
+		await network.use(
+			http.post('/api/auth/resend-verification', () =>
+				HttpResponse.json({ code: 200, message: 'Success resend verification' }, { status: 200 })
+			)
+		)
 
 		// Redirect to verify page
 		await page.goto('/verify/tok123')
@@ -102,16 +109,22 @@ test.describe('Verify E2E', () => {
 		// Check success caption shows
 		const successCaption = page.getByTestId('verify-resend-success')
 		await expect(successCaption).toBeVisible()
-
-		await network.stop()
 	})
 
 	test('failed verify -> resend verification shows failed', async ({ page, network }) => {
-		// Stub verify response to fail
-		await stubAuthVerify(network, 'error')
+		// Override verify response to fail
+		await network.use(
+			http.get('/api/auth/verify/:token', () =>
+				HttpResponse.json({ code: 422, message: 'Failed verify user email' }, { status: 422 })
+			)
+		)
 
-		// Stub resend verification response to fail
-		await stubResendVerification(network, 'error')
+		// Override resend verification response to fail
+		await network.use(
+			http.post('/api/auth/resend-verification', () =>
+				HttpResponse.json({ code: 422, message: 'Cannot resend verification' }, { status: 422 })
+			)
+		)
 
 		// Redirect to verify page
 		await page.goto('/verify/tok123')
@@ -127,17 +140,11 @@ test.describe('Verify E2E', () => {
 
 		const resendBtn = page.getByTestId('verify-resend-btn')
 		await expect(resendBtn).toBeVisible()
-		resendBtn.click()
+		await resendBtn.click()
 
-		// Check resend verification response
-		const resendResponse = await page.waitForResponse(
-			(resp) => resp.url().includes('/api/auth/resend-verification') && resp.status() === 422,
-			{ timeout: 3000 }
-		)
-		const resendResponseBody = await resendResponse.json()
-		expect(resendResponseBody).toMatchObject({
-			message: 'Cannot resend verification',
-			code: 422,
-		})
+		// Assert fail caption remains visible, success caption not shown
+		await expect(page.getByTestId('verify-resend-fail')).toBeVisible()
+		const successCaption = page.getByTestId('verify-resend-success')
+		expect(await successCaption.count()).toBe(0)
 	})
 })
