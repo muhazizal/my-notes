@@ -106,7 +106,7 @@ const handleRedirectSignIn = () => {
 	}
 
 	&__body {
-		@apply w-6/12 max-w-96 space-y-5;
+		@apply max-w-96 space-y-5;
 	}
 
 	&__footer {
