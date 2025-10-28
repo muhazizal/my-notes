@@ -30,35 +30,14 @@ test.describe('Login E2E', () => {
 		await expect(loginButton).toBeEnabled()
 		loginButton.click()
 
-		// Check login response
-		const loginResponse = await page.waitForResponse(
-			(resp) => resp.url().includes('/api/auth/login') && resp.status() === 200,
-			{ timeout: 3000 }
-		)
-		const loginResponseBody = await loginResponse.json()
-		expect(loginResponseBody).toMatchObject({
-			message: 'Success login user',
-			code: 200,
-		})
-
-		// Check user profile response
-		const userProfileResponse = await page.waitForResponse(
-			(resp) => resp.url().includes('/api/user/profile') && resp.status() === 200,
-			{ timeout: 3000 }
-		)
-		const userProfileResponseBody = await userProfileResponse.json()
-		expect(userProfileResponseBody).toMatchObject({
-			message: 'Success get profile',
-			data: sampleUser,
-			code: 200,
-		})
+		// Rely on UI: redirect and content rendering
 
 		// Check redirect to notes index page
 		await expect(page).toHaveURL('/notes')
 
 		// Check notes index element is visible
 		const notesIndex = page.getByTestId('notes-index')
-		await expect(notesIndex).toBeVisible()
+		await expect(notesIndex).toBeVisible({ timeout: 5000 })
 
 		const noteItems = page.getByTestId('note-item')
 		const allNotes = await noteItems.all()

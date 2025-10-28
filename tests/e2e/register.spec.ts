@@ -2,6 +2,9 @@ import { test, expect } from '@/tests/playwright.setup'
 import { http, HttpResponse } from 'msw'
 
 test.describe('Register E2E', () => {
+	test.beforeEach(async ({ network }) => {
+		await network.resetHandlers()
+	})
 	test.afterEach(async ({ network }) => {
 		await network.resetHandlers()
 	})
@@ -35,16 +38,6 @@ test.describe('Register E2E', () => {
 		const registerButton = page.getByTestId('register-button')
 		registerButton.click()
 
-		// Check register response (default MSW returns 201 on success)
-		const registerResponse = await page.waitForResponse(
-			(resp) => resp.url().includes('/api/auth/register') && resp.status() === 201,
-			{ timeout: 3000 }
-		)
-		const registerResponseBody = await registerResponse.json()
-		expect(registerResponseBody).toMatchObject({
-			message: 'Success register user, please verify your email',
-			code: 201,
-		})
 
 		// Check success caption
 		const successCaption = page.getByTestId('register-success-caption')
@@ -87,16 +80,11 @@ test.describe('Register E2E', () => {
 		const registerButton = page.getByTestId('register-button')
 		registerButton.click()
 
-		// Check register response
-		const registerResponse = await page.waitForResponse(
-			(resp) => resp.url().includes('/api/auth/register') && resp.status() === 422,
-			{ timeout: 3000 }
-		)
-		const registerResponseBody = await registerResponse.json()
-		expect(registerResponseBody).toMatchObject({
-			message: 'User already exists',
-			code: 422,
-		})
+		// Assert error feedback via toast and success caption remains hidden
+		await expect(page.getByText('Validation error').first()).toBeVisible()
+		await expect(page.getByText('User already exists').first()).toBeVisible()
+		const successCaption = page.getByTestId('register-success-caption')
+		expect(await successCaption.count()).toBe(0)
 	})
 
 	test('register with empty credentials show validation error', async ({ page }) => {

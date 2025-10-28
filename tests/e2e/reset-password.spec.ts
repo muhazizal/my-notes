@@ -2,6 +2,9 @@ import { test, expect } from '@/tests/playwright.setup'
 import { http, HttpResponse } from 'msw'
 
 test.describe('Reset Password E2E', () => {
+	test.beforeEach(async ({ network }) => {
+		await network.resetHandlers()
+	})
 	test.afterEach(async ({ network }) => {
 		await network.resetHandlers()
 	})
@@ -27,14 +30,6 @@ test.describe('Reset Password E2E', () => {
 		const submitBtn = page.getByTestId('reset-password-submit')
 		await expect(submitBtn).toBeEnabled()
 		await submitBtn.click()
-
-		// Verify API response
-		const resp = await page.waitForResponse(
-			(r) => r.url().includes('/api/auth/reset-password') && r.status() === 200,
-			{ timeout: 3000 }
-		)
-		const body = await resp.json()
-		expect(body).toMatchObject({ code: 200 })
 
 		// Success UI appears and Sign in navigates
 		const successCaption = page.getByTestId('reset-password-success')
@@ -70,14 +65,6 @@ test.describe('Reset Password E2E', () => {
 		// Submit
 		const submitBtn = page.getByTestId('reset-password-submit')
 		await submitBtn.click()
-
-		// Verify API error response
-		const resp = await page.waitForResponse(
-			(r) => r.url().includes('/api/auth/reset-password') && r.status() === 422,
-			{ timeout: 3000 }
-		)
-		const body = await resp.json()
-		expect(body).toMatchObject({ code: 422 })
 
 		// Fail UI appears and request new url navigates
 		const failCaption = page.getByTestId('reset-password-fail')

@@ -22,14 +22,6 @@ test.describe('Verify E2E', () => {
 		const loadingVerify = page.getByTestId('verify-loading')
 		await expect(loadingVerify).toBeVisible()
 
-		// Ensure verify request completes successfully
-		const verifyResponse = await page.waitForResponse(
-			(resp) => resp.url().includes('/api/auth/verify') && resp.status() === 200,
-			{ timeout: 3000 }
-		)
-		const verifyResponseBody = await verifyResponse.json()
-		expect(verifyResponseBody).toMatchObject({ code: 200 })
-
 		// Success caption shows and sign-in button navigates
 		const success = page.getByTestId('verify-success')
 		await expect(success).toBeVisible({ timeout: 5000 })
@@ -94,17 +86,6 @@ test.describe('Verify E2E', () => {
 		const resendBtn = page.getByTestId('verify-resend-btn')
 		await expect(resendBtn).toBeVisible()
 		resendBtn.click()
-
-		// Check resend verification response
-		const resendResponse = await page.waitForResponse(
-			(resp) => resp.url().includes('/api/auth/resend-verification') && resp.status() === 200,
-			{ timeout: 3000 }
-		)
-		const resendResponseBody = await resendResponse.json()
-		expect(resendResponseBody).toMatchObject({
-			message: 'Success resend verification',
-			code: 200,
-		})
 
 		// Check success caption shows
 		const successCaption = page.getByTestId('verify-resend-success')

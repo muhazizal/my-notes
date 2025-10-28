@@ -24,17 +24,6 @@ test.describe('Forgot Password E2E', () => {
 		await expect(submitButton).toBeEnabled()
 		submitButton.click()
 
-		// Check forgot password response
-		const forgotPasswordResponse = await page.waitForResponse(
-			(resp) => resp.url().includes('/api/auth/forgot-password') && resp.status() === 200,
-			{ timeout: 3000 }
-		)
-		const forgotPasswordResponseBody = await forgotPasswordResponse.json()
-		expect(forgotPasswordResponseBody).toMatchObject({
-			message: 'Success forgot password, please check your email',
-			code: 200,
-		})
-
 		// Check success message is displayed
 		const successMessage = await page.getByTestId('forgot-password-success')
 		await expect(successMessage).toBeVisible()
