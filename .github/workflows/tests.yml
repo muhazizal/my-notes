@@ -1,4 +1,4 @@
-name: Tests
+name: Automated Testing
 
 on:
   push:
@@ -6,56 +6,61 @@ on:
   pull_request:
 
 jobs:
-  vitest:
+  automated-testing:
+    name: Automated Testing
     runs-on: ubuntu-latest
 
     steps:
+      # 🧾 Checkout code
       - name: Checkout
         uses: actions/checkout@v4
 
+      # ⚙️ Setup Node & cache deps
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
 
-      - name: Install deps
+      # 📦 Install dependencies
+      - name: Install dependencies
         run: npm ci
 
-      - name: Run unit tests with coverage
+      # 🧪 Run unit + integration tests first (Vitest)
+      - name: Run Vitest with coverage
         run: npm run test:coverage
 
-      - name: Upload coverage HTML (artifact)
+      # 📊 Upload Vitest coverage (HTML report)
+      - name: Upload coverage HTML
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: coverage-html
           path: coverage
 
-  playwright:
-    runs-on: ubuntu-latest
+      # 🏗️ Build the app (ensures it compiles fine)
+      - name: Build Nuxt app
+        run: npm run build
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      # 🚀 Start the preview server in background
+      - name: Start preview server
+        run: |
+          npm run preview -- --port=3000 &
+          npx wait-on http://localhost:3000
+        env:
+          NITRO_PORT: 3000
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
-
-      - name: Install deps
-        run: npm ci
-
+      # 🌐 Install Playwright dependencies
       - name: Install Playwright browsers and OS deps
         run: npx playwright install --with-deps
 
-      - name: Run Playwright e2e (dev server)
+      # 🎭 Run E2E tests (Playwright)
+      - name: Run Playwright E2E tests
         env:
           NUXT_API_BASE_URL: http://localhost:3000
         run: npx playwright test --reporter=line --reporter=html
 
+      # 📁 Upload Playwright HTML report
       - name: Upload Playwright HTML report
         if: always()
         uses: actions/upload-artifact@v4
@@ -64,7 +69,8 @@ jobs:
           path: playwright-report
           if-no-files-found: ignore
 
-      - name: Upload raw test-results on failure
+      # 🧩 Upload raw test-results if E2E fails
+      - name: Upload raw Playwright test-results (on failure)
         if: failure()
         uses: actions/upload-artifact@v4
         with:
