@@ -2,21 +2,28 @@
 	<div class="form">
 		<AppLogo class="form__logo" />
 		<h2 class="form__title" data-test="forgot-password-title">Forgot Password.</h2>
-		<div v-if="isSuccessForgotPassword">
+		<div v-if="isSuccessForgotPassword" data-test="forgot-password-success">
 			<p>Success to send reset password URL, please check your email.</p>
 		</div>
 		<div v-else>
 			<div class="form__caption">
 				<p>Already remember your password?</p>
-				<UButton color="primary" variant="link" :padded="false" @click="handleRedirectSignIn"
-					>Sign in</UButton
+				<UButton
+					color="primary"
+					variant="link"
+					:padded="false"
+					@click="handleRedirectSignIn"
+					data-test="forgot-password-sign-in"
 				>
+					Sign in
+				</UButton>
 			</div>
 			<UForm
 				class="form__body"
 				:schema="forgotPasswordSchema"
 				:state="form"
 				@submit="handleForgotPassword"
+				data-test="forgot-password-form"
 			>
 				<UFormGroup name="email" size="xl" eager-validation>
 					<UInput
@@ -25,6 +32,7 @@
 						placeholder="Email address"
 						size="xl"
 						@keypress="preventSpace"
+						data-test="forgot-password-email"
 					/>
 				</UFormGroup>
 				<div class="form__actions">
@@ -35,8 +43,10 @@
 						:square="true"
 						:loading="isLoadingForgotPassword"
 						:disabled="isLoadingForgotPassword"
-						>Submit</UButton
+						data-test="forgot-password-submit"
 					>
+						Submit
+					</UButton>
 				</div>
 			</UForm>
 		</div>

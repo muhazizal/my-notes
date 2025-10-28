@@ -54,3 +54,19 @@ export async function stubNotesIndex(page: Page) {
 		})
 	})
 }
+
+export async function stubAuthForgotPassword(page: Page, mode: 'success' | 'error') {
+	await page.route('**/api/auth/forgot-password', async (route) => {
+		await route.fulfill({
+			status: mode === 'success' ? 200 : 422,
+			contentType: 'application/json',
+			body: JSON.stringify({
+				message:
+					mode === 'success'
+						? 'Success forgot password, please check your email'
+						: 'Invalid email address',
+				code: mode === 'success' ? 200 : 422,
+			}),
+		})
+	})
+}
