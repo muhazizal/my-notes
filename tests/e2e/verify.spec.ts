@@ -2,6 +2,10 @@ import { test, expect } from '@/tests/playwright.setup'
 import { stubAuthVerify, stubResendVerification } from '@/tests/helpers/network'
 
 test.describe('Verify E2E', () => {
+	test.afterEach(async ({ network }) => {
+		network.resetHandlers()
+	})
+
 	test('success verify and redirect to sign-in page', async ({ page, network }) => {
 		// Stub verify response to success
 		await stubAuthVerify(network, 'success')
