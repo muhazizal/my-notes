@@ -142,9 +142,11 @@ describe('🔐 Auth integration (Nuxt + MSW)', () => {
 
     const comp = mount(ForgotPassword, { global: { stubs: forgotStubs } })
 
-    const signInBtn = comp.findAll('[data-test="btn"]').find((b) => b.text() === 'Sign in')
-    expect(signInBtn).toBeTruthy()
-    await signInBtn!.trigger('click')
+    // Prefer component-level lookup to avoid markup differences
+    const buttons = comp.findAllComponents({ name: 'UButton' })
+    const signInBtnComp = buttons.find((b) => b.text() === 'Sign in')
+    expect(signInBtnComp).toBeTruthy()
+    ;(signInBtnComp as any).vm.$emit('click')
 
     expect(replaceSpy).toHaveBeenCalledWith('/sign-in')
   })

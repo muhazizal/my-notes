@@ -104,7 +104,10 @@ describe('components/ForgotPassword/Index.vue', () => {
 
 		const wrapper = mountComp()
 
-		await wrapper.find('[data-test="form"]').trigger('submit')
+		// Emit submit on UForm component instead of relying on DOM selector
+		const formComp = wrapper.findComponent({ name: 'UForm' })
+		expect(formComp.exists()).toBe(true)
+		formComp.vm.$emit('submit')
 		await flushPromises()
 		await wrapper.vm.$nextTick()
 
@@ -143,8 +146,11 @@ describe('components/ForgotPassword/Index.vue', () => {
 	it('clicking "Sign in" navigates to /sign-in (positive)', async () => {
 		const wrapper = mountComp()
 
-		const signInBtn = wrapper.findAll('button').find((b) => b.text() === 'Sign in')!
-		await signInBtn.trigger('click')
+		// Find UButton component by name to avoid reliance on stub markup
+		const btnComps = wrapper.findAllComponents({ name: 'UButton' })
+		const signInBtnComp = btnComps.find((b) => b.text() === 'Sign in')
+		expect(signInBtnComp).toBeTruthy()
+		;(signInBtnComp as any).vm.$emit('click')
 		expect(replaceSpy).toHaveBeenCalledWith('/sign-in')
 	})
 
@@ -179,7 +185,9 @@ describe('components/ForgotPassword/Index.vue', () => {
 		await emailInput.setValue('payload@example.com')
 		await wrapper.vm.$nextTick()
 
-		await wrapper.find('[data-test="form"]').trigger('submit')
+		const formComp = wrapper.findComponent({ name: 'UForm' })
+		expect(formComp.exists()).toBe(true)
+		formComp.vm.$emit('submit')
 		await flushPromises()
 		await wrapper.vm.$nextTick()
 

@@ -57,6 +57,7 @@ describe('🔗 Token flows integration (Nuxt + MSW)', () => {
 		await flushPromises()
 		await nextTick()
 
+		// Trigger click on stub DOM to satisfy @click.self modifier
 		const signInBtn = app.findAll('[data-test="btn"]').find((b) => b.text() === 'Sign in')
 		expect(signInBtn).toBeTruthy()
 		await signInBtn!.trigger('click')
@@ -75,7 +76,6 @@ describe('🔗 Token flows integration (Nuxt + MSW)', () => {
 			{ Verify, ResetPassword, Login },
 			{ ...commonStubs, ...stubs }
 		)
-
 
 		const inputs = app.findAll('[data-test="input"]')
 		expect(inputs.length).toBeGreaterThanOrEqual(2)

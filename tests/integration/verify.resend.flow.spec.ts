@@ -51,9 +51,11 @@ describe('🔗 Verify resend token integration (Nuxt + MSW)', () => {
 			stubs,
 		})
 
-		const resendBtn = app.findAll('[data-test="btn"]').find((b) => b.text() === 'Resend')
-		expect(resendBtn).toBeTruthy()
-		await resendBtn!.trigger('click')
+		// Prefer component lookup and emit for stability across stub implementations
+		const buttons = app.findAllComponents({ name: 'UButton' })
+		const resendBtnComp = buttons.find((b) => b.text() === 'Resend')
+		expect(resendBtnComp).toBeTruthy()
+		;(resendBtnComp as any).vm.$emit('click')
 
 		await flushPromises()
 		await nextTick()
