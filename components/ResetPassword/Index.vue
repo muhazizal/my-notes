@@ -1,11 +1,11 @@
 <template>
 	<div class="form">
 		<AppLogo class="form__logo" />
-		<h2 class="form__title">Reset Password.</h2>
+		<h2 class="form__title" data-test="reset-password-title">Reset Password.</h2>
 		<div v-if="!isFailedReset && !isSuccessReset" class="form__caption">
 			<p>Input your new password to reset your password</p>
 		</div>
-		<div v-if="isFailedReset">
+		<div v-if="isFailedReset" data-test="reset-password-fail">
 			<div class="form__caption">
 				<p>
 					failed to reset your password, please
@@ -14,16 +14,22 @@
 						variant="link"
 						:padded="false"
 						@click="handleRedirectForgotPassword"
+						data-test="reset-password-forgot-password"
 						>request new url</UButton
 					>
 				</p>
 			</div>
 		</div>
 		<div v-else-if="isSuccessReset">
-			<div class="form__caption">
+			<div class="form__caption" data-test="reset-password-success">
 				<p>
 					Success to reset your password, please
-					<UButton color="primary" variant="link" :padded="false" @click="handleRedirectSignIn"
+					<UButton
+						color="primary"
+						variant="link"
+						:padded="false"
+						@click="handleRedirectSignIn"
+						data-test="reset-password-sign-in"
 						>Sign in</UButton
 					>
 					to continue
@@ -37,6 +43,7 @@
 					:schema="resetPasswordSchema"
 					:state="form"
 					@submit="handleResetPassword"
+					data-test="reset-password-form"
 				>
 					<UFormGroup name="password.real" size="xl" eager-validation>
 						<UInput
@@ -45,6 +52,7 @@
 							size="xl"
 							type="password"
 							@keypress="preventSpace"
+							data-test="reset-password-real"
 						/>
 					</UFormGroup>
 					<UFormGroup name="password.confirmation" size="xl" eager-validation>
@@ -54,6 +62,7 @@
 							size="xl"
 							type="password"
 							@keypress="preventSpace"
+							data-test="reset-password-confirmation"
 						/>
 					</UFormGroup>
 					<div class="form__actions">
@@ -64,6 +73,7 @@
 							:square="true"
 							:loading="isLoadingResetPassword"
 							:disabled="isLoadingResetPassword"
+							data-test="reset-password-submit"
 							>Submit</UButton
 						>
 					</div>
