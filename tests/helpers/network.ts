@@ -1,5 +1,7 @@
 import type { Page } from '@playwright/test'
-import { sampleUser, sampleNotes } from './data'
+import type { NetworkFixture } from '@msw/playwright'
+import { sampleUser, sampleNotes } from '@/tests/helpers/data'
+import { http, HttpResponse } from 'msw'
 
 export async function stubAuthRegister(page: Page, mode: 'success' | 'error') {
 	await page.route('**/api/auth/register', async (route) => {
@@ -69,4 +71,24 @@ export async function stubAuthForgotPassword(page: Page, mode: 'success' | 'erro
 			}),
 		})
 	})
+}
+
+export async function stubAuthVerify(network: NetworkFixture, mode: 'success' | 'error') {
+	network.use(
+		http.get('/api/auth/verify/tok123', () =>
+			mode === 'success'
+				? HttpResponse.json({ code: 200, message: 'Success verify user email' }, { status: 200 })
+				: HttpResponse.json({ code: 422, message: 'Failed verify user email' }, { status: 422 })
+		)
+	)
+}
+
+export async function stubResendVerification(network: NetworkFixture, mode: 'success' | 'error') {
+	network.use(
+		http.post('/api/auth/resend-verification', () =>
+			mode === 'success'
+				? HttpResponse.json({ code: 200, message: 'Success resend verification' }, { status: 200 })
+				: HttpResponse.json({ code: 422, message: 'Cannot resend verification' }, { status: 422 })
+		)
+	)
 }

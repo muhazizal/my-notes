@@ -1,18 +1,23 @@
 <template>
 	<div class="form">
 		<AppLogo class="form__logo" />
-		<h2 class="form__title">Email Verification.</h2>
-		<template v-if="isLoadingVerify">
-			<div class="form__caption">
+		<h2 class="form__title" data-test="verify-title">Email Verification.</h2>
+		<template v-if="isWaitingVerify">
+			<div class="form__caption" data-test="verify-loading">
 				<p>Please wait, email verification is on progress</p>
 				<UProgress animation="carousel" />
 			</div>
 		</template>
 		<template v-else-if="isSuccessVerify">
-			<div class="form__caption">
+			<div class="form__caption" data-test="verify-success">
 				<p>
 					Success to verify your email, please
-					<UButton color="primary" variant="link" :padded="false" @click.self="handleRedirectSignIn"
+					<UButton
+						color="primary"
+						variant="link"
+						:padded="false"
+						@click.self="handleRedirectSignIn"
+						data-test="verify-success-btn"
 						>Sign in</UButton
 					>
 					to continue
@@ -21,12 +26,12 @@
 		</template>
 		<template v-else>
 			<template v-if="isSuccessResendVerification">
-				<div class="form__caption">
+				<div class="form__caption" data-test="verify-resend-success">
 					<p>Success to send new verification URL, please check your email</p>
 				</div>
 			</template>
 			<template v-else>
-				<div class="form__caption">
+				<div class="form__caption" data-test="verify-resend-fail">
 					<p>Failed to verify your email, please try again with new verification URL</p>
 					<UButton
 						class="form__caption__btn"
@@ -35,6 +40,7 @@
 						:loading="isLoadingResendVerification"
 						:disabled="isLoadingResendVerification"
 						@click="handleResendVerification"
+						data-test="verify-resend-btn"
 						>Resend</UButton
 					>
 				</div>
@@ -44,31 +50,35 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
 import { useAuth } from '@/composables/api/useAuth'
 
 const route = useRoute()
 const router = useRouter()
-const { verify, resendVerification, isLoadingResendVerification, isLoadingVerify } = useAuth()
+const { verify, resendVerification, isLoadingResendVerification } = useAuth()
 
 const toast = useToast()
 const { token } = route.params
+const isWaitingVerify = ref<boolean>(true)
 const isSuccessVerify = ref<boolean>(false)
 const isSuccessResendVerification = ref<boolean>(false)
 
 const handleVerify = async (): Promise<void> => {
-	const data = await verify(token)
+	setTimeout(async (): Promise<void> => {
+		const data = await verify(token)
 
-	if (data) {
-		isSuccessVerify.value = true
-		toast.add({
-			color: 'green',
-			title: 'Verify Email',
-			description: 'Success to verify email',
-		})
-	}
+		if (data) {
+			isWaitingVerify.value = false
+			isSuccessVerify.value = true
+			toast.add({
+				color: 'green',
+				title: 'Verify Email',
+				description: 'Success to verify email',
+			})
+		} else {
+			isWaitingVerify.value = false
+		}
+	}, 1500)
 }
-
 const handleResendVerification = async (): Promise<void> => {
 	const data = await resendVerification(token)
 
