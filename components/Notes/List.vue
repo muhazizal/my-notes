@@ -14,7 +14,7 @@
 		>
 			<div class="flex flex-col items-center justify-center p-3">
 				<h3 class="text-base font-bold mb-1">{{ note.title }}</h3>
-				<p class="text-xs line-clamp-1">{{ note.description }}</p>
+				<p class="text-xs break-words truncate">{{ note.description }}</p>
 			</div>
 		</NotesItem>
 	</template>
