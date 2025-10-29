@@ -96,7 +96,7 @@
 							color="gray"
 							:square="true"
 							:disabled="isUpdating"
-							@click="handleClearForm"
+							@click="handleCancelUpdate"
 							>Cancel</UButton
 						>
 						<UButton
@@ -188,6 +188,12 @@ const handleUpdateNote = async (): Promise<void> => {
 		handleClearForm()
 	}
 	isUpdating.value = false
+}
+
+const handleCancelUpdate = (): void => {
+	form.value.title = note.value.title
+	form.value.description = note.value.description
+	updateNoteRef.value?.handleOpenModal(false)
 }
 
 const isDeleting = ref(false)
