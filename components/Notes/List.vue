@@ -12,9 +12,9 @@
 			data-test="note-item"
 			@click="handleRedirectNote(note.id)"
 		>
-			<div class="flex flex-col items-center justify-center p-3">
+			<div class="flex flex-col items-center justify-center p-3 overflow-hidden">
 				<h3 class="text-base font-bold mb-1">{{ note.title }}</h3>
-				<p class="text-xs break-words truncate">{{ note.description }}</p>
+				<p class="text-xs break-words line-clamp-2">{{ note.description }}</p>
 			</div>
 		</NotesItem>
 	</template>
