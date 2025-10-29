@@ -20,7 +20,7 @@
 					color="primary"
 					:loading="isUpdating"
 					:disabled="isUpdating"
-					@click="handleOpenUpdateModal"
+					@click="updateNoteRef?.handleOpenModal(true)"
 				>
 					Update
 				</UButton>
@@ -62,9 +62,7 @@
 		<template v-else>
 			<p class="note__date">{{ formattedUpdatedDate }}</p>
 			<h4 class="note__title" data-test="note-title">{{ note.title }}</h4>
-			<p class="note__desc whitespace-pre-line" data-test="note-description">
-				{{ note.description }}
-			</p>
+			<p class="note__desc whitespace-pre-line" data-test="note-description">{{ note.description }}</p>
 		</template>
 
 		<AppCreateDialog ref="updateNoteRef" title="Update Note">
@@ -77,12 +75,7 @@
 					@submit="handleUpdateNote"
 				>
 					<UFormGroup name="title" size="xl" eager-validation>
-						<UInput
-							v-model="form.title"
-							placeholder="Title"
-							size="xl"
-							data-test="update-title-input"
-						/>
+						<UInput v-model="form.title" placeholder="Title" size="xl" data-test="update-title-input" />
 					</UFormGroup>
 					<UFormGroup name="description" size="xl" eager-validation>
 						<UTextarea
@@ -144,18 +137,16 @@ const note = ref<INote>({
 	title: '',
 	updatedAt: '',
 })
-const setNote = (): void => {
-	if (data.value?.data) {
-		note.value = data.value.data
-	}
-}
 const formattedUpdatedDate = computed<string>(() => {
 	const dateStr = note.value.updatedAt || note.value.createdAt
 	return dateStr ? format(dateStr, "dd MMM yyyy 'at' HH:mm") : ''
 })
 
 const { data, pending, error } = await getNoteById(params.id as string)
-setNote()
+
+if (data.value?.data) {
+	note.value = data.value.data
+}
 
 const handleBack = (): void => {
 	router.push('/notes')
@@ -166,10 +157,6 @@ const form = ref<IUpdateNoteBody>({
 	title: note.value.title,
 	description: note.value.description,
 })
-const handleOpenUpdateModal = (): void => {
-	setNote()
-	updateNoteRef.value?.handleOpenModal(true)
-}
 const handleClearForm = async (): Promise<void> => {
 	updateNoteRef.value?.handleOpenModal(false)
 
