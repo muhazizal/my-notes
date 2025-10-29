@@ -114,7 +114,7 @@ describe('components/Notes/Detail.vue', () => {
 		expect(wrapper.find('[data-test="textarea"]').exists()).toBe(true)
 	})
 
-	it('v-model updates form fields inside update modal (positive)', async () => {
+  it('v-model updates form fields inside update modal (positive)', async () => {
 		const wrapper = await mountComp()
 		const updateBtn = wrapper
 			.findAllComponents({ name: 'UButton' })
@@ -131,7 +131,52 @@ describe('components/Notes/Detail.vue', () => {
 		const form = vm.form?.value ?? vm.form
 		expect(form.title).toBe('Edited Title')
 		expect(form.description).toBe('Edited Description')
-	})
+  })
+
+  it('Cancel in update modal restores original form values and closes dialog', async () => {
+    const wrapper = await mountComp()
+
+    // Open the update dialog
+    const updateBtn = wrapper
+      .findAllComponents({ name: 'UButton' })
+      .find((b) => b.props('icon') === 'i-heroicons-pencil-square')!
+    await updateBtn.trigger('click')
+
+    const detail = wrapper.findComponent(DetailCtor)
+    await detail.vm.$nextTick()
+
+    // Change the form values
+    await wrapper.find('[data-test="input"]').setValue('Edited Title')
+    await wrapper.find('[data-test="textarea"]').setValue('Edited Description')
+
+    // Ensure modal was opened
+    expect(openSpy).toHaveBeenCalledWith(true)
+
+    // Click Cancel
+    const cancelBtn = wrapper
+      .findAllComponents({ name: 'UButton' })
+      .find((b) => b.text().includes('Cancel'))!
+    await cancelBtn.trigger('click')
+
+    await flushPromises()
+    await detail.vm.$nextTick()
+
+    // Modal closed via exposed method
+    expect(openSpy).toHaveBeenCalledWith(false)
+
+    // Form values restored to original note values
+    const vm: any = detail.vm
+    const noteRef = vm.note?.value ?? vm.note
+    const formRef = vm.form?.value ?? vm.form
+    expect(formRef.title).toBe(noteRef.title)
+    expect(formRef.description).toBe(noteRef.description)
+
+    // Stubs reflect restored values
+    const inputStub = wrapper.findComponent({ name: 'UInput' })
+    const textareaStub = wrapper.findComponent({ name: 'UTextarea' })
+    expect(inputStub.props('modelValue')).toBe(noteRef.title)
+    expect(textareaStub.props('modelValue')).toBe(noteRef.description)
+  })
 
 	it('renders skeleton when pending is true', async () => {
 		const spy = vi.spyOn(useNotesModule, 'useNotes').mockImplementation(
