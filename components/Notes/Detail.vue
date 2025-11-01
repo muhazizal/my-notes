@@ -167,14 +167,6 @@ const form = ref<IUpdateNoteBody>({
 	title: note.value.title,
 	description: note.value.description,
 })
-const handleClearForm = async (): Promise<void> => {
-	updateNoteRef.value?.handleOpenModal(false)
-
-	await nextTick()
-
-	form.value.title = ''
-	form.value.description = ''
-}
 const isUpdating = ref(false)
 const handleUpdateNote = async (): Promise<void> => {
 	if (!note.value.id || isUpdating.value) return
@@ -194,8 +186,8 @@ const handleUpdateNote = async (): Promise<void> => {
 			title: 'Update Note',
 			description: updateData.value?.message || 'Note updated',
 		})
-		note.value = updateData.value?.data || note.value
-		handleClearForm()
+		form.value = updateData.value?.data || note.value
+		updateNoteRef.value?.handleOpenModal(false)
 	}
 	isUpdating.value = false
 }
