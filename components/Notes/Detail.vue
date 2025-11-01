@@ -12,6 +12,9 @@
 				Back to Notes
 			</UButton>
 
+			<UDropdown class="note__dropdown" :items="actionItems" :ui="{ content: 'w-48' }">
+				<UButton color="gray" variant="outline" icon="i-lucide-menu" />
+			</UDropdown>
 			<div class="note__actions">
 				<UButton
 					data-test="detail-update-button"
@@ -62,7 +65,9 @@
 		<template v-else>
 			<p class="note__date">{{ formattedUpdatedDate }}</p>
 			<h4 class="note__title" data-test="note-title">{{ note.title }}</h4>
-			<p class="note__desc whitespace-pre-line" data-test="note-description">{{ note.description }}</p>
+			<p class="note__desc whitespace-pre-line" data-test="note-description">
+				{{ note.description }}
+			</p>
 		</template>
 
 		<AppCreateDialog ref="updateNoteRef" title="Update Note">
@@ -75,7 +80,12 @@
 					@submit="handleUpdateNote"
 				>
 					<UFormGroup name="title" size="xl" eager-validation>
-						<UInput v-model="form.title" placeholder="Title" size="xl" data-test="update-title-input" />
+						<UInput
+							v-model="form.title"
+							placeholder="Title"
+							size="xl"
+							data-test="update-title-input"
+						/>
 					</UFormGroup>
 					<UFormGroup name="description" size="xl" eager-validation>
 						<UTextarea
@@ -214,6 +224,25 @@ const handleDeleteNote = async (): Promise<void> => {
 	isDeleting.value = false
 }
 
+const actionItems = [
+	[
+		{
+			label: 'Update',
+			labelClass: 'text-primary',
+			icon: 'i-heroicons-pencil-square',
+			iconClass: 'text-primary',
+			click: () => updateNoteRef.value?.handleOpenModal(true),
+		},
+		{
+			label: 'Delete',
+			labelClass: 'text-red-500',
+			icon: 'i-heroicons-trash',
+			iconClass: 'text-red-500',
+			click: () => handleDeleteNote(),
+		},
+	],
+]
+
 useHead(() => ({
 	title: note.value.title ? `${note.value.title} • Notes` : 'Note • My Notes',
 }))
@@ -227,8 +256,12 @@ useHead(() => ({
 		@apply flex items-center justify-between mb-6;
 	}
 
+	&__dropdown {
+		@apply flex md:hidden;
+	}
+
 	&__actions {
-		@apply flex items-center gap-2;
+		@apply hidden md:flex  items-center gap-2;
 	}
 
 	&__skeleton {

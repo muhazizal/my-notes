@@ -170,7 +170,7 @@ const handleRedirectSignIn = () => {
 	}
 
 	&__body {
-		@apply w-6/12 max-w-96 space-y-5;
+		@apply w-full md:w-6/12 max-w-96 space-y-5;
 	}
 
 	&__actions {

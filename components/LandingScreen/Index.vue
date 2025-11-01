@@ -47,22 +47,22 @@ const handleRedirectSignUp = (): void => {
 	}
 
 	&__title {
-		@apply text-7xl font-bold mb-8;
+		@apply text-center text-3xl md:text-7xl font-bold mb-4 md:mb-8;
 	}
 
 	&__caption {
-		@apply text-lg flex flex-row gap-1;
+		@apply text-center text-sm md:text-lg flex flex-row gap-1;
 	}
 
 	&__actions {
 		@apply text-center !mt-16;
 
 		span {
-			@apply mx-6;
+			@apply mx-3 md:mx-6;
 		}
 
 		&__item {
-			@apply w-44 justify-center p-3 rounded-none;
+			@apply w-28 md:w-44 justify-center p-3 rounded-none text-sm md:text-base;
 		}
 	}
 }
