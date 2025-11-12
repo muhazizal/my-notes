@@ -186,8 +186,12 @@ const handleUpdateNote = async (): Promise<void> => {
 			title: 'Update Note',
 			description: updateData.value?.message || 'Note updated',
 		})
-		form.value = updateData.value?.data || note.value
+		if (updateData.value?.data) {
+			note.value = updateData.value.data
+		}
 		updateNoteRef.value?.handleOpenModal(false)
+		form.value.title = ''
+		form.value.description = ''
 	}
 	isUpdating.value = false
 }
